@@ -1,0 +1,67 @@
+/* Styling for the table container */
+.TableContainer-root {
+  margin: 16px;
+  overflow-x: auto;
+}
+
+/* Styling for the table */
+.MuiTable-root {
+  min-width: 650px;
+}
+
+/* Styling for table header cells */
+.MuiTableHead-root {
+  background-color: #f0f0f0;
+}
+
+.MuiTableCell-head {
+  text-align: center;
+  font-weight: bold;
+  padding: 8px 16px;
+}
+
+/* Styling for table rows */
+.MuiTableRow-root {
+  &:nth-of-type(even) {
+    background-color: #f5f5f5;
+  }
+}
+
+/* Styling for active sorting label */
+.MuiTableSortLabel-root.MuiTableSortLabel-active {
+  color: #1976d2;
+}
+
+/* Styling for ascending sorting label */
+.MuiTableSortLabel-iconDirectionAsc {
+  color: #1976d2;
+}
+
+/* Styling for descending sorting label */
+.MuiTableSortLabel-iconDirectionDesc {
+  color: #1976d2;
+}
+
+/* Style the main scrollbar container */
+::-webkit-scrollbar {
+  width: 12px; /* Width of the scrollbar */
+}
+
+::-webkit-scrollbar:hover {
+  width: 12px; /* Width of the scrollbar */
+}
+
+/* Track styles (the background of the scrollbar) */
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Background color */
+}
+
+/* Handle (thumb) styles for the scrollbar */
+::-webkit-scrollbar-thumb {
+  background: gray; /* Color of the scrollbar handle */
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #202020; /* Color on hover */
+}
