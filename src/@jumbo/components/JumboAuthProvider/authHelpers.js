@@ -1,7 +1,8 @@
 import {config} from "../../../app/config/main";
 
 export const storeToken = (token) => {
-    localStorage.setItem('token', token);
+    console.log(token,"444444444444444444");
+    localStorage.setItem('token', "shdguisbfbf");
     if(!config?.authSetting?.axiosObject)
         throw Error("axiosObject need to be set under authSettings inside app/config/main.js");
     else

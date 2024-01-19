@@ -6,7 +6,7 @@ import { Navigate, Outlet } from "react-router-dom";
 const AuthenticateAndRolesMiddleware = ({ fallbackPath,module }) => {
 //   const isAuthenticated = sessionStorage.getItem("isAuthenticated");
 //   const Permission = useSelector(
-//     (state) => state?.cloudstratCustomer?.loginUserDetails?.role?.permissions
+//     (state) => state?.loginUserDetails?.role?.permissions
 //   );
 //   if (Permission) {
 //     if (isAuthenticated === "true" && Permission?.view_roles) {

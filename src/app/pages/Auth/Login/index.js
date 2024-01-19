@@ -16,6 +16,8 @@ import JumboTextField from "@jumbo/components/JumboFormik/JumboTextField";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import useJumboAuth from "@jumbo/hooks/useJumboAuth";
+// import { setAuthToken } from "app/services/config";
 
 const validationSchema = yup.object({
   email_id: yup
@@ -26,13 +28,14 @@ const validationSchema = yup.object({
 });
 
 const Login = ({ disableSmLogin }) => {
+  const {setAuthToken} = useJumboAuth();
+  const navigate = useNavigate();
   // const { error, loading, isAuthenticated, user } = useSelector(
   //   (state) => state.userReducer
   // );
   const [showPassword, setShowPassword] = useState(false);
-  const [isSubmitting, setSubmitting] = useState(false);
+  // const [isSubmitting, setSubmitting] = useState(false);
 
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   // useEffect(() => {
@@ -53,8 +56,14 @@ const Login = ({ disableSmLogin }) => {
   // }, []);
 
   const onSignIn = (values) => {
+    console.log(values);
     if (values) {
-      navigate("/");
+      // authServices.signIn({email, password})
+      // .then((data) => {
+          // setAuthToken(data?.token);
+          setAuthToken(1234);
+          navigate("/");
+      // });
     }
     // dispatch(login(values?.email_id, values?.password, setSubmitting));
   };
@@ -139,9 +148,13 @@ const Login = ({ disableSmLogin }) => {
               password: "",
             }}
             validationSchema={validationSchema}
-            onSubmit={onSignIn}
+            onSubmit={(data, {setSubmitting}) => {
+              // setSubmitting(true);
+              onSignIn(data);
+              setSubmitting(false);
+          }}
           >
-            {({ values }) => (
+            {({ isSubmitting }) => (
               <Form style={{ textAlign: "left" }} noValidate autoComplete="off">
                 <Div sx={{ mt: 1, mb: 3 }}>
                   <JumboTextField fullWidth name="email_id" label="Email ID" />
