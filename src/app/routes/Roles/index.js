@@ -1,31 +1,51 @@
 import Page from "@jumbo/shared/Page";
-import AuthenticateAndRolesMiddleware from "../Middleware";
+import AddUser from "app/pages/UserManagement/AddUser";
+import ListUser from "app/pages/UserManagement/ListUser";
+import EditUser from "app/pages/UserManagement/EditUser";
+import PermissionMiddleware from "../Middleware/permission";
+import Dashboard from "app/pages/Dashboard";
+import ListRole from "app/pages/RoleManagement/ListRole";
 
-
-const routesName = "/dashboards/roles";
+const routesName = "/roles";
 const modules = "roles";
 
-export const rolesRoute = [
+var routes = [
   {
-    middleware: [
+    path: `${routesName}`,
+    element: <Page component={ListRole} layout={"vertical-default"} />,
+    permission: "view",
+  },
+  {
+    path: `${routesName}/add`,
+    element: <Page component={Dashboard} layout={"vertical-default"} />,
+    permission: "add",
+  },
+  {
+    path: `${routesName}/edit`,
+    element: <Page component={Dashboard} layout={"vertical-default"} />,
+    permission: "edit",
+  },
+];
+
+const createRoutes = () => {
+  let allRoutes = routes?.map((route) => {
+    let obj = {};
+    obj["middleware"] = [
       {
-        element: AuthenticateAndRolesMiddleware,
-        fallbackPath: "/admin/dashboard",
-        module: modules
+        element: PermissionMiddleware,
+        fallbackPath: ["/", modules, route.permission],
       },
-    ],
-    routes: [
+    ];
+    obj["routes"] = [
       {
-        path: `${routesName}`,
-        // element: <Page component={Home} />
+        path: route.path,
+        element: route.element,
       },
-      {
-        path: `${routesName}/add`,
-        // element: <Page component={AdminCustomers} />,
-      },
-      {
-        path: `${routesName}/edit`,
-        // element: <Page component={EditCloudstratClient} />,
-      },
-    ],
-  },]
+    ];
+    return obj;
+  });
+  return allRoutes;
+};
+
+export const rolesRoute = [...createRoutes()];
+

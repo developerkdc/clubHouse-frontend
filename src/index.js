@@ -1,14 +1,13 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom";
+import reportWebVitals from "./reportWebVitals";
 import App from "./app/App";
-import './app/config/i18n';
-import axios from 'axios';
-
+import "./app/config/i18n";
+import axios from "axios";
 
 export const Axios = axios.create({
-  baseURL: process.env.LOCALURL
-})
+  baseURL: process.env.APP_URL,
+});
 
 Axios.interceptors.request.use(function (request) {
   const token = localStorage.getItem("token");
@@ -20,12 +19,11 @@ Axios.interceptors.request.use(function (request) {
   return request;
 });
 
-
 ReactDOM.render(
   <React.StrictMode>
     <App />
   </React.StrictMode>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
 
 // If you want to start measuring performance in your app, pass a function

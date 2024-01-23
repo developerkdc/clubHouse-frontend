@@ -3,24 +3,25 @@ import AddUser from "app/pages/UserManagement/AddUser";
 import ListUser from "app/pages/UserManagement/ListUser";
 import EditUser from "app/pages/UserManagement/EditUser";
 import PermissionMiddleware from "../Middleware/permission";
+import Dashboard from "app/pages/Dashboard";
 
-const routesName = "/user";
-const modules = "user";
+const routesName = "/member";
+const modules = "member";
 
 var routes = [
   {
     path: `${routesName}`,
-    element: <Page component={ListUser} layout={"vertical-default"} />,
+    element: <Page component={Dashboard} layout={"vertical-default"} />,
     permission: "view",
   },
   {
     path: `${routesName}/add`,
-    element: <Page component={AddUser} layout={"vertical-default"} />,
+    element: <Page component={Dashboard} layout={"vertical-default"} />,
     permission: "add",
   },
   {
     path: `${routesName}/edit`,
-    element: <Page component={EditUser} layout={"vertical-default"} />,
+    element: <Page component={Dashboard} layout={"vertical-default"} />,
     permission: "edit",
   },
 ];
@@ -45,4 +46,5 @@ const createRoutes = () => {
   return allRoutes;
 };
 
-export const usersRoute = [...createRoutes()];
+export const memberRoute = [...createRoutes()];
+

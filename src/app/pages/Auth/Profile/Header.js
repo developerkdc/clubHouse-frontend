@@ -8,10 +8,6 @@ import {ASSET_AVATARS} from "../../../utils/constants/paths";
 import {getAssetPath} from "../../../utils/appHelpers";
 
 
-
-
-
-
 const Header = () => {
     return (
         <ContentHeader

@@ -18,10 +18,10 @@ import useJumboAuth from "@jumbo/hooks/useJumboAuth";
 const AuthUserDropdown = () => {
     const navigate = useNavigate();
     const {theme} = useJumboTheme();
-    // const {setAuthToken} = useJumboAuth();
+    const {setAuthToken} = useJumboAuth();
 
     const onLogout = () => {
-        // setAuthToken(null);
+        setAuthToken(null);
         navigate("/login");
     };
 

@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Card,
-  CardContent,
-  Checkbox,
-  FormControlLabel,
-  Typography,
-} from "@mui/material";
+import { Card, CardContent, Checkbox, FormControlLabel, Typography } from "@mui/material";
 import Div from "@jumbo/shared/Div";
 import { alpha } from "@mui/material/styles";
 import { ASSET_IMAGES } from "../../../utils/constants/paths";
@@ -17,18 +11,17 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import useJumboAuth from "@jumbo/hooks/useJumboAuth";
+import Swal from "sweetalert2";
 // import { setAuthToken } from "app/services/config";
 
 const validationSchema = yup.object({
-  email_id: yup
-    .string("Enter your Email ID")
-    .email("Enter Valid Email ID")
-    .required("Email ID is required"),
+  email_id: yup.string("Enter your Email ID").email("Enter Valid Email ID").required("Email ID is required"),
   password: yup.string("Enter your password").required("Password is required"),
 });
 
 const Login = ({ disableSmLogin }) => {
-  const {setAuthToken} = useJumboAuth();
+  const { setAuthToken, authToken, authUser } = useJumboAuth();
+  console.log(authUser,"login");
   const navigate = useNavigate();
   // const { error, loading, isAuthenticated, user } = useSelector(
   //   (state) => state.userReducer
@@ -38,31 +31,31 @@ const Login = ({ disableSmLogin }) => {
 
   const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   if (error) {
-  //     Swal.fire({
-  //       icon: "error",
-  //       title: "Invalid Credentials",
-  //       text: error,
-  //     });
-  //     dispatch(clearErrors());
-  //   }
-  //   if (isAuthenticated) {
-  //     navigate("/dashboard");
-  //   }
-  //   } else if (isAuthenticated && user.role != "admin") {
-  //     navigate("/mycontent");
-  //   }
-  // }, []);
+  useEffect(() => {
+    // if (error) {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Invalid Credentials",
+    //     text: error,
+    //   });
+    //   dispatch(clearErrors());
+    // }
+    if (authToken) {
+      navigate("/");
+    }
+    //  else if (authToken) {
+    //   navigate("/mycontent");
+    // }
+  }, []);
 
   const onSignIn = (values) => {
     console.log(values);
     if (values) {
       // authServices.signIn({email, password})
       // .then((data) => {
-          // setAuthToken(data?.token);
-          setAuthToken(1234);
-          navigate("/");
+      // setAuthToken(data?.token);
+      setAuthToken(1234);
+      navigate("/");
       // });
     }
     // dispatch(login(values?.email_id, values?.password, setSubmitting));
@@ -96,10 +89,7 @@ const Login = ({ disableSmLogin }) => {
           sx={{
             flex: "0 1 300px",
             position: "relative",
-            background: `#0267a0 url(${getAssetPath(
-              `${ASSET_IMAGES}/widgets/keith-luke.jpg`,
-              "640x428"
-            )}) no-repeat center`,
+            background: `#0267a0 url(${getAssetPath(`${ASSET_IMAGES}/widgets/keith-luke.jpg`, "640x428")}) no-repeat center`,
             backgroundSize: "cover",
 
             "&::after": {
@@ -124,12 +114,7 @@ const Login = ({ disableSmLogin }) => {
             }}
           >
             <Div sx={{ mb: 2 }}>
-              <Typography
-                variant={"h3"}
-                color={"inherit"}
-                fontWeight={500}
-                mb={3}
-              >
+              <Typography variant={"h3"} color={"inherit"} fontWeight={500} mb={3}>
                 Sign In
               </Typography>
               <Typography variant={"body1"} mb={2}>
@@ -148,11 +133,11 @@ const Login = ({ disableSmLogin }) => {
               password: "",
             }}
             validationSchema={validationSchema}
-            onSubmit={(data, {setSubmitting}) => {
+            onSubmit={(data, { setSubmitting }) => {
               // setSubmitting(true);
               onSignIn(data);
               setSubmitting(false);
-          }}
+            }}
           >
             {({ isSubmitting }) => (
               <Form style={{ textAlign: "left" }} noValidate autoComplete="off">
@@ -169,23 +154,11 @@ const Login = ({ disableSmLogin }) => {
                 </Div>
                 <Div sx={{ mb: 1 }}>
                   <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={showPassword}
-                        onChange={() => setShowPassword(!showPassword)}
-                      />
-                    }
+                    control={<Checkbox checked={showPassword} onChange={() => setShowPassword(!showPassword)} />}
                     label="Show Password"
                   />
                 </Div>
-                <LoadingButton
-                  fullWidth
-                  variant="contained"
-                  size="medium"
-                  type="submit"
-                  sx={{ mb: 3 }}
-                  loading={isSubmitting}
-                >
+                <LoadingButton fullWidth variant="contained" size="medium" type="submit" sx={{ mb: 3 }} loading={isSubmitting}>
                   Sign In
                 </LoadingButton>
 
