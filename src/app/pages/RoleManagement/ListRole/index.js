@@ -5,7 +5,8 @@ import { Button, InputAdornment, TextField, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import ListRoleTable from "./roletable";
 import { useDispatch } from "react-redux";
-import { getAllRoles } from "app/redux/actions/roleAction";
+// import { getAllRoles } from "app/redux/actions/roleAction";
+import ExampleComponent from "./roletable";
 
 export default function ListRole() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -14,11 +15,11 @@ export default function ListRole() {
   const permissions = JSON.parse(sessionStorage.getItem("permissions"));
 
   const handleSearch = (value) => {
-    dispatch(getAllRoles(value,"",""));
+    // dispatch(getAllRoles(value,"",""));
   };
 
   useEffect(() => {
-    dispatch(getAllRoles());
+    // dispatch(getAllRoles());
   }, []);
   return (
     <Div sx={{ mt: -4 }}>
@@ -75,7 +76,8 @@ export default function ListRole() {
           )}
         </Div>
       </Div>
-      <ListRoleTable searchTerm={searchTerm}/>
+      {/* <ListRoleTable searchTerm={searchTerm}/> */}
+      <ExampleComponent/>
     </Div>
   );
 }

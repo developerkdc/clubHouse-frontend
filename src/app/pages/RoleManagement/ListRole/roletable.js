@@ -1,214 +1,57 @@
-import React, { useState } from "react";
-import {
-  Table,
-  TableContainer,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  Paper,
-  TableSortLabel,
-  Pagination,
-} from "@mui/material";
-import "./user.css";
+import React from "react";
+// import { ASSET_AVATARS } from '../../../../utils/constants/paths';
+// import { getAssetPath } from '../../../../utils/appHelpers';
+import contactsList from "app/pages/UserManagement/ListUser/components/data";
+import DynamicTable from "./dynamicTable";
+import { Avatar } from "@mui/material";
 
-import SettingsIcon from "@mui/icons-material/Settings";
-
-import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { displayDateFun } from "app/utils/constants/functions";
-import { getAllRoles } from "app/redux/actions/roleAction";
-export default function ListRoleTable({ searchTerm }) {
-  const [order, setOrder] = useState("asc");
-  const [orderBy, setOrderBy] = useState("id");
-  const [page, setPage] = useState(1);
-  const { allRoles, TotalPage } = useSelector((state) => state.roleReducer);
-  const permissions = JSON.parse(sessionStorage.getItem("permissions"));
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const handleSort = (property) => {
-    const isAscending = orderBy === property && order === "asc";
-    setOrder(isAscending ? "desc" : "asc");
-    setOrderBy(property);
-  };
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-    dispatch(getAllRoles(searchTerm, "", newPage));
-  };
-
-  const sortedData = allRoles?.sort((a, b) => {
-    let aValue;
-    let bValue;
-    console.log(orderBy);
-    if (orderBy == "role_name") {
-      aValue = a.role_name.toLowerCase();
-      bValue = b.role_name.toLowerCase();
-    } else {
-      aValue = a[orderBy];
-      bValue = b[orderBy];
-    }
-    if (order === "desc") {
-      return aValue < bValue ? -1 : 1;
-    } else {
-      return bValue < aValue ? -1 : 1;
-    }
-  });
-
-  return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow sx={{ bgcolor: "#202020", color: "white" }}>
-            <TableCell
-              sx={{
-                textAlign: "left",
-                minWidth: "150px",
-                verticalAlign: "middle",
-              }}
-            >
-              <TableSortLabel
-                active={orderBy === "id"}
-                direction={order}
-                onClick={() => handleSort("id")}
-                sx={{
-                  color: "white",
-                  "&:hover": { color: "white" },
-                  "&.MuiTableSortLabel-root.Mui-active": {
-                    color: "white", // Set the color for the active state
-                  },
-                }}
-              >
-                Role ID
-              </TableSortLabel>
-            </TableCell>
-            <TableCell
-              sx={{
-                textAlign: "left",
-                minWidth: "150px",
-                verticalAlign: "middle",
-              }}
-            >
-              <TableSortLabel
-                active={orderBy === "role_name"}
-                direction={order}
-                onClick={() => handleSort("role_name")}
-                sx={{
-                  color: "white",
-                  "&:hover": { color: "white" },
-                  "&.MuiTableSortLabel-root.Mui-active": {
-                    color: "white", // Set the color for the active state
-                  },
-                }}
-              >
-                Role Name
-              </TableSortLabel>
-            </TableCell>
-
-            <TableCell
-              sx={{
-                textAlign: "left",
-                minWidth: "80px",
-                verticalAlign: "middle",
-              }}
-            >
-              <TableSortLabel
-                active={orderBy === "role_status"}
-                direction={order}
-                onClick={() => handleSort("role_status")}
-                sx={{
-                  color: "white",
-                  "&:hover": { color: "white" },
-                  "&.MuiTableSortLabel-root.Mui-active": {
-                    color: "white", // Set the color for the active state
-                  },
-                }}
-              >
-                Status
-              </TableSortLabel>
-            </TableCell>
-            <TableCell
-              sx={{
-                textAlign: "left",
-                minWidth: "80px",
-                verticalAlign: "middle",
-                color: "white",
-              }}
-            >
-              Created Date
-            </TableCell>
-            <TableCell
-              sx={{
-                textAlign: "left",
-                minWidth: "80px",
-                verticalAlign: "middle",
-                color: "white",
-              }}
-            >
-              Updated Date
-            </TableCell>
-            {permissions.role_edit == true && (
-              <TableCell
-                sx={{
-                  textAlign: "left",
-                  minWidth: "40px",
-                  verticalAlign: "middle",
-                  color: "white",
-                }}
-              >
-                Configure
-              </TableCell>
-            )}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {sortedData?.map((row, i) => (
-            <TableRow key={i}>
-              <TableCell
-                sx={{
-                  textAlign: "left",
-                  pl: 5,
-                }}
-              >
-                {row.id}
-              </TableCell>
-              <TableCell sx={{ textAlign: "left" }}>{row.role_name}</TableCell>
-
-              <TableCell sx={{ textAlign: "left" }}>
-                {row.role_status === 0 ? "Inactive" : "Active"}
-              </TableCell>
-              <TableCell sx={{ textAlign: "left" }}>
-                {displayDateFun(row.role_create_date)}
-              </TableCell>
-              <TableCell sx={{ textAlign: "left" }}>
-                {displayDateFun(row.role_update_date)}
-              </TableCell>
-              {permissions.role_edit == true && (
-                <TableCell sx={{ textAlign: "left", pl: 5 }}>
-                  <SettingsIcon
-                    sx={{ "&:hover": { cursor: "pointer", color: "black" } }}
-                    onClick={() => {
-                      navigate("/configurerole", { state: row });
-                    }}
-                  />
-                </TableCell>
-              )}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      <Pagination
-        count={TotalPage || 1}
-        page={page}
-        onChange={handleChangePage}
+const columns = [
+  { field: "id", headerName: "ID" },
+  { field: "name", headerName: "Name", sortable: true },
+  { field: "designation", headerName: "Designation", sortable: true },
+  // { field: "thumb", headerName: "Thumb", render: (value) => <img src={value} alt={value} /> },
+  {
+    field: "thumb",
+    headerName: "Thumb",
+    render: (value) => (
+      <Avatar
         sx={{
-          position: "sticky",
-          bottom: 0,
-          left: 0,
-          backgroundColor: "white",
-          borderTop: "1px solid #ddd",
+          width: 56,
+          height: 56,
+          margin: "auto", // Center the Avatar
         }}
+        variant="square"
+        src={value}
       />
-    </TableContainer>
-  );
-}
+    ),
+  },
+  // Add more columns as needed
+];
+
+const actions = [
+  {
+    label: "1",
+    color: "primary",
+    onClick: (row) => console.log("Action 1 clicked for row:", row),
+  },
+  {
+    label: "2",
+    color: "secondary",
+    onClick: (row) => console.log("Action 2 clicked for row:", row),
+  },
+  {
+    label: "Edit",
+    color: "primary",
+    onClick: (row) => console.log("Action 2 clicked for row:", row),
+  },
+  // Add more actions as needed
+];
+const fetchData = (props) => {
+  console.log(props);
+};
+
+const ExampleComponent = () => {
+  return <DynamicTable data={contactsList} columns={columns} actions={actions} fetchData={fetchData} totalCount={20} />;
+};
+
+export default ExampleComponent;

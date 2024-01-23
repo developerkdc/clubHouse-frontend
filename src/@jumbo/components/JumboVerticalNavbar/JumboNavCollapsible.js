@@ -69,9 +69,12 @@ const JumboNavCollapsible = ({item, translate}) => {
 
     return (
         <React.Fragment>
+            {subMenus && subMenus.length && 
+            
             <ListItemButton
                 component={"li"}
                 onClick={() => setOpen(!open)}
+                
                 onMouseEnter={handlePopoverOpen}
                 onMouseLeave={handlePopoverClose}
                 sx={{
@@ -120,6 +123,7 @@ const JumboNavCollapsible = ({item, translate}) => {
                     />
                 }
             </ListItemButton>
+            }
             {
                 subMenus && !isMiniAndClosed &&
                 <Collapse component={"li"} in={open} timeout="auto" unmountOnExit>

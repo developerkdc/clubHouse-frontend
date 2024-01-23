@@ -47,9 +47,10 @@ const authReducer = (state, action) => {
         ...state,
         isLoading: false,
       };
+
     default:
       return {
-        authToken: storedToken ?? null,
+        authToken: null,
         authUser: null,
         isLoading: false,
       };
@@ -75,7 +76,7 @@ const JumboAuthProvider = ({ children, ...restProps }) => {
   }, [logout]);
 
   const setAuthToken = React.useCallback(async (token) => {
-    console.log(token);
+    // console.log(token);
     setAuthOptions({ type: "start-loading" });
     if (!token) {
       setLogout(true);
@@ -84,8 +85,8 @@ const JumboAuthProvider = ({ children, ...restProps }) => {
 
     storeToken(token);
     try {
-    //   const authUser = await config?.authSetting?.getAuthUserService();
-      const authUser = {name:"User", email_id:"user@gmail.com"};
+      //   const authUser = await config?.authSetting?.getAuthUserService();
+      const authUser = { name: "User", email_id: "user@gmail.com" };
       if (authUser) {
         setAuthOptions({
           type: "set-auth-data",
@@ -101,9 +102,9 @@ const JumboAuthProvider = ({ children, ...restProps }) => {
   }, []);
 
   //todo: maybe in next version
-//   const setRedirectPath = React.useCallback((redirectPath) => {
-//     setAuthOptions({ type: "set-redirect-path", payload: { redirectPath } });
-//   }, []);
+  //   const setRedirectPath = React.useCallback((redirectPath) => {
+  //     setAuthOptions({ type: "set-redirect-path", payload: { redirectPath } });
+  //   }, []);
 
   const setAuthData = React.useCallback((data) => {
     setAuthOptions({ type: "set-auth-data", payload: data });
@@ -113,7 +114,7 @@ const JumboAuthProvider = ({ children, ...restProps }) => {
     return {
       ...authOptions,
       setAuthData,
-    //   setRedirectPath,
+      //   setRedirectPath,
       setAuthToken,
       setAuthOptions,
     };

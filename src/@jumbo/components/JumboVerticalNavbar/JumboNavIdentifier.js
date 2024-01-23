@@ -14,6 +14,9 @@ const JumboNavIdentifier = ({item, isNested, translate}) => {
 
     if(item.type && ['section', 'collapsible', 'nav-item'].includes(item.type)) {
         const NavComponent = NAV_VARIANTS[item.type];
+        if(item.isDisabled){
+            return null;
+        }
         return <NavComponent translate item={item} isNested={isNested}/>
     }
 };

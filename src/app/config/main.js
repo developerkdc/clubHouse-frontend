@@ -13,7 +13,7 @@ const config = {
     axiosObject: jwtAuthAxios,
     fallbackPath: "/login",
     getAuthUserService: getCurrentUser,
-    redirectNotAuthenticatedPath: "/login",
+    redirectNotAuthenticatedPath: "/",
   },
 
   defaultLayout: LAYOUT_NAMES.VERTICAL_DEFAULT,
