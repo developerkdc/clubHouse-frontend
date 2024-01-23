@@ -16,7 +16,8 @@ const config = {
     redirectNotAuthenticatedPath: "/",
   },
 
-  defaultLayout: LAYOUT_NAMES.VERTICAL_DEFAULT,
+  // defaultLayout: LAYOUT_NAMES.VERTICAL_DEFAULT,
+  defaultLayout: LAYOUT_NAMES.SOLO_PAGE,
   containerStyle: LAYOUT_CONTAINER_STYLES.FLUID,
 
   theme: createJumboTheme(mainTheme, headerTheme, sidebarTheme, footerTheme),

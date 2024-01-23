@@ -21,8 +21,8 @@ var routes = [
     permission: "add",
   },
   {
-    path: `${routesName}/edit`,
-    element: <Page component={Dashboard} layout={"vertical-default"} />,
+    path: `${routesName}/edit/:id`,
+    element: <Page component={EditUser} layout={"vertical-default"} />,
     permission: "edit",
   },
 ];

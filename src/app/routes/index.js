@@ -15,6 +15,7 @@ import UserProfile from "app/pages/Auth/Profile";
 import EditProfile from "app/pages/Auth/EditProfile";
 import ChangePassword from "app/pages/UserManagement/ChangePassword";
 import AuthMiddleware from "./Middleware/auth";
+import { memberRoute } from "./Member";
 
 /**
  routes which you want to make accessible to both authenticated and anonymous users
@@ -37,7 +38,7 @@ const routesForAuthenticatedOnly = [
     routes: [
       {
         path: "/",
-        element: <Page component={Dashboard} />,
+        element: <Page component={Dashboard} layout={"vertical-default"} />,
       },
       {
         path: "/profile",
@@ -55,6 +56,7 @@ const routesForAuthenticatedOnly = [
   },
   ...usersRoute,
   ...rolesRoute,
+  ...memberRoute,
 ];
 
 /**
