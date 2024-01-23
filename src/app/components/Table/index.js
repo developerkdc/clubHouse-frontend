@@ -14,6 +14,7 @@ import {
   IconButton,
   ListItemIcon,
   ListItemText,
+  TextField,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import Button from "@mui/material/Button";
@@ -23,8 +24,9 @@ import Fade from "@mui/material/Fade";
 import JumboDemoCard from "@jumbo/components/JumboDemoCard";
 import JumboDdMenu from "@jumbo/components/JumboDdMenu";
 import { MoreHorizOutlined } from "@mui/icons-material";
+import CustomActionMenu from "app/components/Menu";
 
-const DynamicTable = ({ data, columns, actions, fetchData, totalCount }) => {
+const CustomTable = ({ data, columns, actions, fetchData, totalCount }) => {
   const [page, setPage] = useState(0);
   const rowsPerPage = 10;
   const [sortField, setSortField] = useState("");
@@ -56,7 +58,6 @@ const DynamicTable = ({ data, columns, actions, fetchData, totalCount }) => {
     return column.render ? column.render(value, row) : value;
   };
 
-  const renderActions = (row) => <></>;
 
   return (
     <Paper>
@@ -65,11 +66,11 @@ const DynamicTable = ({ data, columns, actions, fetchData, totalCount }) => {
           <TableHead>
             <TableRow>
               {columns.map((column) => (
-                <TableCell key={column.field} variant="head" align="center">
+                <TableCell key={column.field} variant="head" sx={{ padding: "10px 0px 10px 20px" }} align="left">
                   {column.sortable ? (
                     <TableSortLabel
                       active={sortField === column.field}
-                      direction={sortField === column.field ? sortOrder : "asc"}
+                      direction={sortField === column.field ? sortOrder : "desc"}
                       onClick={() => handleSort(column.field)}
                     >
                       {column.headerName}
@@ -79,20 +80,24 @@ const DynamicTable = ({ data, columns, actions, fetchData, totalCount }) => {
                   )}
                 </TableCell>
               ))}
-              {actions && <TableCell align="center">Action</TableCell>}
+              {actions && (
+                <TableCell sx={{ padding: "10px 0px" }} align="center">
+                  Action
+                </TableCell>
+              )}
             </TableRow>
           </TableHead>
           <TableBody>
             {data.map((row) => (
               <TableRow key={row.id} hover={true} sx={{ margin: "0px" }}>
                 {columns.map((column) => (
-                  <TableCell key={column.field} align="center">
+                  <TableCell key={column.field} align="left" sx={{ padding: "10px 0px 10px 20px" }}>
                     {renderCellContent(row, column)}
                   </TableCell>
                 ))}
                 {actions && (
-                  <TableCell align="center">
-                    <IconButton
+                  <TableCell align="center" sx={{ padding: "0px" }}>
+                    {/* <IconButton
                       sx={{
                         color: "inherit",
                       }}
@@ -113,7 +118,8 @@ const DynamicTable = ({ data, columns, actions, fetchData, totalCount }) => {
                           </MenuItem>
                         ))}
                       </Menu>
-                    )}
+                    )} */}
+                    <CustomActionMenu menuItems={actions} row={row}/>
                   </TableCell>
                 )}
               </TableRow>
@@ -133,4 +139,4 @@ const DynamicTable = ({ data, columns, actions, fetchData, totalCount }) => {
   );
 };
 
-export default DynamicTable;
+export default CustomTable;

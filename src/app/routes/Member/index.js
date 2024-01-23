@@ -4,6 +4,9 @@ import ListUser from "app/pages/UserManagement/ListUser";
 import EditUser from "app/pages/UserManagement/EditUser";
 import PermissionMiddleware from "../Middleware/permission";
 import Dashboard from "app/pages/Dashboard";
+import ListMember from "app/pages/Member/ListMember";
+import AddMember from "app/pages/Member/AddMember";
+import EditMember from "app/pages/Member/EditMember";
 
 const routesName = "/member";
 const modules = "member";
@@ -11,17 +14,17 @@ const modules = "member";
 var routes = [
   {
     path: `${routesName}`,
-    element: <Page component={Dashboard} layout={"vertical-default"} />,
+    element: <Page component={ListMember} layout={"vertical-default"} />,
     permission: "view",
   },
   {
     path: `${routesName}/add`,
-    element: <Page component={Dashboard} layout={"vertical-default"} />,
+    element: <Page component={AddMember} layout={"vertical-default"} />,
     permission: "add",
   },
   {
-    path: `${routesName}/edit`,
-    element: <Page component={Dashboard} layout={"vertical-default"} />,
+    path: `${routesName}/edit/:id`,
+    element: <Page component={EditMember} layout={"vertical-default"} />,
     permission: "edit",
   },
 ];

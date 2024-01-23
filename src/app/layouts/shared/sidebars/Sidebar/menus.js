@@ -33,19 +33,19 @@ const menus = [
         icon: <CurrencyExchangeOutlinedIcon sx={{ fontSize: 25 }} />,
       },
       {
-        uri: "/members",
+        uri: "/member",
         label: "Member",
         type: "nav-item",
         icon: <ListAltOutlinedIcon sx={{ fontSize: 25 }} />,
       },
       {
-        uri: "/News",
+        uri: "/news",
         label: "News & Circular",
         type: "nav-item",
         icon: <SupportAgentOutlinedIcon sx={{ fontSize: 25 }} />,
       },
       {
-        uri: "/events",
+        uri: "/event",
         label: "Events",
         type: "nav-item",
         icon: <EventOutlinedIcon sx={{ fontSize: 25 }} />,
@@ -63,7 +63,7 @@ const menus = [
         icon: <NewspaperIcon sx={{ fontSize: 25 }} />,
       },
       {
-        uri: "/sports",
+        uri: "/sport",
         label: "Sports Facility",
         type: "nav-item",
         icon: <SportsSoccerOutlinedIcon sx={{ fontSize: 25 }} />,
