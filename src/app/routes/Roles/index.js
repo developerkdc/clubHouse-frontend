@@ -5,6 +5,7 @@ import EditUser from "app/pages/UserManagement/EditUser";
 import PermissionMiddleware from "../Middleware/permission";
 import Dashboard from "app/pages/Dashboard";
 import ListRole from "app/pages/RoleManagement/ListRole";
+import AddRole from "app/pages/RoleManagement/AddRole";
 
 const routesName = "/roles";
 const modules = "roles";
@@ -17,7 +18,7 @@ var routes = [
   },
   {
     path: `${routesName}/add`,
-    element: <Page component={Dashboard} layout={"vertical-default"} />,
+    element: <Page component={AddRole} layout={"vertical-default"} />,
     permission: "add",
   },
   {

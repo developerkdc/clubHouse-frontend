@@ -13,7 +13,7 @@ import EditUser from "app/pages/UserManagement/EditUser";
 import PermissionList from "app/pages/RoleManagement/ConfigureRole/roleList";
 import UserProfile from "app/pages/Auth/Profile";
 import EditProfile from "app/pages/Auth/EditProfile";
-import ChangePassword from "app/pages/UserManagement/ChangePassword";
+import ChangePassword from "app/pages/Auth/ChangePassword";
 import AuthMiddleware from "./Middleware/auth";
 import { memberRoute } from "./Member";
 

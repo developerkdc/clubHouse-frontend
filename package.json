@@ -25,6 +25,7 @@
     "connected-react-router": "^6.9.1",
     "date-fns": "^2.27.0",
     "date-fns-jalali": "^2.27.0-0",
+    "dayjs": "^1.11.10",
     "docs": "^0.3.2-canary.0",
     "draft-js": "^0.11.7",
     "draftjs-to-html": "^0.9.1",

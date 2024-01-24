@@ -33,7 +33,7 @@ const PermissionMiddleware = ({ fallbackPath }) => {
   const Permission = {
     user: {
       add: true,
-      edit: false,
+      edit: true,
       view: true,
     },
     roles: {

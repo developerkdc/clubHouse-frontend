@@ -5,14 +5,15 @@ import Box from "@mui/material/Box";
 import Div from "@jumbo/shared/Div";
 import { LoadingButton } from "@mui/lab";
 import Button from "@mui/material/Button";
-const role = ["admin", "user"];
 
+
+const role = ["admin", "user"];
 const AddMember = () => {
   const user_status = 1;
   return (
     <React.Fragment>
       <Typography variant="h1" mb={3}>
-        ADD USER
+        ADD MEMBER
       </Typography>
       <Card sx={{ display: "flex", mb: 3.5 }}>
         <Div sx={{ display: "flex", flexDirection: "column", flex: "1" }}>
@@ -39,57 +40,18 @@ const AddMember = () => {
                   fullWidth
                   id="user_id"
                   name="user_id"
-                  label="User ID"
+                  label="Member ID"
                   inputProps={{ style: { height: "12px" } }}
                   InputLabelProps={{ style: { lineHeight: "12px" } }}
                 />
               </FormControl>
-              <FormControl>
-                <TextField
-                  fullWidth
-                  id="first_name"
-                  name="first_name"
-                  label="First name"
-                  inputProps={{ style: { height: "12px" } }}
-                  InputLabelProps={{ style: { lineHeight: "12px" } }}
-                />
-              </FormControl>
-              <FormControl>
-                <TextField
-                  fullWidth
-                  id="last_name"
-                  name="last_name"
-                  label="Last name"
-                  inputProps={{ style: { height: "12px" } }}
-                  InputLabelProps={{ style: { lineHeight: "12px" } }}
-                />
-              </FormControl>
-              <FormControl>
-                <TextField
-                  fullWidth
-                  id="email"
-                  name="email"
-                  label="Email"
-                  inputProps={{ style: { height: "12px" } }}
-                  InputLabelProps={{ style: { lineHeight: "12px" } }}
-                />
-              </FormControl>
-              <FormControl>
-                <TextField
-                  fullWidth
-                  id="phone_no"
-                  name="phone_no"
-                  label="Phone No."
-                  inputProps={{ style: { height: "12px" } }}
-                  InputLabelProps={{ style: { lineHeight: "12px" } }}
-                />
-              </FormControl>
+            
               <FormControl sx={{ minWidth: 120, height: 10, marginBottom: 0 }}>
-                <InputLabel sx={{ padding: 1.1, top: -3 }}>Role</InputLabel>
+                <InputLabel sx={{ padding: 1.1, top: -3 }}>Member Type</InputLabel>
                 <Select
                   labelId="role_name"
                   id="role_name"
-                  label="Role"
+                  label="Member Type"
                   inputProps={{
                     "aria-label": "Role",
                     style: { height: "12px" },
@@ -106,21 +68,90 @@ const AddMember = () => {
                 </Select>
               </FormControl>
 
+              <FormControl>
+                <TextField
+                  fullWidth
+                  id="first_name"
+                  name="first_name"
+                  label="First Name"
+                  inputProps={{ style: { height: "12px" } }}
+                  InputLabelProps={{ style: { lineHeight: "12px" } }}
+                />
+              </FormControl>
+              <FormControl>
+                <TextField
+                  fullWidth
+                  id="last_name"
+                  name="last_name"
+                  label="Last Name"
+                  inputProps={{ style: { height: "12px" } }}
+                  InputLabelProps={{ style: { lineHeight: "12px" } }}
+                />
+              </FormControl>
+              <FormControl>
+                <TextField
+                  fullWidth
+                  id="email"
+                  name="email"
+                  label="Email"
+                  inputProps={{ style: { height: "12px" } }}
+                  InputLabelProps={{ style: { lineHeight: "12px" } }}
+                />
+              </FormControl>
+              <FormControl>
+              <TextField
+                    id="date"
+                    label="Birthday"
+                    type="date"
+                    sx={{width: 350}}
+                    InputLabelProps={{shrink: true,style: { lineHeight: "12px" }}}
+                      inputProps={{ style: { height: "12px" } }}
+  
+                />
+              </FormControl>
+            
+              <FormControl>
+                <TextField
+                  fullWidth
+                  id="phone_no"
+                  name="phone_no"
+                  label="Phone No."
+                  inputProps={{ style: { height: "12px" } }}
+                  InputLabelProps={{ style: { lineHeight: "12px" } }}
+                />
+              </FormControl>
+              <FormControl>
+                <TextField
+                  fullWidth
+                  id="dob"
+                  name="dob"
+                  label="Password"
+                  inputProps={{ style: { height: "12px" } }}
+                  InputLabelProps={{ style: { lineHeight: "12px" } }}
+                />
+              </FormControl>
               <FormControlLabel
                 label={<Typography variant="h5">Status</Typography>}
                 control={<Switch defaultChecked={user_status === 1} color={user_status === 1 ? "success" : "error"} />}
                 labelPlacement="start"
               />
-              <Div
-                sx={{
-                  width: "93.5%",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  gap: 3,
-                  mt: 3,
-                }}
+               <Div
+               sx={{
+                // width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 3,
+                mt: 3,
+              }}
               >
+                <LoadingButton
+                  type="submit"
+                  variant="contained"
+                  sx={{ width: "100px" }}
+                >
+                  Save
+                </LoadingButton>
                 <Button
                   variant="outlined"
                   // onClick={() => {
@@ -140,9 +171,7 @@ const AddMember = () => {
                   Cancel
                 </Button>
 
-                <LoadingButton type="submit" variant="outlined" sx={{ width: "100px" }}>
-                  Save
-                </LoadingButton>
+                
               </Div>
             </Box>
           </CardContent>

@@ -10,6 +10,7 @@ import LockResetOutlinedIcon from "@mui/icons-material/LockResetOutlined";
 import PreviewOutlinedIcon from "@mui/icons-material/PreviewOutlined";
 import ModeEditOutlinedIcon from "@mui/icons-material/ModeEditOutlined";
 import ViewUser from "app/pages/UserManagement/ViewUser";
+import ViewRole from "../ViewRole";
 
 export default function ListRole() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -59,12 +60,6 @@ export default function ListRole() {
       color: "secondary",
       onClick: (row) => navigate(`/roles/edit/${row.id}`),
       icon: <ModeEditOutlinedIcon />,
-    },
-    {
-      label: "Change Password",
-      color: "primary",
-      onClick: (row) => navigate(`/roles/edit/${row.id}`),
-      icon: <LockResetOutlinedIcon />,
     },
   ];
   const fetchData = (props) => {
@@ -119,7 +114,7 @@ export default function ListRole() {
           />
           <Div>
             {/* {permissions?.role_create == true && ( */}
-            <Button variant="contained" sx={{ p: 1, pl: 4, pr: 4 }} onClick={() => navigate("/member/add")}>
+            <Button variant="contained" sx={{ p: 1, pl: 4, pr: 4 }} onClick={() => navigate("/roles/add")}>
               Add Role
             </Button>
             {/* )} */}
@@ -129,7 +124,7 @@ export default function ListRole() {
       <Div>
         <CustomTable data={contactsList} columns={columns} actions={actions} fetchData={fetchData} totalCount={20} />
       </Div>
-      {openView && userDetails && <ViewUser openView={openView} setOpenView={setOpenView} data={userDetails} />}
+      {openView && userDetails && <ViewRole openView={openView} setOpenView={setOpenView} data={userDetails} />}
     </Div>
   );
 }

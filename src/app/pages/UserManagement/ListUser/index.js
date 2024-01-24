@@ -57,13 +57,13 @@ export default function ListUser() {
     {
       label: "Edit",
       color: "secondary",
-      onClick: (row) => navigate(`/roles/edit/${row.id}`),
+      onClick: (row) => navigate(`/user/edit/${row.user_id}`),
       icon: <ModeEditOutlinedIcon />,
     },
     {
       label: "Change Password",
       color: "primary",
-      onClick: (row) => navigate(`/roles/edit/${row.id}`),
+      onClick: (row) => navigate(`/user/change-password/${row.user_id}`),
       icon: <LockResetOutlinedIcon />,
     },
   ];

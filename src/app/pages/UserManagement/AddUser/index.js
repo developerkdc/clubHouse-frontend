@@ -127,16 +127,23 @@ const AddUser = () => {
                 }
                 labelPlacement="start"
               />
-              <Div
-                sx={{
-                  width: "93.5%",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  gap: 3,
-                  mt: 3,
-                }}
+       <Div
+               sx={{
+                // width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 3,
+                mt: 3,
+              }}
               >
+                <LoadingButton
+                  type="submit"
+                  variant="contained"
+                  sx={{ width: "100px" }}
+                >
+                  Save
+                </LoadingButton>
                 <Button
                   variant="outlined"
                   // onClick={() => {
@@ -156,13 +163,7 @@ const AddUser = () => {
                   Cancel
                 </Button>
 
-                <LoadingButton
-                  type="submit"
-                  variant="outlined"
-                  sx={{ width: "100px" }}
-                >
-                  Save
-                </LoadingButton>
+                
               </Div>
             </Box>
           </CardContent>

@@ -10,6 +10,7 @@ import LockResetOutlinedIcon from "@mui/icons-material/LockResetOutlined";
 import PreviewOutlinedIcon from "@mui/icons-material/PreviewOutlined";
 import ModeEditOutlinedIcon from "@mui/icons-material/ModeEditOutlined";
 import ViewUser from "app/pages/UserManagement/ViewUser";
+import ViewMember from "../ViewMember";
 
 export default function ListMember() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -57,12 +58,6 @@ export default function ListMember() {
       color: "secondary",
       onClick: (row) => navigate(`/member/edit/${row.id}`),
       icon: <ModeEditOutlinedIcon />,
-    },
-    {
-      label: "Change Password",
-      color: "primary",
-      onClick: (row) => navigate(`/member/edit/${row.id}`),
-      icon: <LockResetOutlinedIcon />,
     },
   ];
   const fetchData = (props) => {
@@ -127,7 +122,7 @@ export default function ListMember() {
       <Div>
         <CustomTable data={contactsList} columns={columns} actions={actions} fetchData={fetchData} totalCount={20} />
       </Div>
-      {openView && userDetails && <ViewUser openView={openView} setOpenView={setOpenView} data={userDetails} />}
+      {openView && userDetails && <ViewMember openView={openView} setOpenView={setOpenView} data={userDetails} />}
     </Div>
   );
 }

@@ -73,27 +73,43 @@ const ChangePassword = () => {
                 </FormControl>
   
                 <Div
-                  sx={{
-                    width: "93.5%",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    gap: 3,
-                    mt: 3,
-                  }}
+               sx={{
+                // width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 3,
+                mt: 3,
+              }}
+              >
+                <LoadingButton
+                  type="submit"
+                  variant="contained"
+                  sx={{ width: "100px" }}
                 >
-                  <Button variant="outlined">
-                    Cancel
-                  </Button>
-  
-                  <LoadingButton
-                    type="submit"
-                    variant="outlined"
-                    sx={{ width: "100px" }}
-                  >
-                    Save
-                  </LoadingButton>
-                </Div>
+                  Save
+                </LoadingButton>
+                <Button
+                  variant="outlined"
+                  // onClick={() => {
+                  //   Swal.fire({
+                  //     title: "Are you sure you want to cancel?",
+                  //     icon: "warning",
+                  //     showCancelButton: true,
+                  //     confirmButtonText: "Yes",
+                  //     cancelButtonText: "No",
+                  //   }).then((result) => {
+                  //     if (result.isConfirmed) {
+                  //       navigate("/dashboard/user");
+                  //     }
+                  //   });
+                  // }}
+                >
+                  Cancel
+                </Button>
+
+                
+              </Div>
               </Box>
             </CardContent>
           </Div>
