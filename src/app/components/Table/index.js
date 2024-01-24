@@ -58,15 +58,26 @@ const CustomTable = ({ data, columns, actions, fetchData, totalCount }) => {
     return column.render ? column.render(value, row) : value;
   };
 
-
   return (
-    <Paper>
+    <Paper elevation={0}>
       <TableContainer>
         <Table>
           <TableHead>
             <TableRow>
               {columns.map((column) => (
-                <TableCell key={column.field} variant="head" sx={{ padding: "10px 0px 10px 20px" }} align="left">
+                <TableCell
+                  key={column.field}
+                  variant="head"
+                  sx={{
+                    padding: "10px 0px 10px 20px",
+                    fontSize: "16px",
+                    // position: "sticky",
+                    // top: 0,
+                    // // background: "#fff",
+                    // zIndex: 1, // Ensure the header stays above the body
+                  }}
+                  align="left"
+                >
                   {column.sortable ? (
                     <TableSortLabel
                       active={sortField === column.field}
@@ -81,45 +92,23 @@ const CustomTable = ({ data, columns, actions, fetchData, totalCount }) => {
                 </TableCell>
               ))}
               {actions && (
-                <TableCell sx={{ padding: "10px 0px" }} align="center">
+                <TableCell sx={{ padding: "10px 0px", fontSize: "16px" }} align="center">
                   Action
                 </TableCell>
               )}
             </TableRow>
           </TableHead>
-          <TableBody>
+          <TableBody >
             {data.map((row) => (
               <TableRow key={row.id} hover={true} sx={{ margin: "0px" }}>
                 {columns.map((column) => (
-                  <TableCell key={column.field} align="left" sx={{ padding: "10px 0px 10px 20px" }}>
+                  <TableCell key={column.field} align="left" sx={{ padding: "8px 0px 8px 20px" }}>
                     {renderCellContent(row, column)}
                   </TableCell>
                 ))}
                 {actions && (
                   <TableCell align="center" sx={{ padding: "0px" }}>
-                    {/* <IconButton
-                      sx={{
-                        color: "inherit",
-                      }}
-                      onClick={(e) => {
-                        setOpenMenu(true);
-                        //   e.stopPropagation();
-                      }}
-                    >
-                      <MoreHorizOutlined />
-                    </IconButton>
-                    {openMenu && (
-                      <Menu open={openMenu} sx={{ boxShadow: "none", border: "2px solid" }} onClose={() => setOpenMenu(false)}>
-                        {actions.map((action, index) => (
-                          <MenuItem key={index} onClick={() => action.onClick(row)}>
-                            {action.icon && <ListItemIcon>{action.icon}</ListItemIcon>}
-
-                            <ListItemText>{action.label}</ListItemText>
-                          </MenuItem>
-                        ))}
-                      </Menu>
-                    )} */}
-                    <CustomActionMenu menuItems={actions} row={row}/>
+                    <CustomActionMenu menuItems={actions} row={row} />
                   </TableCell>
                 )}
               </TableRow>
