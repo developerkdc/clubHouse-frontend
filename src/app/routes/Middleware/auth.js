@@ -7,8 +7,9 @@ import { useSelector } from "react-redux";
 import { Navigate, Outlet } from "react-router-dom";
 
 const AuthMiddleware = ({ fallbackPath, module }) => {
-  const { setAuthToken } = useJumboAuth();
-  const isAuthenticated = localStorage.getItem("token");
+  const { setAuthToken,authUser } = useJumboAuth();
+  
+  const isToken = localStorage.getItem("token");
 
   const Swal = useSwalWrapper();
   const theme = useTheme();
@@ -28,10 +29,10 @@ const AuthMiddleware = ({ fallbackPath, module }) => {
     });
   };
 
-  if (isAuthenticated) {
+  if (isToken) {
     return <Outlet />;
   } else {
-    sweetAlerts("warning", "Token not found!");
+    sweetAlerts("warning", "Token not found. Please login to continue.");
     setAuthToken(null);
     return <Navigate to={fallbackPath} />;
   }

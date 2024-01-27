@@ -12,6 +12,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import useJumboAuth from "@jumbo/hooks/useJumboAuth";
 import Swal from "sweetalert2";
+// import { Axios } from "index";
+import axios from "axios";
+import { Axios } from "app/services/config";
 // import { setAuthToken } from "app/services/config";
 
 const validationSchema = yup.object({
@@ -21,7 +24,7 @@ const validationSchema = yup.object({
 
 const Login = ({ disableSmLogin }) => {
   const { setAuthToken, authToken, authUser } = useJumboAuth();
-  console.log(authUser,"login");
+  // console.log(authUser, "login");
   const navigate = useNavigate();
   // const { error, loading, isAuthenticated, user } = useSelector(
   //   (state) => state.userReducer
@@ -48,14 +51,15 @@ const Login = ({ disableSmLogin }) => {
     // }
   }, []);
 
-  const onSignIn = (values) => {
-    console.log(values);
+  const onSignIn = async (values) => {
     if (values) {
-      // authServices.signIn({email, password})
-      // .then((data) => {
-      // setAuthToken(data?.token);
-      setAuthToken(1234);
-      navigate("/");
+      try {
+        let {data} = await Axios.post("/auth/login", values);
+        setAuthToken(data?.data?.token);
+      } catch (error) {
+        console.log(error);
+      }
+      // navigate("/");
       // });
     }
     // dispatch(login(values?.email_id, values?.password, setSubmitting));

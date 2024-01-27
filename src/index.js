@@ -2,27 +2,27 @@ import React from "react";
 import ReactDOM from "react-dom";
 import reportWebVitals from "./reportWebVitals";
 import App from "./app/App";
-import "./app/config/i18n";
 import axios from "axios";
+import "./app/config/i18n";
 
-export const Axios = axios.create({
-  baseURL: process.env.APP_URL,
-});
+// export const Axios = axios.create({
+//   baseURL: process.env.REACT_APP_URL,
+// });
 
-Axios.interceptors.request.use(function (request) {
-  const token = localStorage.getItem("token");
+// Axios.interceptors.request.use(function (request) {
+//   const token = localStorage.getItem("token");
 
-  if (token) {
-    request.headers.Authorization = token;
-  }
+//   if (token) {
+//     request.headers.Authorization = token;
+//   }
 
-  return request;
-});
+//   return request;
+// });
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  // <React.StrictMode>
+    <App />,
+  // </React.StrictMode>,
   document.getElementById("root")
 );
 

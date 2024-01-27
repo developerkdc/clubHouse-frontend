@@ -5,12 +5,12 @@ import { sidebarTheme } from "../themes/sidebar/default";
 import { footerTheme } from "../themes/footer/default";
 import LAYOUT_NAMES from "../layouts/layouts";
 import { createJumboTheme } from "@jumbo/utils";
-import jwtAuthAxios from "app/services/config";
-import getCurrentUser from "app/services/config";
+import jwtAuthAxios, { Axios } from "app/services/config";
+import {getCurrentUser} from "app/services/config";
 
 const config = {
   authSetting: {
-    axiosObject: jwtAuthAxios,
+    axiosObject: Axios,
     fallbackPath: "/login",
     getAuthUserService: getCurrentUser,
     redirectNotAuthenticatedPath: "/",
