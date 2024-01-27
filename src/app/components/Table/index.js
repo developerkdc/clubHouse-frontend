@@ -15,6 +15,7 @@ import {
   ListItemIcon,
   ListItemText,
   TextField,
+  CircularProgress,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import Button from "@mui/material/Button";
@@ -47,7 +48,7 @@ const CustomTable = ({ data, columns, actions, fetchData, totalCount }) => {
 
   useEffect(() => {
     fetchData({ page: page + 1, sortField, sortOrder });
-  }, [page, sortField, sortOrder, fetchData]);
+  }, [page, sortField, sortOrder]);
 
   const renderCellContent = (row, column) => {
     if (column.renderCell) {
@@ -98,22 +99,33 @@ const CustomTable = ({ data, columns, actions, fetchData, totalCount }) => {
               )}
             </TableRow>
           </TableHead>
-          <TableBody >
-            {data.map((row) => (
-              <TableRow key={row.id} hover={true} sx={{ margin: "0px" }}>
-                {columns.map((column) => (
-                  <TableCell key={column.field} align="left" sx={{ padding: "8px 0px 8px 20px" }}>
-                    {renderCellContent(row, column)}
-                  </TableCell>
-                ))}
-                {actions && (
-                  <TableCell align="center" sx={{ padding: "0px" }}>
-                    <CustomActionMenu menuItems={actions} row={row} />
-                  </TableCell>
-                )}
+
+          {data && data.length ? (
+            <TableBody>
+              {data.map((row) => (
+                <TableRow key={row.id} hover={true} sx={{ margin: "0px" }}>
+                  {columns.map((column) => (
+                    <TableCell key={column.field} align="left" sx={{ padding: "8px 0px 8px 20px" }}>
+                      {renderCellContent(row, column)}
+                    </TableCell>
+                  ))}
+                  {actions && (
+                    <TableCell align="center" sx={{ padding: "0px" }}>
+                      <CustomActionMenu menuItems={actions} row={row} />
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))}
+            </TableBody>
+          ) : (
+            <TableBody>
+              <TableRow>
+                <TableCell colSpan={columns.length + (actions ? 1 : 0)} align="center">
+                  Data Not Found !!
+                </TableCell>
               </TableRow>
-            ))}
-          </TableBody>
+            </TableBody>
+          )}
         </Table>
       </TableContainer>
       <TablePagination

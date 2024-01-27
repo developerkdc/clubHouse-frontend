@@ -9,11 +9,13 @@ import { Navigate, Outlet, useRoutes } from "react-router-dom";
 const PermissionMiddleware = ({ fallbackPath }) => {
   const [fallbackPathRoute, module, permission] = fallbackPath;
   const isToken = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("authUser"));
 
   const Swal = useSwalWrapper();
   const theme = useTheme();
-  const { setAuthToken, setAuthOptions } = useJumboAuth();
+  const { setAuthToken, authUser } = useJumboAuth();
 
+  // console.log(authUser?.role_id?.permissions,"inside permission");
   const sweetAlerts = (variant, msg) => {
     const Toast = Swal.mixin({
       toast: true,
@@ -29,29 +31,7 @@ const PermissionMiddleware = ({ fallbackPath }) => {
     });
   };
 
-  //   //   const Permission = useSelector((state) => state?.loginUserDetails?.role?.permissions);
-  const Permission = {
-    user: {
-      add: true,
-      edit: true,
-      view: true,
-    },
-    roles: {
-      add: true,
-      edit: true,
-      view: true,
-    },
-    member: {
-      add: true,
-      edit: true,
-      view: true,
-    },
-    sport: {
-      add: true,
-      edit: true,
-      view: true,
-    },
-  };
+  const Permission = user?.role_id?.permissions;
   if (Permission && isToken) {
     if (Permission[module] && Permission[module][permission]) {
       return <Outlet />;
@@ -60,7 +40,7 @@ const PermissionMiddleware = ({ fallbackPath }) => {
       return <Navigate to={fallbackPathRoute} />;
     }
   } else {
-    sweetAlerts("warning", "Access token or permissions not found!");
+    sweetAlerts("warning", "Access token or user permissions not found!");
     setAuthToken(null);
     return <Navigate to={"/login"} />;
   }
