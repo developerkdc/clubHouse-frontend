@@ -15,6 +15,7 @@ import Swal from "sweetalert2";
 // import { Axios } from "index";
 import axios from "axios";
 import { Axios } from "app/services/config";
+import ToastAlerts from "app/components/Toast";
 // import { setAuthToken } from "app/services/config";
 
 const validationSchema = yup.object({
@@ -24,7 +25,7 @@ const validationSchema = yup.object({
 
 const Login = ({ disableSmLogin }) => {
   const { setAuthToken, authToken, authUser } = useJumboAuth();
-  // console.log(authUser, "login");
+  const showAlert = ToastAlerts();
   const navigate = useNavigate();
   // const { error, loading, isAuthenticated, user } = useSelector(
   //   (state) => state.userReducer
@@ -54,10 +55,10 @@ const Login = ({ disableSmLogin }) => {
   const onSignIn = async (values) => {
     if (values) {
       try {
-        let {data} = await Axios.post("/auth/login", values);
+        let { data } = await Axios.post("/auth/login", values);
         setAuthToken(data?.data?.token);
       } catch (error) {
-        console.log(error);
+        showAlert("error", error.response.data.message);
       }
       // navigate("/");
       // });

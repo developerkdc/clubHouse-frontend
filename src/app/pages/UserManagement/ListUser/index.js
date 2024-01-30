@@ -11,27 +11,29 @@ import LockResetOutlinedIcon from "@mui/icons-material/LockResetOutlined";
 import PreviewOutlinedIcon from "@mui/icons-material/PreviewOutlined";
 import { onUserList } from "app/redux/actions/User";
 import ToastAlerts from "app/components/Toast";
+import { GlobalRoleList } from "app/redux/actions/Roles";
 
 export default function ListUser() {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const showAlert = ToastAlerts();
   const dispatch = useDispatch();
-  const [rolesList, setRolesList] = useState([{ role_name: "user" }, { role_name: "admin" }, { role_name: "owner" }]);
+  // const [rolesList, setRolesList] = useState([{ role_name: "user" }, { role_name: "admin" }, { role_name: "owner" }]);
   const { role_id } = JSON.parse(localStorage.getItem("authUser"));
   const { userList, totalPages, error, successMessage } = useSelector((state) => state.userReducer);
+  const rolesList = useSelector((state) => state.roleReducer.globalRoleList);
   const [selectedRole, setSelectedRole] = useState(null);
   const [openView, setOpenView] = useState(false);
   const [userDetails, setUserDetails] = useState(false);
   const [query, setQuery] = useState({});
-
+  console.log(rolesList);
   const columns = [
     { field: "user_id", headerName: "User ID" },
     { field: "first_name", headerName: "Name", sortable: true, render: (_, elm) => elm.first_name + " " + elm.last_name },
     { field: "mobile_no", headerName: "Mobile", sortable: true },
     { field: "email_id", headerName: "Email Id", sortable: true },
     { field: "status", headerName: "Status", sortable: true, render: (value, elm) => (value ? "Active" : "Inactive") },
-    { field: "role_id", headerName: "Role", render: (value, elm) => value.role_name },
+    { field: "role_id", headerName: "Role", render: (value, elm) =>value.role_name},
     // {
     //   field: "thumb",
     //   headerName: "Thumb",
@@ -77,12 +79,13 @@ export default function ListUser() {
   };
 
   const handleSearch = (value) => {};
+  
   const handleFilter = () => {
-    setQuery({ ...query, role: selectedRole.role_name });
+    setQuery({ ...query, role: selectedRole._id });
   };
   const handleClearFilter = () => {
-    showAlert("warning", "Token not found. Please login to continue.");
     setSelectedRole(null);
+    setQuery({...query,role:""})
   };
   useEffect(() => {
     setQuery({ ...query, search: searchTerm });
@@ -90,11 +93,15 @@ export default function ListUser() {
 
   if (error) {
     showAlert("error", error);
-  } 
+  }
+  useEffect(() => {
+    dispatch(GlobalRoleList());
+  }, []);
 
   useEffect(() => {
     dispatch(onUserList(query));
   }, [query]);
+
   return (
     <Div sx={{ mt: -4, maxHeight: "89vh", overflowY: "scroll", paddingRight: "10px" }}>
       <Div
@@ -108,27 +115,26 @@ export default function ListUser() {
         <Typography variant="h1">User Master</Typography>
         <Div sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
           <Div sx={{ width: "20%" }}>
-            <Autocomplete
-              size="small"
-              id="tags-standard"
-              options={rolesList || []}
-              getOptionLabel={(option) => option.role_name}
-              value={selectedRole} // Use a single value for the selected role
-              onChange={(e, newValue) => {
-                handleSearch(newValue);
-                // setSelectedRole(newValue);
-              }}
-              // inputValue={searchTerm}
-              // onInputChange={(event, newInputValue) => setSearchTerm(newInputValue)}
-              renderInput={(params) => <TextField {...params} label="Roles" />}
-            />
+              <Autocomplete
+                size="small"
+                id="tags-standard"
+                options={rolesList}
+                getOptionLabel={(option) => option.role_name}
+                value={selectedRole} // Use a single value for the selected role
+                onChange={(e, newValue) => {
+                  setSelectedRole(newValue);
+                }}
+                // inputValue={searchTerm}
+                // onInputChange={(event, newInputValue) => setSearchTerm(newInputValue)}
+                renderInput={(params) => <TextField {...params} label="Roles" />}
+              />
 
             <Div sx={{ display: "flex", gap: 1, flex: "1" }}>
-              <Button variant="outlined" sx={{ mt: 1, height: "35px" }} onClick={handleFilter}>
+              <Button size="small" variant="outlined" sx={{ mt: 1, height: "35px" }} onClick={handleFilter}>
                 Apply
               </Button>
 
-              <Button variant="outlined" sx={{ mt: 1, height: "35px" }} onClick={handleClearFilter}>
+              <Button size="small" variant="outlined" sx={{ mt: 1, height: "35px" }} onClick={handleClearFilter}>
                 Clear
               </Button>
             </Div>
