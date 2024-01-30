@@ -3,7 +3,7 @@
 // import { Axios } from "index";
 import { USER_ADDED, USER_DELETE, USER_EDIT, USER_LIST, USER_ERROR, USER_SUCCESS } from "./userConstant";
 import axios from "axios";
-import jwtAuthAxios, { Axios } from "app/services/config";
+import { Axios } from "app/services/config";
 
 const setLoading = (type) => ({ type, payload: true });
 const clearLoading = (type) => ({ type, payload: false });
@@ -52,22 +52,25 @@ export const onUserList = (query) => async (dispatch) => {
   }
 };
 
-export const onUserAdd = (postData) => async (dispatch) => {
-  try {
-    // dispatch(setLoading(USER_ADDED));
-    dispatch(clearError(USER_ERROR));
+// export const onUserAdd = (postData) => async (dispatch) => {
+//   try {
+//     // dispatch(setLoading(USER_ADDED));
+//     dispatch(clearError(USER_ERROR));
 
-    // Implement logic for adding a new user if needed
+//     // Implement logic for adding a new user if needed
 
-    const { data } = await Axios.post('/user/add', postData);
-    // dispatch({ type: USER_ADDED });
-    dispatch(setSuccess(USER_ADDED, data.message));
-  } catch (error) {
-    dispatch(setError(USER_ERROR, error.message));
-  } finally {
-    // dispatch(clearLoading(USER_ADDED));
-  }
-};
+//     const { data } = await Axios.post('/user/add', postData);
+//     // dispatch({ type: USER_ADDED });
+//     console.log(data);
+//     dispatch(setSuccess(USER_ADDED, data.message));
+//     return data.data;
+//   } catch (error) {
+//     dispatch(setError(USER_ERROR, error.message));
+//     return error.response.data;
+//   } finally {
+//     // dispatch(clearLoading(USER_ADDED));
+//   }
+// };
 
 // export const onUserEdit = (contact) => async (dispatch) => {
 //   try {
