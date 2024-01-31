@@ -1,48 +1,29 @@
 import Div from "@jumbo/shared/Div/Div";
 import React, { useEffect, useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
-import { Avatar, Button, InputAdornment, TextField, Typography } from "@mui/material";
+import {Button, InputAdornment, TextField, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import contactsList from "app/pages/UserManagement/ListUser/components/data";
 import CustomTable from "app/components/Table";
-import LockResetOutlinedIcon from "@mui/icons-material/LockResetOutlined";
 import PreviewOutlinedIcon from "@mui/icons-material/PreviewOutlined";
 import ModeEditOutlinedIcon from "@mui/icons-material/ModeEditOutlined";
-import ViewUser from "app/pages/UserManagement/ViewUser";
 import ViewRole from "../ViewRole";
+import { onRoleList } from "app/redux/actions/Roles";
+import { useSelector } from "react-redux";
+import ToastAlerts from "app/components/Toast";
 
 export default function ListRole() {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
+  const showAlert = ToastAlerts();
   const dispatch = useDispatch();
-  const permissions = JSON.parse(sessionStorage.getItem("permissions"));
   const [openView, setOpenView] = useState(false);
-  const [userDetails, setUserDetails] = useState(false);
-
-
-
+  const [roleDetails, setRoleDetails] = useState(false);
+  const { roleList, totalPages, error, successMessage } = useSelector((state) => state.roleReducer);
+  const [query, setQuery] = useState({});
   const columns = [
-    { field: "user_id", headerName: "User ID" },
-    { field: "name", headerName: "Name", sortable: true, render: (_, elm) => elm.first_name + " " + elm.last_name },
-    { field: "mobile_no", headerName: "Mobile", sortable: true },
-    { field: "email_id", headerName: "Email Id", sortable: true },
-    { field: "status", headerName: "Status", sortable: true, render: (value, elm) => (value ? "Active" : "Inactive") },
-    { field: "role_id", headerName: "Role", render: (value, elm) => value.role_name },
-    // {
-    //   field: "thumb",
-    //   headerName: "Thumb",
-    //   render: (value) => (
-    //     <Avatar
-    //       sx={{
-    //         width: 56,
-    //         height: 56,
-    //       }}
-    //       variant="square"
-    //       src={value}
-    //     />
-    //   ),
-    // },
+    { field: "role_name", headerName: "Role",sortable: true,},
+    { field: "status", headerName: "Status", render: (value, elm) => (value ? "Active" : "Inactive") },
   ];
 
   const actions = [
@@ -50,7 +31,8 @@ export default function ListRole() {
       label: "View Details",
       color: "secondary",
       onClick: (row) => {
-        setUserDetails(row);
+
+        setRoleDetails(row);
         setOpenView(true);
       },
       icon: <PreviewOutlinedIcon />,
@@ -58,21 +40,28 @@ export default function ListRole() {
     {
       label: "Edit",
       color: "secondary",
-      onClick: (row) => navigate(`/roles/edit/${row.id}`),
+      onClick: (row) => 
+      navigate(`/roles/edit/${row._id}`,{state: row }),
       icon: <ModeEditOutlinedIcon />,
     },
   ];
   const fetchData = (props) => {
     console.log(props);
+    setQuery({ ...query, ...props });
   };
 
   const handleSearch = (value) => {
     // dispatch(getAllRoles(value,"",""));
   };
-
   useEffect(() => {
-    // dispatch(getAllRoles());
-  }, []);
+    setQuery({ ...query, search: searchTerm });
+  }, [searchTerm]);
+  if (error) {
+    showAlert("error", error);
+  }
+  useEffect(() => {
+    dispatch(onRoleList(query));
+  }, [query]);
   return (
     <Div sx={{ mt: -4, maxHeight: "89vh", overflowY: "scroll", paddingRight:"10px" }}>
       <Div
@@ -122,9 +111,9 @@ export default function ListRole() {
         </Div>
       </Div>
       <Div>
-        <CustomTable data={contactsList} columns={columns} actions={actions} fetchData={fetchData} totalCount={20} />
+        <CustomTable data={roleList} columns={columns} actions={actions} fetchData={fetchData} totalCount={totalPages} />
       </Div>
-      {openView && userDetails && <ViewRole openView={openView} setOpenView={setOpenView} data={userDetails} />}
+      {openView && roleDetails && <ViewRole openView={openView} setOpenView={setOpenView} data={roleDetails} />}
     </Div>
   );
 }

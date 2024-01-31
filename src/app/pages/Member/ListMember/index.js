@@ -1,46 +1,36 @@
 import Div from "@jumbo/shared/Div/Div";
 import React, { useEffect, useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
-import { Avatar, Button, InputAdornment, TextField, Typography } from "@mui/material";
+import { Button, InputAdornment, TextField, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import contactsList from "app/pages/UserManagement/ListUser/components/data";
 import CustomTable from "app/components/Table";
-import LockResetOutlinedIcon from "@mui/icons-material/LockResetOutlined";
 import PreviewOutlinedIcon from "@mui/icons-material/PreviewOutlined";
 import ModeEditOutlinedIcon from "@mui/icons-material/ModeEditOutlined";
-import ViewUser from "app/pages/UserManagement/ViewUser";
 import ViewMember from "../ViewMember";
+import { useSelector } from "react-redux";
+import { onMemberList } from "app/redux/actions/Member";
+import ToastAlerts from "app/components/Toast";
 
 export default function ListMember() {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
+  const showAlert = ToastAlerts();
   const dispatch = useDispatch();
-  const permissions = JSON.parse(sessionStorage.getItem("permissions"));
   const [openView, setOpenView] = useState(false);
-  const [userDetails, setUserDetails] = useState(false);
+  const [memberDetails, setMmberDetails] = useState(false);
+  const { memberList, totalPages, error, successMessage } = useSelector((state) => state.memberReducer);
+  const [query, setQuery] = useState({});
+  console.log(memberList, 'memberList');
 
   const columns = [
-    { field: "user_id", headerName: "User ID" },
-    { field: "name", headerName: "Name", sortable: true, render: (_, elm) => elm.first_name + " " + elm.last_name },
-    { field: "mobile_no", headerName: "Mobile", sortable: true },
-    { field: "email_id", headerName: "Email Id", sortable: true },
+    { field: "member_id", headerName: "Member ID" },
+    { field: "first_name", headerName: "Name", sortable: true, render: (_, elm) => elm.first_name + " " + elm.last_name },
+    { field: "email_id", headerName: "Email ID", sortable: true },
+    { field: "mobile_no", headerName: "Mobil NO", sortable: true },
+    { field: "dob", headerName: "Date Of Birth", sortable: true },
+    { field: "member_type", headerName: "Member Type", sortable: true, },
     { field: "status", headerName: "Status", sortable: true, render: (value, elm) => (value ? "Active" : "Inactive") },
-    { field: "role_id", headerName: "Role", render: (value, elm) => value.role_name },
-    // {
-    //   field: "thumb",
-    //   headerName: "Thumb",
-    //   render: (value) => (
-    //     <Avatar
-    //       sx={{
-    //         width: 56,
-    //         height: 56,
-    //       }}
-    //       variant="square"
-    //       src={value}
-    //     />
-    //   ),
-    // },
   ];
 
   const actions = [
@@ -48,7 +38,7 @@ export default function ListMember() {
       label: "View Details",
       color: "secondary",
       onClick: (row) => {
-        setUserDetails(row);
+        setMmberDetails(row);
         setOpenView(true);
       },
       icon: <PreviewOutlinedIcon />,
@@ -56,21 +46,26 @@ export default function ListMember() {
     {
       label: "Edit",
       color: "secondary",
-      onClick: (row) => navigate(`/member/edit/${row.id}`),
+      onClick: (row) => navigate(`/member/edit/${row._id}`,{state:row}),
       icon: <ModeEditOutlinedIcon />,
     },
   ];
   const fetchData = (props) => {
     console.log(props);
-  };
-
-  const handleSearch = (value) => {
-    // dispatch(getAllRoles(value,"",""));
+    setQuery({ ...query, ...props });
   };
 
   useEffect(() => {
-    // dispatch(getAllRoles());
-  }, []);
+    setQuery({ ...query, search: searchTerm });
+  }, [searchTerm]);
+
+  if (error) {
+    showAlert("error", error);
+  }
+
+  useEffect(() => {
+    dispatch(onMemberList(query));
+  }, [query]);
   return (
     <Div sx={{ mt: -4, maxHeight: "89vh", overflowY: "scroll", paddingRight: "10px" }}>
       <Div
@@ -91,13 +86,11 @@ export default function ListMember() {
         >
           <TextField
             id="search"
-            type="search"
             label="Search"
             value={searchTerm}
             size="small"
             onChange={(e) => {
               setSearchTerm(e.target.value);
-              handleSearch(e.target.value);
             }}
             sx={{ width: 300, mb: 5, mt: 4 }}
             InputProps={{
@@ -120,9 +113,9 @@ export default function ListMember() {
         </Div>
       </Div>
       <Div>
-        <CustomTable data={contactsList} columns={columns} actions={actions} fetchData={fetchData} totalCount={20} />
+        <CustomTable data={memberList} columns={columns} actions={actions} fetchData={fetchData} totalCount={totalPages} />
       </Div>
-      {openView && userDetails && <ViewMember openView={openView} setOpenView={setOpenView} data={userDetails} />}
+      {openView && memberDetails && <ViewMember openView={openView} setOpenView={setOpenView} data={memberDetails} />}
     </Div>
   );
 }
