@@ -13,7 +13,6 @@ import {
 import React from "react";
 
 const ViewUser = ({ openView, setOpenView, data }) => {
-  console.log(data);
   return (
 
     <Dialog

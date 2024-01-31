@@ -14,11 +14,15 @@ import JumboDdPopover from "@jumbo/components/JumboDdPopover";
 import Div from "@jumbo/shared/Div";
 import useJumboTheme from "@jumbo/hooks/useJumboTheme";
 import useJumboAuth from "@jumbo/hooks/useJumboAuth";
+import LockResetOutlinedIcon from "@mui/icons-material/LockResetOutlined";
+import logo from '../../../../'
+import { ASSET_IMAGES } from 'app/utils/constants/paths';
 
 const AuthUserDropdown = () => {
     const navigate = useNavigate();
     const {theme} = useJumboTheme();
     const {setAuthToken} = useJumboAuth();
+    const AuthUser = JSON.parse(localStorage.getItem('authUser'))
 
     const onLogout = () => {
         setAuthToken(null);
@@ -30,7 +34,7 @@ const AuthUserDropdown = () => {
             <JumboDdPopover
                 triggerButton={
                     <Avatar
-                        src={authUser.profile_pic}
+                        src={`${ASSET_IMAGES}/clubLogo.png`}
                         sizes={"small"}
                         sx={{boxShadow: 25, cursor: 'pointer'}}
                     />
@@ -42,9 +46,9 @@ const AuthUserDropdown = () => {
                     flexDirection: 'column',
                     p: theme => theme.spacing(2.5),
                 }}>
-                    <Avatar src={authUser.profile_pic} alt={authUser.name} sx={{width: 60, height: 60, mb: 2}}/>
-                    <Typography variant={"h5"}>{authUser.name}</Typography>
-                    <Typography variant={"body1"} color="text.secondary">{authUser.handle}</Typography>
+                    <Avatar src={`${ASSET_IMAGES}/clubLogo.png`} alt={AuthUser.name} sx={{width: 60, height: 60, mb: 2}}/>
+                    <Typography variant={"h5"}>{AuthUser.first_name} {AuthUser.last_name}</Typography>
+                    <Typography variant={"body1"} color="text.secondary">{AuthUser.email_id}</Typography>
                 </Div>
                 <Divider/>
                 <nav>
@@ -66,7 +70,7 @@ const AuthUserDropdown = () => {
                       
                         <ListItemButton>
                             <ListItemIcon sx={{minWidth: 36}}>
-                                <LogoutIcon/>
+                                <LockResetOutlinedIcon/>
                             </ListItemIcon>
                             <ListItemText primary="Change Password" sx={{my: 0}} onClick={() => navigate("/profile/changePassword")}/>
                         </ListItemButton>

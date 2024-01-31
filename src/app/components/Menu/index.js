@@ -12,7 +12,6 @@ const CustomActionMenu = ({ icon, menuItems, onClickCallback, row }) => {
     setMenuEl(null);
     if (typeof option.onClick === "function") {
       option.onClick();
-      console.log(option.label, "clicked");
     }
   };
 

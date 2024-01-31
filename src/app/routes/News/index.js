@@ -3,30 +3,29 @@ import AddUser from "app/pages/UserManagement/AddUser";
 import ListUser from "app/pages/UserManagement/ListUser";
 import EditUser from "app/pages/UserManagement/EditUser";
 import PermissionMiddleware from "../Middleware/permission";
-import AdminChangePassword from "app/pages/UserManagement/UserChangePassword";
+import Dashboard from "app/pages/Dashboard";
+import ListMember from "app/pages/Member/ListMember";
+import AddMember from "app/pages/Member/AddMember";
+import EditMember from "app/pages/Member/EditMember";
+import ListNews from "app/pages/NewsAndCircular/ListNewsAndCircular";
 
-const routesName = "/user";
-const modules = "user";
+const routesName = "/news";
+const modules = "news";
 
 var routes = [
   {
     path: `${routesName}`,
-    element: <Page component={ListUser} layout={"vertical-default"} />,
+    element: <Page component={ListNews} layout={"vertical-default"} />,
     permission: "view",
   },
   {
     path: `${routesName}/add`,
-    element: <Page component={AddUser} layout={"vertical-default"} />,
+    element: <Page component={AddMember} layout={"vertical-default"} />,
     permission: "add",
   },
   {
     path: `${routesName}/edit/:id`,
-    element: <Page component={EditUser} layout={"vertical-default"} />,
-    permission: "edit",
-  },
-  {
-    path: `${routesName}/change-password/:id`,
-    element: <Page component={AdminChangePassword} layout={"vertical-default"} />,
+    element: <Page component={EditMember} layout={"vertical-default"} />,
     permission: "edit",
   },
 ];
@@ -51,4 +50,5 @@ const createRoutes = () => {
   return allRoutes;
 };
 
-export const usersRoute = [...createRoutes()];
+export const newsRoute = [...createRoutes()];
+

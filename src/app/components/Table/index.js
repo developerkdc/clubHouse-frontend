@@ -9,22 +9,7 @@ import {
   Paper,
   TablePagination,
   TableSortLabel,
-  Menu,
-  MenuItem,
-  IconButton,
-  ListItemIcon,
-  ListItemText,
-  TextField,
-  CircularProgress,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import Button from "@mui/material/Button";
-import Div from "@jumbo/shared/Div";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import Fade from "@mui/material/Fade";
-import JumboDemoCard from "@jumbo/components/JumboDemoCard";
-import JumboDdMenu from "@jumbo/components/JumboDdMenu";
-import { MoreHorizOutlined } from "@mui/icons-material";
 import CustomActionMenu from "app/components/Menu";
 
 const CustomTable = ({ data, columns, actions, fetchData, totalCount }) => {
@@ -34,9 +19,6 @@ const CustomTable = ({ data, columns, actions, fetchData, totalCount }) => {
   const rowsPerPage = 10;
   const [sortField, setSortField] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
-
-  const [openMenu, setOpenMenu] = React.useState(false);
-  //   const openMenu = Boolean(menuEl);
 
   const handleSort = (field) => {
     const isAsc = sortField === field && sortOrder === "asc";
@@ -74,10 +56,6 @@ const CustomTable = ({ data, columns, actions, fetchData, totalCount }) => {
                   sx={{
                     padding: "10px 0px 10px 20px",
                     fontSize: "16px",
-                    // position: "sticky",
-                    // top: 0,
-                    // // background: "#fff",
-                    // zIndex: 1, // Ensure the header stays above the body
                   }}
                   align="left"
                 >
@@ -104,21 +82,26 @@ const CustomTable = ({ data, columns, actions, fetchData, totalCount }) => {
 
           {data && data.length ? (
             <TableBody>
-              {data.map((row) => (
-                <TableRow key={row.id} hover={true} sx={{ margin: "0px" }}>
-                  {columns.map((column) => (
-                    <TableCell key={column.field} align="left" sx={{ padding: "8px 0px 8px 20px" }}>
-                      {renderCellContent(row, column)}
-                    </TableCell>
-                  ))}
-                  {actions && (
-                    <TableCell align="center" sx={{ padding: "0px" }}>
-                      <CustomActionMenu menuItems={actions} row={row} />
-                    </TableCell>
-                  )}
-                </TableRow>
-              ))}
-            </TableBody>
+            {data.map((row) => (
+              <TableRow key={row.id} hover={true} sx={{ margin: "0px" }}>
+                {columns.map((column) => (
+                  <TableCell
+                    key={column.field}
+                    align="left"
+                    sx={{ padding: "8px 0px 8px 20px" }}
+                    onClick={() => column.onClick && column.onClick(row)}
+                  >
+                    {renderCellContent(row, column)}
+                  </TableCell>
+                ))}
+                {actions && (
+                  <TableCell align="center" sx={{ padding: "0px" }}>
+                    <CustomActionMenu menuItems={actions} row={row} />
+                  </TableCell>
+                )}
+              </TableRow>
+            ))}
+          </TableBody>
           ) : (
             <TableBody>
               <TableRow>

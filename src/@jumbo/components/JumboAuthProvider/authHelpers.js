@@ -7,7 +7,7 @@ export const storeToken = (token) => {
   } else {
     config.authSetting.axiosObject.defaults.headers.common["token"] = token;
     config.authSetting.axiosObject.defaults.withCredentials = true;
-    document.cookie = `token=${token}; path=/`;
+    document.cookie = `token=${token};`;
   }
 };
 
