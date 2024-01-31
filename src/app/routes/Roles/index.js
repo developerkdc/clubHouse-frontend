@@ -5,7 +5,8 @@ import EditUser from "app/pages/UserManagement/EditUser";
 import PermissionMiddleware from "../Middleware/permission";
 import Dashboard from "app/pages/Dashboard";
 import ListRole from "app/pages/RoleManagement/ListRole";
-import AddRole from "app/pages/RoleManagement/AddRole";
+import AddRole from "app/pages/RoleManagement/AddRole/index";
+import EditRole from "app/pages/RoleManagement/EditRole";
 
 const routesName = "/roles";
 const modules = "roles";
@@ -23,7 +24,7 @@ var routes = [
   },
   {
     path: `${routesName}/edit/:id`,
-    element: <Page component={EditUser} layout={"vertical-default"} />,
+    element: <Page component={EditRole} layout={"vertical-default"} />,
     permission: "edit",
   },
 ];

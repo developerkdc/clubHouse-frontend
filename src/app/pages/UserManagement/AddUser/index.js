@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Autocomplete,
   Card,
@@ -6,9 +6,6 @@ import {
   FormControlLabel,
   FormHelperText,
   Grid,
-  InputLabel,
-  MenuItem,
-  Select,
   Switch,
   TextField,
   Typography,
@@ -21,15 +18,11 @@ import JumboTextField from "@jumbo/components/JumboFormik/JumboTextField";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
-import Div from "@jumbo/shared/Div";
-import { useDispatch, useSelector } from "react-redux";
-import { onUserAdd } from "app/redux/actions/User";
+import {useSelector } from "react-redux";
 import { Axios } from "app/services/config";
 import ToastAlerts from "app/components/Toast";
-// const role = [{ name: "admin" }, { name: "user" }];
 const AddUser = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const showAlert = ToastAlerts();
   const rolesList = useSelector((state) => state.roleReducer.globalRoleList);
 
@@ -61,41 +54,10 @@ const AddUser = () => {
       .required("Phone Number is Required")
       .matches(/^\d{10}$/, "Number should be 10 digits."),
     password: yup.string().required("Password is Required"),
-    role_id: yup.string().required("Please select role."),
-    // gender: yup
-    //   .string()
-    //   .required("Gender is required")
-    //   .test(
-    //     "gender-not-select",
-    //     "Please select a valid Gender",
-    //     (value) => value !== "Select"
-    //   ),
-    // date_of_birth: yup
-    //   .date()
-    //   .test("not-current-date", "Enter Valid Date of Birth", function (value) {
-    //     if (!value) {
-    //       // Handle case where value is not provided
-    //       return false;
-    //     }
-
-    //     const currentDate = new Date();
-    //     currentDate.setHours(0, 0, 0, 0); // Set time to midnight
-
-    //     return value < currentDate; // Change this to <= to allow the current date
-    //   })
-    //   .required("Date Of Birth is required"),
+    role_id: yup.string().required("Please select role.")
   });
 
   const handleUserAdd = async (data) => {
-    // let formData = new FormData();
-    // formData.append("user_id", data.user_id);
-    // formData.append("first_name", data.first_name);
-    // formData.append("last_name", data.last_name);
-    // formData.append("email_id", data.email_id);
-    // formData.append("password", data.password);
-    // formData.append("role_id", data.role_id);
-    // formData.append("phone_no", data.phone_no);
-    // formData.append("status", data.status);
     try {
       await Axios.post("/user/add", data);
       showAlert("success", "User added successfully.");
@@ -126,9 +88,6 @@ const AddUser = () => {
                   console.error("Validation Errors:", validationErrors);
                   setSubmitting(false);
                 });
-              // setSubmitting(true);
-              // handleUserAdd(data);
-              // setSubmitting(false);
             }}
           >
             {({ setFieldValue, isSubmitting, values, errors, touched }) => (
@@ -154,35 +113,6 @@ const AddUser = () => {
                   </Grid>
                   <Grid item xs={6}>
                     <FormControl fullWidth error={errors.role_id && touched.role_id}>
-                      {/* <InputLabel
-                        id="role_name_label"
-                        htmlFor="role_name"
-                        style={{ marginTop: "", lineHeight: "12px" }}
-                        InputLabelProps={{ style: { lineHeight: "12px", border: "1px solid red" } }}
-                      >
-                        Role
-                      </InputLabel>
-                      <Select
-                        id="role_name"
-                        label="Role"
-                        name="role_name"
-                        fullWidth
-                        value={values.role_name}
-                        onChange={(event) => {
-                          setFieldValue("role_name", event.target.value);
-                        }}
-                        style={{ height: "45px" }}
-                      >
-                        <MenuItem value="">
-                          <em>None</em>
-                        </MenuItem>
-                        {role?.map((item) => (
-                          <MenuItem key={item} value={item}>
-                            {item}
-                          </MenuItem>
-                        ))}
-                      </Select> */}
-
                       <Autocomplete
                         fullWidth
                         size="small"
@@ -190,9 +120,9 @@ const AddUser = () => {
                         getOptionLabel={(option) => option.role_name}
                         options={rolesList}
                         name="role_id"
-                        onChange={(event) => {
-                          // setFieldValue("role_id", event.target.value);
-                          setFieldValue("role_id",event.target.value._id );
+                        onChange={(event,val) => {
+                         
+                          setFieldValue("role_id",val._id );
                         }}
                         renderInput={(params) => <TextField error={errors.role_id && touched.role_id} {...params} label="Roles" />}
                       />

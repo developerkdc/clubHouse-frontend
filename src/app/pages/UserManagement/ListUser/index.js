@@ -26,7 +26,7 @@ export default function ListUser() {
   const [openView, setOpenView] = useState(false);
   const [userDetails, setUserDetails] = useState(false);
   const [query, setQuery] = useState({});
-  console.log(rolesList);
+
   const columns = [
     { field: "user_id", headerName: "User ID" },
     { field: "first_name", headerName: "Name", sortable: true, render: (_, elm) => elm.first_name + " " + elm.last_name },
@@ -78,7 +78,7 @@ export default function ListUser() {
     setQuery({ ...query, ...props });
   };
 
-  const handleSearch = (value) => {};
+
   
   const handleFilter = () => {
     setQuery({ ...query, role: selectedRole._id });
