@@ -1,26 +1,20 @@
 import React from "react";
-import {
-  Card,
-  CardContent,
-  Grid,
-  TextField,
-  Typography,
-} from "@mui/material";
-import * as yup from "yup";
+import { Card, CardContent, Grid, TextField, Typography } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import Button from "@mui/material/Button";
 import { Form, Formik } from "formik";
-import ToastAlerts from "app/components/Toast";
-import { useNavigate } from "react-router-dom";
-import { Axios } from "app/services/config";
+import * as yup from "yup";
 import JumboTextField from "@jumbo/components/JumboFormik/JumboTextField";
 import Swal from "sweetalert2";
-const ChangePassword = () => {
-  const showAlert = ToastAlerts();
+import { useNavigate, useParams } from "react-router-dom";
+import ToastAlerts from "app/components/Toast";
+import { Axios } from "app/services/config";
+const UserChangePassword = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const showAlert = ToastAlerts();
 
   const validationSchema = yup.object({
-    old_password: yup.string("Enter Old Password").required("Old Password is required"),
     new_password: yup.string("Enter New Password").required("New Password is required"),
     confirm_password: yup
       .string("Enter Confirm Password")
@@ -30,23 +24,23 @@ const ChangePassword = () => {
 
   const handleUpdatePassword = async (data) => {
     try {
-      await Axios.patch(`/auth/reset-password`, data);
+      await Axios.patch(`/user/change-password/${id}`, data);
       showAlert("success", "Password updated successfully.");
-      navigate("/profile");
+      navigate("/user");
     } catch (error) {
       showAlert("error", error.response.data.message);
     }
   };
-    return (
-      <React.Fragment>
-        <Typography variant="h1" mb={3}>
-          Change Password
-        </Typography>
-        <Card>
-            <CardContent>
-            <Formik
+  return (
+    <React.Fragment>
+      <Typography variant="h1" mb={3}>
+        Change Password
+      </Typography>
+      <Card>
+        <CardContent>
+          <Formik
             validateOnChange={true}
-            initialValues={{old_password:"", new_password: "", confirm_password: "" }}
+            initialValues={{ new_password: "", confirm_password: "" }}
             validationSchema={validationSchema}
             onSubmit={(data, { setSubmitting }) => {
               setSubmitting(true);
@@ -65,13 +59,10 @@ const ChangePassword = () => {
             {({ isSubmitting }) => (
               <Form noValidate autoComplete="off">
                 <Grid container rowSpacing={3} columnSpacing={3}>
-                  <Grid item xs={4}>
-                    <JumboTextField fullWidth id="old_password" name="old_password" label="Old Password" />
-                  </Grid>
-                  <Grid item xs={4}>
+                  <Grid item xs={6}>
                     <JumboTextField fullWidth id="new_password" name="new_password" label="New Password" />
                   </Grid>
-                  <Grid item xs={4}>
+                  <Grid item xs={6}>
                     <JumboTextField fullWidth id="confirm_password" name="confirm_password" label="Confirm Password" />
                   </Grid>
                 </Grid>
@@ -79,7 +70,7 @@ const ChangePassword = () => {
                 <Grid container columnSpacing={3} mt={5}>
                   <Grid item xs={6} textAlign="right">
                     <LoadingButton variant="contained" size="medium" type="submit" loading={isSubmitting}>
-                      Update
+                      Save
                     </LoadingButton>
                   </Grid>
                   <Grid item xs={6} textAlign="left">
@@ -106,10 +97,10 @@ const ChangePassword = () => {
               </Form>
             )}
           </Formik>
-            </CardContent>
-        </Card>
-      </React.Fragment>
-    );
-  };
-  
-  export default ChangePassword;
+        </CardContent>
+      </Card>
+    </React.Fragment>
+  );
+};
+
+export default UserChangePassword;

@@ -37,6 +37,11 @@ const authReducer = (state, action) => {
         ...state,
         ...action.payload,
       };
+    case "update-auth-data":
+      return {
+        ...state,
+        authUser:action.payload,
+      };
 
     case "start-loading":
       return {
@@ -80,7 +85,7 @@ const JumboAuthProvider = ({ children, ...restProps }) => {
   }, [logout]);
 
   const setAuthToken = React.useCallback(async (token) => {
-    // console.log(token);
+    console.log(token);
     setAuthOptions({ type: "start-loading" });
     if (!token) {
       setLogout(true);
@@ -90,117 +95,6 @@ const JumboAuthProvider = ({ children, ...restProps }) => {
     storeToken(token);
     try {
       const authUser = await config?.authSetting?.getAuthUserService();
-      //   const authUser = {
-      //     "otp": null,
-      //     "_id": "6597fc800bf48e7b03caad0a",
-      //     "user_id": 1,
-      //     "first_name": "Shyam",
-      //     "last_name": "Kumar",
-      //     "email_id": "akshay.ingle@kdigitalcurry.com",
-      //     "password": "$2b$10$0Fuuf39qDnm1H9x89TFt5u1HexHrT08sW9eB8WdVJ41YP6owhOZIC",
-      //     "mobile_no": "1230456789",
-      //     "status": true,
-      //     "role_id": {
-      //         "permissions": {
-      //             "user": {
-      //                 "add": true,
-      //                 "edit": true,
-      //                 "view": true
-      //             },
-      //             "roles": {
-      //                 "add": true,
-      //                 "edit": true,
-      //                 "view": true
-      //             },
-      //             "member": {
-      //                 "add": true,
-      //                 "edit": true,
-      //                 "view": true
-      //             },
-      //             "news": {
-      //                 "add": true,
-      //                 "edit": true,
-      //                 "view": true
-      //             },
-      //             "event": {
-      //                 "add": true,
-      //                 "edit": true,
-      //                 "view": true
-      //             },
-      //             "gallery": {
-      //                 "add": true,
-      //                 "edit": true,
-      //                 "view": true
-      //             },
-      //             "banquet": {
-      //                 "add": true,
-      //                 "edit": true,
-      //                 "view": true
-      //             },
-      //             "sport": {
-      //                 "add": true,
-      //                 "edit": true,
-      //                 "view": true
-      //             },
-      //             "salon": {
-      //                 "add": true,
-      //                 "edit": true,
-      //                 "view": true
-      //             },
-      //             "spa": {
-      //                 "add": true,
-      //                 "edit": true,
-      //                 "view": true
-      //             },
-      //             "library": {
-      //                 "add": true,
-      //                 "edit": true,
-      //                 "view": true
-      //             },
-      //             "nutritionist": {
-      //                 "add": true,
-      //                 "edit": true,
-      //                 "view": true
-      //             },
-      //             "trainer": {
-      //                 "add": true,
-      //                 "edit": true,
-      //                 "view": true
-      //             },
-      //             "payment": {
-      //                 "add": true,
-      //                 "edit": true,
-      //                 "view": true
-      //             },
-      //             "invoice": {
-      //                 "add": true,
-      //                 "edit": true,
-      //                 "view": true
-      //             },
-      //             "support": {
-      //                 "add": true,
-      //                 "edit": true,
-      //                 "view": true
-      //             },
-      //             "feedback": {
-      //                 "add": true,
-      //                 "edit": true,
-      //                 "view": true
-      //             }
-      //         },
-      //         "_id": "6599448e70b02b40e5fe7c69",
-      //         "role_name": "Super Admin",
-      //         "status": true,
-      //         "deleted_at": null,
-      //         "created_at": "2024-01-06T12:16:14.019Z",
-      //         "updated_at": "2024-01-06T12:16:14.020Z",
-      //         "__v": 0
-      //     },
-      //     "deleted_at": null,
-      //     "created_at": "2024-01-05T12:56:32.089Z",
-      //     "updated_at": "2024-01-06T07:20:19.000Z",
-      //     "__v": 0
-      // };
 
       if (authUser) {
         localStorage.setItem("authUser", JSON.stringify(authUser));
@@ -216,11 +110,6 @@ const JumboAuthProvider = ({ children, ...restProps }) => {
       console.error(error);
     }
   }, []);
-
-  //todo: maybe in next version
-  //   const setRedirectPath = React.useCallback((redirectPath) => {
-  //     setAuthOptions({ type: "set-redirect-path", payload: { redirectPath } });
-  //   }, []);
 
   const setAuthData = React.useCallback((data) => {
     setAuthOptions({ type: "set-auth-data", payload: data });
@@ -242,11 +131,13 @@ const JumboAuthProvider = ({ children, ...restProps }) => {
         navigate(authOptions?.fallbackPath);
       }
     } else if (!authOptions.authUser) {
+      console.log("139 in jumboauth");
       setAuthToken(authOptions.authToken);
-    } else if (isNotAuthenticatedRouteOnly) {
-      if (!firstTimePageLoad) navigate(config.authSetting.redirectNotAuthenticatedPath ?? "/");
-      else firstTimePageLoad = false;
     }
+    //  else if (isNotAuthenticatedRouteOnly) {
+    //   if (!firstTimePageLoad) navigate(config.authSetting.redirectNotAuthenticatedPath ?? "/");
+    //   else firstTimePageLoad = false;
+    // }
   }, [authOptions.authUser]);
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;

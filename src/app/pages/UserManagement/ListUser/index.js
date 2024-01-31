@@ -12,6 +12,7 @@ import PreviewOutlinedIcon from "@mui/icons-material/PreviewOutlined";
 import { onUserList } from "app/redux/actions/User";
 import ToastAlerts from "app/components/Toast";
 import { GlobalRoleList } from "app/redux/actions/Roles";
+import Swal from "sweetalert2";
 
 export default function ListUser() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -20,20 +21,48 @@ export default function ListUser() {
   const dispatch = useDispatch();
   // const [rolesList, setRolesList] = useState([{ role_name: "user" }, { role_name: "admin" }, { role_name: "owner" }]);
   const { role_id } = JSON.parse(localStorage.getItem("authUser"));
-  const { userList, totalPages, error, successMessage } = useSelector((state) => state.userReducer);
+  const { userList, totalPages, error } = useSelector((state) => state.userReducer);
   const rolesList = useSelector((state) => state.roleReducer.globalRoleList);
   const [selectedRole, setSelectedRole] = useState(null);
   const [openView, setOpenView] = useState(false);
   const [userDetails, setUserDetails] = useState(false);
   const [query, setQuery] = useState({});
-  console.log(rolesList);
+
   const columns = [
-    { field: "user_id", headerName: "User ID" },
+    { field: "user_id", headerName: "User ID", sortable: true },
     { field: "first_name", headerName: "Name", sortable: true, render: (_, elm) => elm.first_name + " " + elm.last_name },
     { field: "mobile_no", headerName: "Mobile", sortable: true },
     { field: "email_id", headerName: "Email Id", sortable: true },
-    { field: "status", headerName: "Status", sortable: true, render: (value, elm) => (value ? "Active" : "Inactive") },
-    { field: "role_id", headerName: "Role", render: (value, elm) =>value.role_name},
+    {
+      field: "status",
+      headerName: "Status",
+      sortable: true,
+      render: (value, elm) =>
+        value ? (
+          <Button size="small" variant="outlined" color="success">
+            Active
+          </Button>
+        ) : (
+          <Button size="small" variant="outlined" color="error">
+            Inactive
+          </Button>
+        ),
+      onClick: (elm) => {
+        let status = elm.status;
+        Swal.fire({
+          title: `Change user status to ${status ? "inactive" : "active"} ?`,
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Yes",
+          cancelButtonText: "No",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            navigate("/user");
+          }
+        });
+      },
+    },
+    { field: "role_id", headerName: "Role", render: (value, elm) => value.role_name },
     // {
     //   field: "thumb",
     //   headerName: "Thumb",
@@ -63,29 +92,28 @@ export default function ListUser() {
     {
       label: "Edit",
       color: "secondary",
-      onClick: (row) => navigate(`/user/edit/${row.user_id}`),
+      onClick: (row) => navigate(`/user/edit/${row._id}`,{state:row}),
       icon: <ModeEditOutlinedIcon />,
     },
     {
       label: "Change Password",
       color: "primary",
-      onClick: (row) => navigate(`/user/change-password/${row.user_id}`),
+      onClick: (row) => navigate(`/user/change-password/${row._id}`),
       icon: <LockResetOutlinedIcon />,
     },
   ];
   const fetchData = (props) => {
-    console.log(props);
     setQuery({ ...query, ...props });
   };
 
   const handleSearch = (value) => {};
-  
+
   const handleFilter = () => {
     setQuery({ ...query, role: selectedRole._id });
   };
   const handleClearFilter = () => {
     setSelectedRole(null);
-    setQuery({...query,role:""})
+    setQuery({ ...query, role: "" });
   };
   useEffect(() => {
     setQuery({ ...query, search: searchTerm });
@@ -115,19 +143,19 @@ export default function ListUser() {
         <Typography variant="h1">User Master</Typography>
         <Div sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
           <Div sx={{ width: "20%" }}>
-              <Autocomplete
-                size="small"
-                id="tags-standard"
-                options={rolesList}
-                getOptionLabel={(option) => option.role_name}
-                value={selectedRole} // Use a single value for the selected role
-                onChange={(e, newValue) => {
-                  setSelectedRole(newValue);
-                }}
-                // inputValue={searchTerm}
-                // onInputChange={(event, newInputValue) => setSearchTerm(newInputValue)}
-                renderInput={(params) => <TextField {...params} label="Roles" />}
-              />
+            <Autocomplete
+              size="small"
+              id="tags-standard"
+              options={rolesList}
+              getOptionLabel={(option) => option.role_name}
+              value={selectedRole} // Use a single value for the selected role
+              onChange={(e, newValue) => {
+                setSelectedRole(newValue);
+              }}
+              // inputValue={searchTerm}
+              // onInputChange={(event, newInputValue) => setSearchTerm(newInputValue)}
+              renderInput={(params) => <TextField {...params} label="Roles" />}
+            />
 
             <Div sx={{ display: "flex", gap: 1, flex: "1" }}>
               <Button size="small" variant="outlined" sx={{ mt: 1, height: "35px" }} onClick={handleFilter}>
@@ -168,7 +196,7 @@ export default function ListUser() {
           />
           <Div>
             {/* {permissions?.role_create == true && ( */}
-            <Button variant="contained" sx={{ p: 1, pl: 4, pr: 4 }} onClick={() => navigate("/user/add")}>
+            <Button size="small" variant="contained" sx={{ p: 1, pl: 4, pr: 4 }} onClick={() => navigate("/user/add")}>
               Add User
             </Button>
             {/* )} */}

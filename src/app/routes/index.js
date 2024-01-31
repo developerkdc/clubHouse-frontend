@@ -16,6 +16,7 @@ import EditProfile from "app/pages/Auth/EditProfile";
 import ChangePassword from "app/pages/Auth/ChangePassword";
 import AuthMiddleware from "./Middleware/auth";
 import { memberRoute } from "./Member";
+import { newsRoute } from "./News";
 
 /**
  routes which you want to make accessible to both authenticated and anonymous users
@@ -57,6 +58,7 @@ const routesForAuthenticatedOnly = [
   ...usersRoute,
   ...rolesRoute,
   ...memberRoute,
+  ...newsRoute,
 ];
 
 /**

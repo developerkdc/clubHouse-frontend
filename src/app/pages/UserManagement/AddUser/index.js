@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Autocomplete,
   Card,
@@ -6,9 +6,6 @@ import {
   FormControlLabel,
   FormHelperText,
   Grid,
-  InputLabel,
-  MenuItem,
-  Select,
   Switch,
   TextField,
   Typography,
@@ -21,9 +18,7 @@ import JumboTextField from "@jumbo/components/JumboFormik/JumboTextField";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
-import Div from "@jumbo/shared/Div";
 import { useDispatch, useSelector } from "react-redux";
-import { onUserAdd } from "app/redux/actions/User";
 import { Axios } from "app/services/config";
 import ToastAlerts from "app/components/Toast";
 // const role = [{ name: "admin" }, { name: "user" }];
@@ -117,8 +112,8 @@ const AddUser = () => {
             validationSchema={validationSchema}
             onSubmit={(data, { setSubmitting }) => {
               validationSchema
-                .validate(data, { abortEarly: false })
-                .then(() => {
+              .validate(data, { abortEarly: false })
+              .then(() => {
                   handleUserAdd(data);
                   setSubmitting(false);
                 })
@@ -126,9 +121,6 @@ const AddUser = () => {
                   console.error("Validation Errors:", validationErrors);
                   setSubmitting(false);
                 });
-              // setSubmitting(true);
-              // handleUserAdd(data);
-              // setSubmitting(false);
             }}
           >
             {({ setFieldValue, isSubmitting, values, errors, touched }) => (
@@ -190,9 +182,9 @@ const AddUser = () => {
                         getOptionLabel={(option) => option.role_name}
                         options={rolesList}
                         name="role_id"
-                        onChange={(event) => {
-                          // setFieldValue("role_id", event.target.value);
-                          setFieldValue("role_id",event.target.value._id );
+                        onChange={(event,val) => {
+                          setFieldValue("role_id", val._id);
+                          // setFieldValue("role_id",event);
                         }}
                         renderInput={(params) => <TextField error={errors.role_id && touched.role_id} {...params} label="Roles" />}
                       />

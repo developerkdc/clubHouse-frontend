@@ -1,14 +1,10 @@
 import {
-  USER_ADDED,
-  USER_DELETE,
-  USER_EDIT,
-  USER_LIST,
-  USER_ERROR,
-  USER_SUCCESS
-} from "../../actions/User/userConstant";
+  NEWS_LIST,
+  NEWS_ERROR,
+} from "../../actions/NewsAndCircular/newsConstant";
 
 const initialState = {
-  userList: [],
+  newsList: [],
   loading: false,
   error: null,
   successMessage: null,
@@ -17,27 +13,17 @@ const initialState = {
 
 const reducerFunc = (state = initialState, action) => {
   switch (action.type) {
-    case USER_LIST:
+    case NEWS_LIST:
       return {
         ...state,
-        userList: action.payload?.data || [],
+        newsList: action.payload?.data || [],
         loading: false,
         error: null,
         successMessage:action.payload?.message,
         totalPages:action.payload?.totalPages,
       };
 
-    case USER_ADDED:
-    case USER_EDIT:
-    case USER_DELETE:
-      return {
-        ...state,
-        loading: false,
-        successMessage: action.payload?.message,
-        error: null
-      };
-
-    case USER_ERROR:
+    case NEWS_ERROR:
       return {
         ...state,
         loading: false,
@@ -51,4 +37,3 @@ const reducerFunc = (state = initialState, action) => {
 };
 
 export default reducerFunc;
-
