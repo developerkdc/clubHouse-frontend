@@ -13,6 +13,8 @@ import {
 import CustomActionMenu from "app/components/Menu";
 
 const CustomTable = ({ data, columns, actions, fetchData, totalCount }) => {
+
+  console.log(data,'datadatadatadata');
   const [page, setPage] = useState(0);
   const rowsPerPage = 10;
   const [sortField, setSortField] = useState("");

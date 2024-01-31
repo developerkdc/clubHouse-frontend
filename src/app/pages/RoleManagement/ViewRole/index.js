@@ -1,4 +1,3 @@
-import Div from "@jumbo/shared/Div";
 import {
   Box,
   Button,
@@ -7,65 +6,55 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   Grid,
   Typography,
-  Zoom,
 } from "@mui/material";
 import React from "react";
 
 const ViewRole = ({ openView, setOpenView, data }) => {
-  console.log(data);
+  console.log(data, 'single role');
   return (
-    // <Zoom>
-    //   <Div sx={{ py: { lg: 2 } }}>
+
     <Dialog
       open={openView}
       onClose={() => setOpenView(false)}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
+      maxWidth="lg"
     >
-      <DialogTitle id="alert-dialog-title">Role Details</DialogTitle>
+      <DialogTitle id="alert-dialog-title"> {data?.role_name}</DialogTitle>
       <DialogContent>
-        {
-          /* <DialogContentText id="alert-dialog-description">
-              Let Google help apps determine location. This means sending anonymous location data to Google, even when no apps are running.
-            </DialogContentText> */
-          <Card style={{ marginBottom: "10px" }}>
-            <CardContent>
-              <Grid container style={{ display: "flex", justifyContent: "space-around" }}>
-                <Box>
-                  <Typography variant="h5" component="div">
-                    User Details
-                  </Typography>
-                  <Typography variant="body2">
-                    <span style={{ opacity: "0.5" }}>Name:</span> {data.first_name || "--"}
-                  </Typography>
-                  <Typography variant="body2">
-                    <span style={{ opacity: "0.5" }}>Email:</span> {data.email_id || "--"}
-                  </Typography>
-                  <Typography variant="body2">
-                    <span style={{ opacity: "0.5" }}>Contact:</span> {data.mobile_no || "--"}
-                  </Typography>
-                  <Typography variant="body2">
-                    <span style={{ opacity: "0.5" }}>City:</span> {data.status || "--"}
-                  </Typography>
-                  <Typography variant="body2">
-                    <span style={{ opacity: "0.5" }}>Feedback:</span> {data.user_id || "--"}
-                  </Typography>
-                </Box>
-              </Grid>
-            </CardContent>
-          </Card>
-        }
+   
+      <Card style={{ marginBottom: "20px" }}>
+  <CardContent>
+    <Grid container style={{ display: "flex", justifyContent: "space-around" }}>
+      {Object.keys(data?.permissions).map((category, index) => (
+        <Grid item xs={12} sm={5} md={5} lg={2.2} key={category} style={{ marginBottom: "5px" }}>
+          <Box sx={{ height: 120 }}>
+            <Typography variant="body2" style={{ fontSize: "18px"}}sx={{color:"blue"}} >
+              <span style={{ opacity: "0.5" }}>{category}:</span>
+            </Typography>
+            {Object.keys(data?.permissions[category]).map((action) => (
+              <Typography key={action} variant="body2" style={{ fontSize: "18px"}}>
+                <span  style={{color:"black" }}>{action}:</span> {data?.permissions[category][action] ? "True" : "False"}
+              </Typography>
+            ))}
+          </Box>
+        </Grid>
+      ))}
+    </Grid>
+  </CardContent>
+</Card>
+
+
+
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setOpenView(false)}>Close</Button>
+        <Button onClick={() => setOpenView(false)} size="large">Close</Button> {/* Set size to "large" for a larger button */}
       </DialogActions>
     </Dialog>
-    //   </Div>
-    // </Zoom>
+
   );
 };
 

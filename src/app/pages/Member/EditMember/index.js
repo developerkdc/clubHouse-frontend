@@ -1,181 +1,312 @@
-import React from "react";
-import { Card, CardContent, FormControlLabel, InputLabel, MenuItem, Select, Switch, TextField, Typography } from "@mui/material";
-import FormControl from "@mui/material/FormControl";
-import Box from "@mui/material/Box";
-import Div from "@jumbo/shared/Div";
+import React, { useState } from "react";
+import {
+  Card,
+  CardContent,
+  FormControlLabel,
+  Grid,
+  Switch,
+  Typography, Menu, MenuItem, Select,
+} from "@mui/material";
+import { AddCircleOutline, RemoveCircleOutline } from "@mui/icons-material"; // Import Material-UI icons
 import { LoadingButton } from "@mui/lab";
 import Button from "@mui/material/Button";
-
-
-const role = ["admin", "user"];
+import { Form, Formik, FieldArray, Field } from "formik";
+import JumboTextField from "@jumbo/components/JumboFormik/JumboTextField";
+import Swal from "sweetalert2";
+import * as yup from "yup";
+import { Axios } from "app/services/config";
+import ToastAlerts from "app/components/Toast";
+import Div from "@jumbo/shared/Div";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { formatDate } from "../AddMember/date";
 const EditMember = () => {
-  const user_status = 1;
+  const navigate = useNavigate();
+  const showAlert = ToastAlerts();
+  const { id } = useParams();
+  const { state } = useLocation();
+  console.log(state, 'statesssssss');
+  var initialValues = {
+    member_id: state.member_id,
+    first_name: state.first_name,
+    last_name: state.last_name,
+    email_id: state.email_id,
+    mobile_no: state.mobile_no,
+    dob: formatDate(state.dob),
+    member_type: state.member_type,
+    status: state.status,
+    family_member: state.family_member
+  };
+  const validationSchema = yup.object({
+    member_id: yup.string("Enter Member ID").required("Member ID is required"),
+    member_type: yup.string("Enter Member Type").required("Member Type is required"),
+    dob: yup.date()
+      .test("not-current-date", "Enter Valid Date of Birth", function (value) {
+        if (!value) {
+          // Handle case where value is not provided
+          return false;
+        }
+
+        const currentDate = new Date();
+        currentDate.setHours(0, 0, 0, 0); // Set time to midnight
+
+        return value < currentDate; // Change this to <= to allow the current date
+      })
+      .required("Date Of Birth is required"),
+    // .matches(/^[0-9]+$/, "User ID must be a number"),
+    first_name: yup
+      .string("Enter First Name")
+      .required("First Name is required")
+      .matches(/^[A-Za-z]+$/, "First Name must contain only alphabetic characters"),
+    last_name: yup
+      .string("Enter Last Name")
+      .required("Last Name is required")
+      .matches(/^[A-Za-z]+$/, "Last Name must contain only alphabetic characters"),
+    email_id: yup.string("Enter your Email ID").email("Enter a valid Email ID").required("Email is required"),
+    mobile_no: yup
+      .string()
+      .typeError("Phone number must be a number")
+      .required("Phone Number is Required")
+      .matches(/^\d{10}$/, "Number should be 10 digits."),
+    family_member: yup.array(
+      yup.object({
+        first_name: yup.string().required('First Name is required'),
+        last_name: yup.string().required('Last Name is required'),
+        mobile_no: yup.string()
+          .typeError("Phone number must be a number")
+          .matches(/^\d{10}$/, "Number should be 10 digits.").nullable() ,
+        dob: yup
+          .date()
+          .nullable() 
+          .test("not-current-date", "Enter Valid Date of Birth", function (value) {
+            if (!value) {
+              return true; // Skip validation if no value is provided
+            }
+
+            const currentDate = new Date();
+            currentDate.setHours(0, 0, 0, 0);
+            return value < currentDate;
+          })
+        ,
+        email_id: yup.string("Enter your Email ID").email("Enter a valid Email ID").nullable() ,
+        relation: yup.string().required('Relation is required'),
+      })
+    )
+  });
+
+  const handleMemberAdd = async (data) => {
+    try {
+      await Axios.patch(`/member/edit/${id}`, data);
+      showAlert("success", "Member added successfully.");
+      navigate("/member");
+    } catch (error) {
+      showAlert("error", error.response.data.message);
+    }
+  };
+
+
   return (
     <React.Fragment>
       <Typography variant="h1" mb={3}>
         EDIT MEMBER
       </Typography>
-      <Card sx={{ display: "flex", mb: 3.5 }}>
-        <Div sx={{ display: "flex", flexDirection: "column", flex: "1" }}>
-          <CardContent>
-            <Box
-              component="form"
-              sx={{
-                mx: -1,
+      <Card>
+        <CardContent>
+          <Formik
+            validateOnChange={true}
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={(data, { setSubmitting }) => {
+              validationSchema
+                .validate(data, { abortEarly: false })
+                .then(() => {
+                  handleMemberAdd(data);
+                  setSubmitting(false);
+                })
+                .catch((validationErrors) => {
+                  console.error("Validation Errors:", validationErrors);
+                  setSubmitting(false);
+                });
+            }}
+          >
+            {({ setFieldValue, isSubmitting, values, errors, touched }) => (
+              <Form noValidate autoComplete="off">
+                <Grid container rowSpacing={3} columnSpacing={3}>
+                  <Grid item xs={6}>
+                    <JumboTextField fullWidth id="member_id" name="member_id" label="Member ID" />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <JumboTextField fullWidth id="first_name" name="first_name" label="First name" />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <JumboTextField fullWidth id="last_name" name="last_name" label="Last name" />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <JumboTextField fullWidth id="email_id" name="email_id" label="Email" />
+                  </Grid>
 
-                "& .MuiFormControl-root:not(.MuiTextField-root)": {
-                  p: 1,
-                  mb: 2,
-                  width: { xs: "100%", sm: "50%" },
-                },
+                  <Grid item xs={6}>
+                    <JumboTextField fullWidth type="number" id="mobile_no" name="mobile_no" label="Phone No." />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <JumboTextField fullWidth id="member_type" name="member_type" label="Member Type." />
+                  </Grid>
 
-                "& .MuiFormControl-root.MuiFormControl-fluid": {
-                  width: "100%",
-                },
-              }}
-              autoComplete="off"
-            >
-              <FormControl>
-                <TextField
-                  fullWidth
-                  id="user_id"
-                  name="user_id"
-                  label="Member ID"
-                  inputProps={{ style: { height: "12px" } }}
-                  InputLabelProps={{ style: { lineHeight: "12px" } }}
-                />
-              </FormControl>
-            
-              <FormControl sx={{ minWidth: 120, height: 10, marginBottom: 0 }}>
-                <InputLabel sx={{ padding: 1.1, top: -3 }}>Member Type</InputLabel>
-                <Select
-                  labelId="role_name"
-                  id="role_name"
-                  label="Member Type"
-                  inputProps={{
-                    "aria-label": "Role",
-                    style: { height: "12px" },
-                  }}
-                  InputLabelProps={{ style: { lineHeight: "12px" } }}
-                  style={{ height: "45px" }}
-                >
-                  <MenuItem value="Select">Select</MenuItem>
-                  {role?.map((item) => (
-                    <MenuItem key={item} value={item}>
-                      {item}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+                  <Grid item xs={3}>
+                    <JumboTextField
+                      fullWidth
+                      type="date"
+                      id="dob"
+                      name="dob"
+                      label="Date of Birth"
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                  </Grid>
+                  <Grid item xs={6} alignContent="center">
+                    <FormControlLabel
+                      style={{ padding: "0px", margin: "0px", height: "100%" }}
+                      control={
+                        <Switch
+                          onChange={(e) => {
+                            setFieldValue("status", values.status ? false : true);
+                          }}
+                          defaultChecked={values.status ? true : false}
+                          color="primary"
+                        />
+                      }
+                      label="Status"
+                      name="status"
+                      labelPlacement="start"
+                    />
+                  </Grid>
+                </Grid>
+                <Grid item xs={2} alignContent="center">
+                  <FieldArray
+                    name="family_member"
+                    render={(arrayHelpers) => (
+                      <Div>
+                        {values?.family_member?.map((subItem, index) => (
+                          <Div
+                            key={index}
+                            sx={{ display: "flex", alignItems: "center" }}
+                          >
+                            <Div
+                              sx={{ display: "flex", flexDirection: "column" }}
+                            >
+                              <Typography variant="h5">{`Member ${index + 1
+                                }`}</Typography>
+                              <Grid container rowSpacing={3} columnSpacing={3}>
 
-              <FormControl>
-                <TextField
-                  fullWidth
-                  id="first_name"
-                  name="first_name"
-                  label="First Name"
-                  inputProps={{ style: { height: "12px" } }}
-                  InputLabelProps={{ style: { lineHeight: "12px" } }}
-                />
-              </FormControl>
-              <FormControl>
-                <TextField
-                  fullWidth
-                  id="last_name"
-                  name="last_name"
-                  label="Last Name"
-                  inputProps={{ style: { height: "12px" } }}
-                  InputLabelProps={{ style: { lineHeight: "12px" } }}
-                />
-              </FormControl>
-              <FormControl>
-                <TextField
-                  fullWidth
-                  id="email"
-                  name="email"
-                  label="Email"
-                  inputProps={{ style: { height: "12px" } }}
-                  InputLabelProps={{ style: { lineHeight: "12px" } }}
-                />
-              </FormControl>
-              <FormControl>
-              <TextField
-                    id="date"
-                    label="Birthday"
-                    type="date"
-                    sx={{width: 350}}
-                    InputLabelProps={{shrink: true,style: { lineHeight: "12px" }}}
-                      inputProps={{ style: { height: "12px" } }}
-  
-                />
-              </FormControl>
-            
-              <FormControl>
-                <TextField
-                  fullWidth
-                  id="phone_no"
-                  name="phone_no"
-                  label="Phone No."
-                  inputProps={{ style: { height: "12px" } }}
-                  InputLabelProps={{ style: { lineHeight: "12px" } }}
-                />
-              </FormControl>
-              <FormControl>
-                <TextField
-                  fullWidth
-                  id="dob"
-                  name="dob"
-                  label="Password"
-                  inputProps={{ style: { height: "12px" } }}
-                  InputLabelProps={{ style: { lineHeight: "12px" } }}
-                />
-              </FormControl>
-              <FormControlLabel
-                label={<Typography variant="h5">Status</Typography>}
-                control={<Switch defaultChecked={user_status === 1} color={user_status === 1 ? "success" : "error"} />}
-                labelPlacement="start"
-              />
-               <Div
-               sx={{
-                // width: "100%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                gap: 3,
-                mt: 3,
-              }}
-              >
-                <LoadingButton
-                  type="submit"
-                  variant="contained"
-                  sx={{ width: "100px" }}
-                >
-                  Save
-                </LoadingButton>
-                <Button
-                  variant="outlined"
-                  // onClick={() => {
-                  //   Swal.fire({
-                  //     title: "Are you sure you want to cancel?",
-                  //     icon: "warning",
-                  //     showCancelButton: true,
-                  //     confirmButtonText: "Yes",
-                  //     cancelButtonText: "No",
-                  //   }).then((result) => {
-                  //     if (result.isConfirmed) {
-                  //       navigate("/dashboard/user");
-                  //     }
-                  //   });
-                  // }}
-                >
-                  Cancel
-                </Button>
 
-                
-              </Div>
-            </Box>
-          </CardContent>
-        </Div>
+                                <Grid item xs={2}>
+                                  <JumboTextField fullWidth id="first_name" name={`family_member.${index}.first_name`} label="First Name" />
+                                </Grid>
+                                <Grid item xs={2}>
+                                  <JumboTextField fullWidth id="last_name" name={`family_member.${index}.last_name`} label="Last Name" />
+                                </Grid>
+                                <Grid item xs={2}>
+                                  <JumboTextField fullWidth id="mobile_no" name={`family_member.${index}.mobile_no`} label="Phone NO" />
+                                </Grid>
+                                <Grid item xs={2}>
+                                  <JumboTextField fullWidth id="email_id" name={`family_member.${index}.email_id`} label="Email ID" />
+                                </Grid>
+                                <Grid item xs={2}>
+                                  <JumboTextField
+                                    fullWidth
+                                    type="date"
+                                    id="dob"
+                                    name={`family_member.${index}.dob`}
+                                    label="Date of Birth"
+                                    defaultValue={null}
+                                  />
+                                </Grid>
+                                <Grid item xs={2}>
+                                  <JumboTextField fullWidth id="relation" name={`family_member.${index}.relation`} label="Relation" />
+                                </Grid>
+                              </Grid>
+                            </Div>
+                            <RemoveCircleOutline
+                              onClick={() => arrayHelpers.remove(index)}
+                              sx={{
+                                ml: 2,
+                                mt: 1.5,
+                                color: "red",
+                                ":hover": { cursor: "pointer" },
+                              }}
+                            />
+                          </Div>
+                        ))}
+                        <Div
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            width: "200px",
+                            ":hover": {
+                              cursor: "pointer",
+                              color: "black",
+                              fontWeight: "600",
+                            },
+                          }}
+                          onClick={() =>
+                            arrayHelpers.push({
+                              first_name: "",
+                              last_name: "",
+                              email_id: "",
+                              mobile_no: "",
+                              dob: "",
+                              relation: "",
+                            })
+                          }
+                        >
+                          <AddCircleOutline />
+                          <Typography
+                            sx={{
+                              fontSize: "15px",
+                              fontWeight: "500",
+                              ml: 1.5,
+                              ":hover": { cursor: "pointer", color: "black" },
+                            }}
+                          >
+                            Add Family Member
+                          </Typography>
+                        </Div>
+                      </Div>
+                    )}
+                  />
+                </Grid>
+
+
+                <Grid container columnSpacing={3} mt={5}>
+                  <Grid item xs={6} textAlign="right">
+                    <LoadingButton variant="contained" size="medium" type="submit" loading={isSubmitting}>
+                      Save
+                    </LoadingButton>
+                  </Grid>
+                  <Grid item xs={6} textAlign="left">
+                    <Button
+                      variant="outlined"
+                      onClick={() => {
+                        Swal.fire({
+                          title: "Are you sure you want to cancel?",
+                          icon: "warning",
+                          showCancelButton: true,
+                          confirmButtonText: "Yes",
+                          cancelButtonText: "No",
+                        }).then((result) => {
+                          if (result.isConfirmed) {
+                            navigate("/member");
+                          }
+                        });
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </Grid>
+                </Grid>
+              </Form>
+            )}
+          </Formik>
+        </CardContent>
       </Card>
     </React.Fragment>
   );
