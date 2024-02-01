@@ -6,13 +6,13 @@ import NotFound from "app/pages/NotFound";
 import Login from "app/pages/Auth/Login";
 import Dashboard from "app/pages/Dashboard";
 import EmailVerify from "app/pages/Auth/EmailVerify";
-import ForgotPassword from "app/pages/Auth/OtpVerify";
 import UserProfile from "app/pages/Auth/Profile";
 import EditProfile from "app/pages/Auth/EditProfile";
 import ChangePassword from "app/pages/Auth/ChangePassword";
 import AuthMiddleware from "./Middleware/auth";
 import { memberRoute } from "./Member";
 import { newsRoute } from "./News";
+import ResetPassword from "app/pages/Auth/OtpVerify";
 
 /**
  routes which you want to make accessible to both authenticated and anonymous users
@@ -70,8 +70,8 @@ const routesForNotAuthenticatedOnly = [
     element: <Page component={EmailVerify} layout="solo-page" />,
   },
   {
-    path: "/forgot-password",
-    element: <Page component={ForgotPassword} layout="solo-page" />,
+    path: "/reset-password",
+    element: <Page component={ResetPassword} layout="solo-page" />,
   },
 ];
 

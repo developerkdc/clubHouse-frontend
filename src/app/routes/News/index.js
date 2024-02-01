@@ -1,13 +1,8 @@
 import Page from "@jumbo/shared/Page";
-import AddUser from "app/pages/UserManagement/AddUser";
-import ListUser from "app/pages/UserManagement/ListUser";
-import EditUser from "app/pages/UserManagement/EditUser";
 import PermissionMiddleware from "../Middleware/permission";
-import Dashboard from "app/pages/Dashboard";
-import ListMember from "app/pages/Member/ListMember";
-import AddMember from "app/pages/Member/AddMember";
 import EditMember from "app/pages/Member/EditMember";
 import ListNews from "app/pages/NewsAndCircular/ListNewsAndCircular";
+import AddNews from "app/pages/NewsAndCircular/AddNewsAndCircular";
 
 const routesName = "/news";
 const modules = "news";
@@ -20,7 +15,7 @@ var routes = [
   },
   {
     path: `${routesName}/add`,
-    element: <Page component={AddMember} layout={"vertical-default"} />,
+    element: <Page component={AddNews} layout={"vertical-default"} />,
     permission: "add",
   },
   {

@@ -106,7 +106,6 @@ export default function ListUser() {
     setQuery({ ...query, ...props });
   };
 
-  const handleSearch = (value) => {};
   const handleFilter = () => {
     setQuery({ ...query, role: selectedRole._id });
   };
