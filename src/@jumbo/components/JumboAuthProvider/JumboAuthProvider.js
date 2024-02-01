@@ -85,7 +85,6 @@ const JumboAuthProvider = ({ children, ...restProps }) => {
   }, [logout]);
 
   const setAuthToken = React.useCallback(async (token) => {
-    console.log(token);
     setAuthOptions({ type: "start-loading" });
     if (!token) {
       setLogout(true);
@@ -126,19 +125,19 @@ const JumboAuthProvider = ({ children, ...restProps }) => {
   }, [authOptions]);
 
   React.useEffect(() => {
-    if (!authOptions.authToken) {
+    if (!authOptions?.authToken) {
       if (isAuthenticatedRouteOnly) {
         navigate(authOptions?.fallbackPath);
       }
-    } else if (!authOptions.authUser) {
+    } else if (!authOptions?.authUser) {
       console.log("139 in jumboauth");
-      setAuthToken(authOptions.authToken);
+      setAuthToken(authOptions?.authToken);
     }
     //  else if (isNotAuthenticatedRouteOnly) {
     //   if (!firstTimePageLoad) navigate(config.authSetting.redirectNotAuthenticatedPath ?? "/");
     //   else firstTimePageLoad = false;
     // }
-  }, [authOptions.authUser]);
+  }, [authOptions?.authUser]);
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 };

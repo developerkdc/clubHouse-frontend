@@ -103,7 +103,7 @@ export default function ListRole() {
           />
           <Div>
             {/* {permissions?.role_create == true && ( */}
-            <Button variant="contained" sx={{ p: 1, pl: 4, pr: 4 }} onClick={() => navigate("/roles/add")}>
+            <Button  size="small" variant="contained" sx={{ p: 1, pl: 4, pr: 4 }} onClick={() => navigate("/roles/add")}>
               Add Role
             </Button>
             {/* )} */}

@@ -24,7 +24,6 @@ const EditMember = () => {
   const showAlert = ToastAlerts();
   const { id } = useParams();
   const { state } = useLocation();
-  console.log(state, 'statesssssss');
   var initialValues = {
     member_id: state.member_id,
     first_name: state.first_name,
@@ -217,7 +216,9 @@ const EditMember = () => {
                                     id="dob"
                                     name={`family_member.${index}.dob`}
                                     label="Date of Birth"
-                                    defaultValue={null}
+                                    InputLabelProps={{
+                                      shrink: true,
+                                  }}
                                   />
                                 </Grid>
                                 <Grid item xs={2}>

@@ -22,7 +22,6 @@
     "axios": "^1.6.5",
     "beautiful-react-hooks": "^1.2.0",
     "can-use-dom": "^0.1.0",
-    "ckeditor4-react": "^2.1.1",
     "clsx": "^1.1.1",
     "connected-react-router": "^6.9.1",
     "date-fns": "^2.27.0",

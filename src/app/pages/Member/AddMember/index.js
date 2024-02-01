@@ -123,11 +123,11 @@ const AddMember = () => {
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={(data, { setSubmitting }) => {
-              console.log(data,'fasssssssss');
+           
               validationSchema
                 .validate(data, { abortEarly: false })
                 .then(() => {
-                  console.log('fffffffffffffff');
+           
                   handleMemberAdd(data);
                   setSubmitting(false);
                 })
@@ -168,7 +168,9 @@ const AddMember = () => {
                       id="dob"
                       name="dob"
                       label="Date of Birth"
-                      defaultValue={null}
+                      InputLabelProps={{
+                        shrink: true,
+                    }}
                     />
                   </Grid>
                   <Grid item xs={6} alignContent="center">
@@ -206,8 +208,6 @@ const AddMember = () => {
                               <Typography variant="h5">{`Member ${index + 1
                                 }`}</Typography>
                               <Grid container rowSpacing={3} columnSpacing={3}>
-
-
                                 <Grid item xs={2}>
                                   <JumboTextField fullWidth id="first_name" name={`family_member.${index}.first_name`} label="First Name" />
                                 </Grid>

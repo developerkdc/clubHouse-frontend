@@ -26,8 +26,6 @@ const EditRole = () => {
     const dispatch = useDispatch();
     const { id } = useParams();
     const { state } = useLocation();
-    console.log(id, 'id');
-    console.log(state, 'dddddddddd');
     const showAlert = ToastAlerts()
 
     const GreenCheckbox = withStyles({
@@ -160,7 +158,6 @@ const EditRole = () => {
         role_name: yup.string("Enter Role Name").required("Role Name is required"),
     });
     const handleRoleEdit = async (data) => {
-        console.log(data, 'data');
         try {
             await Axios.patch(`/role/edit/${id}`,data);
             showAlert("success", "Role updated successfully.");
@@ -188,7 +185,6 @@ const EditRole = () => {
                         initialValues={initialValues}
                         validationSchema={validationSchema}
                         onSubmit={(data, { setSubmitting }) => {
-                            console.log(data, 'data');
                             setSubmitting(true);
                             validationSchema
                                 .validate(data, { abortEarly: false })

@@ -151,7 +151,6 @@ const validationSchema = yup.object({
     role_name: yup.string("Enter Role Name").required("Role Name is required"),
 });
 const handleRoleAdd = async (data) => {
-    console.log(data, 'data');
     try {
         await Axios.post("/role/add", data);
         showAlert("success", "Role added successfully.");
@@ -172,7 +171,7 @@ return (
                     initialValues={initialValues}
                     validationSchema={validationSchema}
                     onSubmit={(data, { setSubmitting }) => {
-                        console.log(data, 'data');
+                        
                         validationSchema
                             .validate(data, { abortEarly: false })
                             .then(() => {

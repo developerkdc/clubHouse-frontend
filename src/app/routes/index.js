@@ -12,6 +12,7 @@ import ChangePassword from "app/pages/Auth/ChangePassword";
 import AuthMiddleware from "./Middleware/auth";
 import { memberRoute } from "./Member";
 import { newsRoute } from "./News";
+import { eventRoute } from "./Event";
 import ResetPassword from "app/pages/Auth/OtpVerify";
 
 /**
@@ -55,6 +56,7 @@ const routesForAuthenticatedOnly = [
   ...rolesRoute,
   ...memberRoute,
   ...newsRoute,
+  ...eventRoute,
 ];
 
 /**
