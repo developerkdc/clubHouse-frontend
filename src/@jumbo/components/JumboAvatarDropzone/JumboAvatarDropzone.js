@@ -3,20 +3,21 @@ import PropTypes from "prop-types";
 
 import {useDropzone} from "react-dropzone";
 import Avatar from "@mui/material/Avatar";
+import Div from '@jumbo/shared/Div';
 
-const JumboAvatarDropzone = ({src, alt, onFileSelection, sx}) => {
+const JumboAvatarDropzone = ({src, alt, onFileSelection, sx,variant}) => {
     const {getRootProps, getInputProps} = useDropzone({
         accept: 'image/*',
         onDrop: acceptedFiles => {
-            onFileSelection(URL.createObjectURL(acceptedFiles[0]));
+            onFileSelection(acceptedFiles[0]);
         },
     });
 
     return (
-        <div {...getRootProps({className: 'dropzone pointer'})} >
+        <Div sx={{...sx,cursor:'pointer'}} {...getRootProps({className: 'dropzone pointer'})} >
             <input {...getInputProps()} />
-            <Avatar alt={alt} src={src} sx={sx}/>
-        </div>
+            <Avatar variant={variant} alt={alt} src={src} sx={sx}/>
+        </Div>
     );
 };
 

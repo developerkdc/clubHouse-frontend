@@ -14,6 +14,7 @@ import { GlobalRoleList } from "app/redux/actions/Roles";
 import Swal from "sweetalert2";
 import ViewNews from "../ViewNews";
 import { onNewsList } from "app/redux/actions/NewsAndCircular";
+import { getCustomDateTime } from "@jumbo/utils";
 
 export default function ListNews() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -28,10 +29,11 @@ export default function ListNews() {
   const [query, setQuery] = useState({});
 
   const columns = [
-    { field: "title", headerName: "Title", sortable: true },
+    { field: "title", headerName: "Title", sortable: true, width: "400px" },
     {
-      field: "thumb",
-      headerName: "Thumb",
+      field: "banner_image",
+      headerName: "Image",
+      width: "100px",
       render: (value) => (
         <Avatar
           sx={{
@@ -39,13 +41,20 @@ export default function ListNews() {
             height: 56,
           }}
           variant="rounded"
-          src={value}
+          src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}news/${value}`}
         />
       ),
     },
-    // { field: "first_name", headerName: "Name", sortable: true, render: (_, elm) => elm.first_name + " " + elm.last_name },
+    { field: "source", headerName: "Source", width: "200px" },
     { field: "type", headerName: "Type", sortable: true },
-    { field: "date", headerName: "Created Date", sortable: true },
+    {
+      field: "created_at",
+      headerName: "Created Date",
+      sortable: true,
+      // render: (_, elm) => getCustomDateTime(elm?.created_at, "days", "DD MMMM YYYY hh:mm A"),
+      render: (_, elm) => getCustomDateTime(elm?.created_at, "days", "DD MMM YYYY"),
+    },
+
     {
       field: "status",
       headerName: "Status",
@@ -75,7 +84,6 @@ export default function ListNews() {
         });
       },
     },
-    { field: "source", headerName: "Source" },
   ];
 
   const actions = [
@@ -99,14 +107,6 @@ export default function ListNews() {
     setQuery({ ...query, ...props });
   };
 
-  const handleSearch = (value) => {};
-
-  const handleFilter = () => {
-    setQuery({ ...query });
-  };
-  const handleClearFilter = () => {
-    setQuery({ ...query });
-  };
   useEffect(() => {
     setQuery({ ...query, search: searchTerm });
   }, [searchTerm]);
@@ -131,31 +131,6 @@ export default function ListNews() {
       >
         <Typography variant="h1">News Master</Typography>
         <Div sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
-          {/* <Div sx={{ width: "20%" }}>
-            <Autocomplete
-              size="small"
-              id="tags-standard"
-              options={rolesList}
-              getOptionLabel={(option) => option.role_name}
-              value={selectedRole} // Use a single value for the selected role
-              onChange={(e, newValue) => {
-                setSelectedRole(newValue);
-              }}
-              // inputValue={searchTerm}
-              // onInputChange={(event, newInputValue) => setSearchTerm(newInputValue)}
-              renderInput={(params) => <TextField {...params} label="Roles" />}
-            />
-
-            <Div sx={{ display: "flex", gap: 1, flex: "1" }}>
-              <Button size="small" variant="outlined" sx={{ mt: 1, height: "35px" }} onClick={handleFilter}>
-                Apply
-              </Button>
-
-              <Button size="small" variant="outlined" sx={{ mt: 1, height: "35px" }} onClick={handleClearFilter}>
-                Clear
-              </Button>
-            </Div>
-          </Div> */}
         </Div>
         <Div
           sx={{
@@ -166,6 +141,7 @@ export default function ListNews() {
         >
           <TextField
             id="search"
+            autoComplete='onInputChange'
             label="Search"
             value={searchTerm}
             size="small"
@@ -184,11 +160,11 @@ export default function ListNews() {
             }}
           />
           <Div>
-            {role_id?.permissions?.news?.add  && (
-            <Button size="small" variant="contained" sx={{ p: 1, pl: 4, pr: 4 }} onClick={() => navigate("/news/add")}>
-              Add User
-            </Button>
-             )} 
+            {role_id?.permissions?.news?.add && (
+              <Button size="small" variant="contained" sx={{ p: 1, pl: 4, pr: 4 }} onClick={() => navigate("/news/add")}>
+                Add User
+              </Button>
+            )}
           </Div>
         </Div>
       </Div>

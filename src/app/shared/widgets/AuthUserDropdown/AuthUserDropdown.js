@@ -46,9 +46,9 @@ const AuthUserDropdown = () => {
                     flexDirection: 'column',
                     p: theme => theme.spacing(2.5),
                 }}>
-                    <Avatar src={`${ASSET_IMAGES}/clubLogo.png`} alt={AuthUser.name} sx={{width: 60, height: 60, mb: 2}}/>
-                    <Typography variant={"h5"}>{AuthUser.first_name} {AuthUser.last_name}</Typography>
-                    <Typography variant={"body1"} color="text.secondary">{AuthUser.email_id}</Typography>
+                    <Avatar src={`${ASSET_IMAGES}/clubLogo.png`} alt={AuthUser?.name} sx={{width: 60, height: 60, mb: 2}}/>
+                    <Typography variant={"h5"}>{AuthUser?.first_name} {AuthUser?.last_name}</Typography>
+                    <Typography variant={"body1"} color="text.secondary">{AuthUser?.email_id}</Typography>
                 </Div>
                 <Divider/>
                 <nav>
