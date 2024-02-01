@@ -1,44 +1,44 @@
-import { MEMBER_LIST, MEMBER_ERROR,GLOBAL_MEMBER_LIST } from "./memberConstant";
+import { EVENT_LIST, EVENT_ERROR,GLOBAL_EVENT_LIST } from "./eventConstant";
 import  { Axios } from "app/services/config";
 
 const setError = (type, error) => ({ type, payload: error });
 const clearError = (type) => ({ type, payload: null });
 
-export const onMemberList = (query) => async (dispatch) => {
+export const onEventList = (query) => async (dispatch) => {
   try {
-    dispatch(clearError(MEMBER_ERROR));
+    dispatch(clearError(EVENT_ERROR));
 
-    let apiUrl = `/member/list`;
+    let apiUrl = `/event/list`;
     if (query) {
       const queryParams = new URLSearchParams(query);
       apiUrl = apiUrl + (queryParams.toString() ? `?${queryParams.toString()}` : "");
     }
     const { data } = await Axios.get(apiUrl);
 
-    dispatch({ type: MEMBER_LIST, payload: data });
+    dispatch({ type: EVENT_LIST, payload: data });
   } catch (error) {
     // setLoading(false);
-    dispatch(setError(MEMBER_ERROR, error.message));
+    dispatch(setError(EVENT_ERROR, error.message));
   } finally {
     // setLoading(false);
   }
 };
 
-export const GlobalMemberList = (query) => async (dispatch) => {
+export const GlobalEventList = (query) => async (dispatch) => {
   try {
-    dispatch(clearError(MEMBER_ERROR));
+    dispatch(clearError(EVENT_ERROR));
 
-    let apiUrl = `/member/memberList`;
+    let apiUrl = `/event/eventList`;
     if (query) {
       const queryParams = new URLSearchParams(query);
       apiUrl = apiUrl + (queryParams.toString() ? `?${queryParams.toString()}` : "");
     }
     const { data } = await Axios.get(apiUrl);
 
-    dispatch({ type: GLOBAL_MEMBER_LIST, payload: data });
+    dispatch({ type: GLOBAL_EVENT_LIST, payload: data });
   } catch (error) {
     // setLoading(false);
-    dispatch(setError(MEMBER_ERROR, error.message));
+    dispatch(setError(EVENT_ERROR, error.message));
   } finally {
     // setLoading(false);
   }

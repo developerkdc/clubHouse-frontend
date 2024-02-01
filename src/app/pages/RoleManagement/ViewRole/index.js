@@ -13,7 +13,6 @@ import {
 import React from "react";
 
 const ViewRole = ({ openView, setOpenView, data }) => {
-  console.log(data, 'single role');
   return (
 
     <Dialog

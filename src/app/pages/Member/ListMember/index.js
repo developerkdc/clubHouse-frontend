@@ -21,7 +21,7 @@ export default function ListMember() {
   const [memberDetails, setMmberDetails] = useState(false);
   const { memberList, totalPages, error, successMessage } = useSelector((state) => state.memberReducer);
   const [query, setQuery] = useState({});
-  console.log(memberList, 'memberList');
+
 
   const columns = [
     { field: "member_id", headerName: "Member ID" },
@@ -51,7 +51,6 @@ export default function ListMember() {
     },
   ];
   const fetchData = (props) => {
-    console.log(props);
     setQuery({ ...query, ...props });
   };
 
@@ -105,7 +104,7 @@ export default function ListMember() {
           />
           <Div>
             {/* {permissions?.role_create == true && ( */}
-            <Button variant="contained" sx={{ p: 1, pl: 4, pr: 4 }} onClick={() => navigate("/member/add")}>
+            <Button  size="small" variant="contained" sx={{ p: 1, pl: 4, pr: 4 }} onClick={() => navigate("/member/add")}>
               Add Member
             </Button>
             {/* )} */}

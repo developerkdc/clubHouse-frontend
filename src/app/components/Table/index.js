@@ -9,12 +9,11 @@ import {
   Paper,
   TablePagination,
   TableSortLabel,
+  Typography,
 } from "@mui/material";
 import CustomActionMenu from "app/components/Menu";
 
 const CustomTable = ({ data, columns, actions, fetchData, totalCount }) => {
-
-  console.log(data,'datadatadatadata');
   const [page, setPage] = useState(0);
   const rowsPerPage = 10;
   const [sortField, setSortField] = useState("");
@@ -56,6 +55,7 @@ const CustomTable = ({ data, columns, actions, fetchData, totalCount }) => {
                   sx={{
                     padding: "10px 0px 10px 20px",
                     fontSize: "16px",
+                    width: column.width || "auto",
                   }}
                   align="left"
                 >
@@ -82,26 +82,26 @@ const CustomTable = ({ data, columns, actions, fetchData, totalCount }) => {
 
           {data && data.length ? (
             <TableBody>
-            {data.map((row) => (
-              <TableRow key={row.id} hover={true} sx={{ margin: "0px" }}>
-                {columns.map((column) => (
-                  <TableCell
-                    key={column.field}
-                    align="left"
-                    sx={{ padding: "8px 0px 8px 20px" }}
-                    onClick={() => column.onClick && column.onClick(row)}
-                  >
-                    {renderCellContent(row, column)}
-                  </TableCell>
-                ))}
-                {actions && (
-                  <TableCell align="center" sx={{ padding: "0px" }}>
-                    <CustomActionMenu menuItems={actions} row={row} />
-                  </TableCell>
-                )}
-              </TableRow>
-            ))}
-          </TableBody>
+              {data.map((row) => (
+                <TableRow key={row.id} hover={true} sx={{ margin: "0px" }}>
+                  {columns.map((column) => (
+                    <TableCell
+                      key={column.field}
+                      align="left"
+                      sx={{ padding: "8px 0px 8px 20px", paddingRight: column.width ? "20px" : "0px" }}
+                      onClick={() => column.onClick && column.onClick(row)}
+                    >
+                      <Typography noWrap width={column.width ? column.width : "auto"}>{renderCellContent(row, column)}</Typography>
+                    </TableCell>
+                  ))}
+                  {actions && (
+                    <TableCell align="center" sx={{ padding: "0px" }}>
+                      <CustomActionMenu menuItems={actions} row={row} />
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))}
+            </TableBody>
           ) : (
             <TableBody>
               <TableRow>

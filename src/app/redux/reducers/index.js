@@ -5,6 +5,7 @@ import UserReducer from "./User"
 import RoleReducer from "./Roles"
 import NewsReducer from "./NewsAndCircular"
 import MemberReducer from "./Member"
+import EventReducer from "./Event"
 
 const exportReducers = history => {
     return combineReducers({
@@ -13,6 +14,7 @@ const exportReducers = history => {
         roleReducer: RoleReducer,
         newsReducer: NewsReducer,
         memberReducer: MemberReducer,
+        eventReducer: EventReducer,
         contactsApp: contactsApp
     });
 };
