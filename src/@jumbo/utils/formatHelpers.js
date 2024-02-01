@@ -40,9 +40,7 @@ export const parseGradientArray = (gradientArray) => {
       gradients.push({ color: gradientValues[0], percent: -1 });
       undefinedGradientCounts++;
     } else {
-      const percent = parseInt(
-        gradientValues[gradientValues.length - 1].trim()
-      );
+      const percent = parseInt(gradientValues[gradientValues.length - 1].trim());
       gradients.push({ color: gradientValues[0], percent: percent });
       percentageDefined += percent;
     }
@@ -84,23 +82,14 @@ export const getDateElements = (date) => {
  * @param format
  * @returns {string}
  */
-export const getCustomDateTime = (
-  dateString,
-  unit = "days",
-  format = "HH:mm a | MMMM DD, YYYY",
-  value = 0
-) => {
+export const getCustomDateTime = (dateString, unit = "days", format = "HH:mm a | MMMM DD, YYYY", value = 0) => {
   if (value !== 0) {
     return moment().format(format);
   } else {
     return moment(dateString).add(value, unit).format(format);
   }
 };
-export const getCustomDate = (
-  value = 0,
-  unit = "days",
-  format = "hh:mm , DD MMMM"
-) => {
+export const getCustomDate = (value = 0, unit = "days", format = "hh:mm , DD MMMM") => {
   if (value === 0) {
     return "Today";
   }
@@ -110,11 +99,8 @@ export const getCustomDate = (
     return moment().subtract(value, unit).format(format);
   }
 };
-export const getCustomTime = (
-  value = 0,
-  unit = "minutes",
-  format = "hh:mm A"
-) => {
+
+export const getCustomTime = (value = 0, unit = "minutes", format = "hh:mm A") => {
   if (value === 0) {
     return moment().format(format);
   } else {
@@ -129,8 +115,8 @@ export const capitalizeFLetter = (string) => {
 };
 
 export const isValidEmail = (emailAddress) => {
-  const pattern = new RegExp(
-    /^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i
-  );
+  // const pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
+  const pattern = new RegExp(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/);
+
   return pattern.test(emailAddress);
 };

@@ -12,7 +12,7 @@ const Header = () => {
   return (
     <ContentHeader
       avatar={<Avatar sx={{ width: 72, height: 72 }} alt={"Remy Sharp"} src={getAssetPath(`${ASSET_IMAGES}/clubLogo.png`, "72x72")} />}
-      title={`${AuthUser.first_name} ${AuthUser.last_name}`}
+      title={`${AuthUser?.first_name} ${AuthUser?.last_name}`}
       subheader={
         <Typography fontSize={12} variant={"body1"} color={"inherit"} mt={0.5}>
           Mumbai, India

@@ -8,32 +8,40 @@ import * as yup from "yup";
 import { Form, Formik } from "formik";
 import JumboTextField from "@jumbo/components/JumboFormik/JumboTextField";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import ToastAlerts from "app/components/Toast";
+import { Axios } from "app/services/config";
 
-
-const validationSchema = yup.object({
-  new_password: yup
-  .string()
-  .required("New Password is required"),
-confirm_password: yup
-  .string()
-  .oneOf([yup.ref('new_password'), null], 'Passwords must match')
-  .required('Confirm Password is required'),
-  otp: yup
-    .number("Enter your OTP")
-    .required("OTP is required")
-    .test("is-six-digits", "OTP must be 6 digits", (value) => {
-      return /^[0-9]{6}$/.test(value);
-    }),
-});
-
-const ForgotPassword = () => {
+const ResetPassword = () => {
   const navigate = useNavigate();
-  const onSignIn = (values) => {
-    if (values) {
+  const { state } = useLocation();
+  const showAlert = ToastAlerts();
+
+  const validationSchema = yup.object({
+    password: yup.string().required("New Password is required"),
+    confirm_password: yup
+      .string()
+      .oneOf([yup.ref("password"), null], "Passwords must match")
+      .required("Confirm Password is required"),
+    otp: yup
+      .number("Enter your OTP")
+      .required("OTP is required")
+      .test("is-six-digits", "OTP must be 6 digits", (value) => {
+        return /^[0-9]{6}$/.test(value);
+      }),
+  });
+
+  const handleResetPassword = async (data, setSubmitting) => {
+    
+    try {
+      await Axios.post(`/auth/verify-otp`, {...data,email_id:state?.data?.email_id});
+      setSubmitting(false);
+      showAlert("success", "Password updated successfully.");
       navigate("/login");
+    } catch (error) {
+      setSubmitting(false);
+      showAlert("error", error.response.data.message);
     }
-    // dispatch(login(values?.email_id, values?.password, setSubmitting));
   };
   return (
     <Div
@@ -55,10 +63,7 @@ const ForgotPassword = () => {
           sx={{
             flex: "0 1 300px",
             position: "relative",
-            background: `#0267a0 url(${getAssetPath(
-              `${ASSET_IMAGES}/widgets/keith-luke.jpg`,
-              "640x428"
-            )}) no-repeat center`,
+            background: `#0267a0 url(${getAssetPath(`${ASSET_IMAGES}/clubLogo.png`, "640x428")}) no-repeat center`,
             backgroundSize: "cover",
 
             "&::after": {
@@ -66,7 +71,7 @@ const ForgotPassword = () => {
               position: "absolute",
               content: `''`,
               inset: 0,
-              backgroundColor: alpha("#0267a0", 0.65),
+              backgroundColor: (theme) => alpha(theme.palette.common.black, 0.5),
             },
           }}
         >
@@ -83,13 +88,8 @@ const ForgotPassword = () => {
             }}
           >
             <Div sx={{ mb: 2 }}>
-              <Typography
-                variant={"h3"}
-                color={"inherit"}
-                fontWeight={500}
-                mb={3}
-              >
-                OTP Verification
+              <Typography variant={"h3"} color={"inherit"} fontWeight={500} mb={3}>
+                Set New Password
               </Typography>
             </Div>
           </Div>
@@ -98,21 +98,33 @@ const ForgotPassword = () => {
           <Formik
             validateOnChange={true}
             initialValues={{
-              new_password: "",
+              password: "",
               confirm_password: "",
-              otp: 0,
+              otp: "",
             }}
             validationSchema={validationSchema}
-            onSubmit={onSignIn}
+            // onSubmit={onSignIn}
+            onSubmit={(data, { setSubmitting }) => {
+              setSubmitting(true);
+              validationSchema
+                .validate(data, { abortEarly: false })
+                .then(() => {
+                  handleResetPassword(data, setSubmitting);
+                  // setSubmitting(false);
+                })
+                .catch((validationErrors) => {
+                  console.error("Validation Errors:", validationErrors);
+                  setSubmitting(false);
+                });
+            }}
           >
             {({ isSubmitting, values }) => (
               <Form style={{ textAlign: "left" }} noValidate autoComplete="off">
-           
                 <Div sx={{ mt: 1, mb: 3 }}>
-                  <JumboTextField fullWidth name="otp" label="OTP" />
+                  <JumboTextField fullWidth type="number" name="otp" label="OTP" />
                 </Div>
                 <Div sx={{ mt: 1, mb: 3 }}>
-                  <JumboTextField fullWidth name="new_password" label="New Password" />
+                  <JumboTextField fullWidth name="password" label="New Password" />
                 </Div>
                 <Div sx={{ mt: 1, mb: 3 }}>
                   <JumboTextField fullWidth name="confirm_password" label="Confirm Password" />
@@ -127,7 +139,7 @@ const ForgotPassword = () => {
                   loading={isSubmitting}
                   // onClick={() => onVerify(values)}
                 >
-                  Verify OTP
+                  Update
                 </LoadingButton>
                 {/* {!disableSmLogin && <React.Fragment></React.Fragment>} */}
               </Form>
@@ -139,4 +151,4 @@ const ForgotPassword = () => {
   );
 };
 
-export default ForgotPassword;
+export default ResetPassword;
