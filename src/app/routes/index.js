@@ -14,6 +14,7 @@ import { memberRoute } from "./Member";
 import { newsRoute } from "./News";
 import { eventRoute } from "./Event";
 import ResetPassword from "app/pages/Auth/OtpVerify";
+import { banquetRoute } from "./Banquet";
 
 /**
  routes which you want to make accessible to both authenticated and anonymous users
@@ -57,6 +58,7 @@ const routesForAuthenticatedOnly = [
   ...memberRoute,
   ...newsRoute,
   ...eventRoute,
+  ...banquetRoute,
 ];
 
 /**

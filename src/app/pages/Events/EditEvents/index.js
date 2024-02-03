@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Autocomplete,
   Card,
@@ -13,9 +13,9 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { useDropzone } from "react-dropzone";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import { LoadingButton } from "@mui/lab";
-// import {DesktopDatePicker} from "@mui/x-date-pickers/DesktopDatePicker";
 import Button from "@mui/material/Button";
 import { Form, Formik } from "formik";
 import JumboTextField from "@jumbo/components/JumboFormik/JumboTextField";
@@ -23,12 +23,16 @@ import Swal from "sweetalert2";
 import * as yup from "yup";
 import { Axios } from "app/services/config";
 import ToastAlerts from "app/components/Toast";
-import { useDropzone } from "react-dropzone";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import ViewMember from "app/pages/Member/ViewMember";
 import EditEventImage from "./editImage";
+
+const img = {
+  display: "block",
+  width: "auto",
+  height: "100%",
+};
 const thumbsContainer = {
   display: "flex",
   flexDirection: "row",
@@ -54,12 +58,6 @@ const thumbInner = {
   overflow: "hidden",
 };
 
-const img = {
-  display: "block",
-  width: "auto",
-  height: "100%",
-};
-
 const EditEvent = () => {
   const [category, SetCategory] = useState(["sport", "religion"]);
   const [eventType, SetEventType] = useState(["free", "paid"]);
@@ -77,11 +75,10 @@ const EditEvent = () => {
     event_type: state.event_type,
     short_description: state.short_description,
     description: state.description,
-    start_date: state.start_date,
+
+    start_date: new Date(state.start_date).toISOString().split("T")[0],
     entry_fee: state.entry_fee,
-    images: state.images,
-    banner_image: state.banner_image,
-    end_date: state.end_date,
+    end_date: new Date(state.end_date).toISOString().split("T")[0],
     status: state.status,
   };
   const validationSchema = yup.object({
@@ -104,9 +101,10 @@ const EditEvent = () => {
     start_date: yup.string("Start Date").required("Start Date is required"),
     entry_fee: yup.string("Entry Fee").when(["event_type"], {
       is: (eventType) => eventType === "paid",
-      then: yup.string().required("Entry Fee is required"),
-      otherwise: yup.string(),
+      then: yup.string().nullable().required("Entry Fee is required"),
+      otherwise: yup.string().nullable(),
     }),
+
     end_date: yup.string("End Date").when("duration_type", {
       is: (durationType) => durationType === "multi",
       then: yup.string().required("End Date is required"),
@@ -115,59 +113,67 @@ const EditEvent = () => {
   });
   const [openView, setOpenView] = useState(false);
 
-  const handleClick = () => {
-    setOpenView(true);
-  };
   const [files, setFiles] = useState(state.images ? state.images : []);
-  const [addImage, setAddImageFiles] = useState([]);
-  const [bannerImage, setBannerImage] = useState(
-    state.banner_image ? [state.banner_image] : []
-  );
-
-  useEffect(() => {
-    files.forEach((file) => URL.revokeObjectURL(file.preview));
-  }, [files]);
-
-  useEffect(() => {
-    bannerImage.forEach((file) => URL.revokeObjectURL(file.preview));
-  }, [bannerImage]);
-
-  const { getRootProps, getInputProps } = useDropzone({
-    accept: "image/*",
-    onDrop: (acceptedFiles) => {
-      setAddImageFiles(
-        acceptedFiles.map((file) =>
-          Object.assign(file, {
-            preview: URL.createObjectURL(file),
-          })
-        )
-      );
-    },
-  });
+  const [bannerImage, setBannerImage] = useState([]);
 
   const handleEventAdd = async (data) => {
+    const formData = new FormData();
+    bannerImage.forEach((file) => {
+      formData.append(`banner_image`, file);
+    });
+    formData.append("title", data.title);
+    formData.append("category", data.category);
+    formData.append("duration_type", data.duration_type);
+    formData.append("event_type", data.event_type);
+    formData.append("start_date", data.start_date);
+    formData.append("short_description", data.short_description);
+    formData.append("description", data.description);
+    formData.append("end_date", data.end_date);
+    formData.append("entry_fee", data.entry_fee);
+    formData.append("status", data.status);
     try {
-      await Axios.post(`/event/edit/${id}`, data);
+      await Axios.patch(`/event/edit/${id}`, formData);
       showAlert("success", "Event updated successfully.");
       navigate("/event");
     } catch (error) {
       showAlert("error", error.response.data.message);
     }
   };
-  //   const actions = [
-  //     {
-  //       label: "View Details",
-  //       color: "secondary",
-  //       onClick: (row) => {
-  //         setMmberDetails(row);
-  //         setOpenView(true);
-  //       },
-  //     },
-  //   ];
+  const {
+    getRootProps: getRootBannerImageProps,
+    getInputProps: getInputBannerImageProps,
+  } = useDropzone({
+    accept: "image/*",
+    onDrop: (acceptedFiles) => {
+      const selectedFile = acceptedFiles[0];
+      if (selectedFile) {
+        setBannerImage([
+          Object.assign(selectedFile, {
+            preview: URL.createObjectURL(selectedFile),
+          }),
+        ]);
+      }
+    },
+  });
+
+  useEffect(
+    () => () => {
+      bannerImage.forEach((file) => URL.revokeObjectURL(file.preview));
+    },
+    [bannerImage]
+  );
+  const thumbs = bannerImage.map((file) => (
+    <div style={thumb} key={file.name}>
+      <div style={thumbInner}>
+        <img src={file.preview} style={img} alt="" />
+      </div>
+    </div>
+  ));
+
   return (
     <React.Fragment>
       <Typography variant="h1" mb={3}>
-        ADD EVENT
+        EDIT EVENT
       </Typography>
       <Card>
         <CardContent>
@@ -176,7 +182,7 @@ const EditEvent = () => {
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={(data, { setSubmitting }) => {
-              console.log(data, "datass");
+              // console.log(data, "datass");
               validationSchema
                 .validate(data, { abortEarly: false })
                 .then(() => {
@@ -244,6 +250,16 @@ const EditEvent = () => {
                         value={values?.duration_type}
                         name="duration_type"
                         onChange={(event, val) => {
+                          if (val === "single") {
+                            setFieldValue("end_date", "");
+                          } else {
+                            setFieldValue(
+                              "end_date",
+                              new Date(state.end_date)
+                                .toISOString()
+                                .split("T")[0]
+                            );
+                          }
                           setFieldValue("duration_type", val);
                         }}
                         renderInput={(params) => (
@@ -308,6 +324,11 @@ const EditEvent = () => {
                         value={values?.event_type}
                         name="eventType"
                         onChange={(event, val) => {
+                          if (val === "free") {
+                            setFieldValue("entry_fee", "");
+                          } else {
+                            setFieldValue("entry_fee", state.entry_fee);
+                          }
                           setFieldValue("event_type", val);
                         }}
                         renderInput={(params) => (
@@ -365,56 +386,45 @@ const EditEvent = () => {
                 </Grid>
                 <Grid container rowSpacing={3} columnSpacing={3} marginTop={2}>
                   <Grid item xs={12}>
-                    <CKEditor
-                      editor={ClassicEditor}
-                      data={values?.description}
-                      config={{
-                        toolbar: {
-                          items: [
-                            "undo",
-                            "redo",
-                            "|",
-                            "heading",
-                            "|",
-                            "bold",
-                            "italic",
-                            "link", // Include or exclude 'link' based on your requirements
-                            "|",
-                            "bulletedList",
-                            "numberedList",
-                          ],
-                        },
-                      }}
-                      onChange={(event, editor) => {
-                        console.log(editor);
-                        if (editor) {
-                          const data = editor.getData();
-                          console.log(data, "ddddd");
-                          setFieldValue("description", data);
-                        }
+                    <ReactQuill
+                      theme="snow"
+                      value={values?.description}
+                      onChange={(content, delta, source, editor) => {
+                        console.log(content);
+                        setFieldValue("description", content);
                       }}
                     />
                   </Grid>
                 </Grid>
 
                 <Grid container rowSpacing={3} columnSpacing={3} marginTop={5}>
-                  <Grid item xs={2}>
+                  <Grid item xs={3}>
                     <Typography variant="body1">Banner Images :-</Typography>
+                    <div
+                      {...getRootBannerImageProps({ className: "dropzone" })}
+                      style={{ marginTop: "10px" }}
+                    >
+                      <input {...getInputBannerImageProps()} />
+                      <Button variant="contained">Select Image</Button>
+                    </div>
                     <aside style={thumbsContainer}>
-                      {bannerImage.map((file) => (
-                        <div style={thumb} key={file}>
+                      {/* Display initial image or selected images */}
+                      {bannerImage.length > 0 ? (
+                        thumbs // Display selected images
+                      ) : (
+                        <div style={thumb}>
                           <div style={thumbInner}>
                             <img
-                              src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/event/${file}`}
+                              src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/event/${state.banner_image}`}
                               style={img}
                               alt=""
                             />
                           </div>
                         </div>
-                      ))}
+                      )}
                     </aside>
                   </Grid>
-                  <Grid item xs={10}>
+                  <Grid item xs={9}>
                     <Typography variant="body1">Images:-</Typography>
                     <Button
                       size="small"
@@ -428,12 +438,9 @@ const EditEvent = () => {
                         openView={openView}
                         setOpenView={setOpenView}
                         data={files}
-                        thumbInner={thumbInner}
-                        thumbsContainer={thumbsContainer}
-                        thumb={thumb}
-                        img={img}
                       />
                     )}
+
                     <ImageList
                       sx={{ width: "90%", maxHeight: 250 }}
                       cols={5}
@@ -449,27 +456,7 @@ const EditEvent = () => {
                         </ImageListItem>
                       ))}
                     </ImageList>
-        
                   </Grid>
-                  {/* <Grid item xs={6}>
-                    <div
-                      {...getRootProps({ className: "dropzone" })}
-                      style={{ marginTop: "10px" }}
-                    >
-                      <input {...getInputProps()} />
-                      <Button variant="contained">Add Images</Button>
-                      <aside style={thumbsContainer}>
-                        {addImage.map((file) => (
-                          <div style={thumb} key={file.name}>
-                            <div style={thumbInner}>
-                              <img src={file.preview} style={img} alt="" />
-                            </div>
-                          </div>
-                        ))}
-                      </aside>
-                    </div>
-                  </Grid>
-                   */}
                 </Grid>
 
                 <Grid container columnSpacing={3} mt={5}>

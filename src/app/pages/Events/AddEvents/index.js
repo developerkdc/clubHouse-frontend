@@ -21,8 +21,8 @@ import * as yup from "yup";
 import { Axios } from "app/services/config";
 import ToastAlerts from "app/components/Toast";
 import { useDropzone } from "react-dropzone";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const thumbsContainer = {
   display: "flex",
@@ -69,7 +69,7 @@ const AddEvent = () => {
     event_type: "",
     short_description: "",
     description: "",
-    start_date: "",
+    start_date: new Date(Date.now()).toISOString().split("T")[0],
     entry_fee: "",
     images: [],
     banner_image: [],
@@ -281,6 +281,14 @@ const AddEvent = () => {
                         options={durationType}
                         name="duration_type"
                         onChange={(event, val) => {
+                          if (val === "single") {
+                            setFieldValue("end_date", "");
+                          } else {
+                            setFieldValue(
+                              "end_date",
+                              new Date(Date.now()).toISOString().split("T")[0]
+                            );
+                          }
                           setFieldValue("duration_type", val);
                         }}
                         renderInput={(params) => (
@@ -343,6 +351,9 @@ const AddEvent = () => {
                         options={eventType}
                         name="eventType"
                         onChange={(event, val) => {
+                          if (val === "free") {
+                            setFieldValue("entry_fee", "");
+                          }
                           setFieldValue("event_type", val);
                         }}
                         renderInput={(params) => (
@@ -424,33 +435,12 @@ const AddEvent = () => {
                 </Grid>{" "}
                 <Grid container rowSpacing={3} columnSpacing={3} marginTop={2}>
                   <Grid item xs={12}>
-                    <CKEditor
-                      editor={ClassicEditor}
-                      data={values?.description}
-                      config={{
-                        toolbar: {
-                          items: [
-                            "undo",
-                            "redo",
-                            "|",
-                            "heading",
-                            "|",
-                            "bold",
-                            "italic",
-                            "link", // Include or exclude 'link' based on your requirements
-                            "|",
-                            "bulletedList",
-                            "numberedList",
-                          ],
-                        },
-                      }}
-                      onChange={(event, editor) => {
-                        console.log(editor);
-                        if (editor && editor.getData) {
-                          const data = editor.getData();
-                          console.log(data, "ddddd");
-                          setFieldValue("description", data);
-                        }
+                    <ReactQuill
+                      theme="snow"
+                      value={values?.description}
+                      onChange={(content, delta, source, editor) => {
+                        console.log(content);
+                        setFieldValue("description", content);
                       }}
                     />
                   </Grid>

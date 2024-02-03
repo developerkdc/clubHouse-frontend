@@ -19,10 +19,11 @@ export default function ListUser() {
   const navigate = useNavigate();
   const showAlert = ToastAlerts();
   const dispatch = useDispatch();
-  // const [rolesList, setRolesList] = useState([{ role_name: "user" }, { role_name: "admin" }, { role_name: "owner" }]);
+
   const { role_id } = JSON.parse(localStorage.getItem("authUser"));
   const { userList, totalPages, error } = useSelector((state) => state.userReducer);
   const rolesList = useSelector((state) => state.roleReducer.globalRoleList);
+  console.log(rolesList,'rolesList');
   const [selectedRole, setSelectedRole] = useState(null);
   const [openView, setOpenView] = useState(false);
   const [userDetails, setUserDetails] = useState(false);
@@ -63,20 +64,7 @@ export default function ListUser() {
       },
     },
     { field: "role_id", headerName: "Role", render: (value, elm) => value.role_name },
-    // {
-    //   field: "thumb",
-    //   headerName: "Thumb",
-    //   render: (value) => (
-    //     <Avatar
-    //       sx={{
-    //         width: 56,
-    //         height: 56,
-    //       }}
-    //       variant="square"
-    //       src={value}
-    //     />
-    //   ),
-    // },
+
   ];
 
   const actions = [
@@ -113,6 +101,7 @@ export default function ListUser() {
     setSelectedRole(null);
     setQuery({ ...query, role: "" });
   };
+
   useEffect(() => {
     setQuery({ ...query, search: searchTerm });
   }, [searchTerm]);
