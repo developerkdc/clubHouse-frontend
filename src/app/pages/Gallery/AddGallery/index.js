@@ -80,6 +80,11 @@ const AddGallery = () => {
       .string("Short Description")
       .required("Short Description is required"),
     event_date: yup.string("Event Date").required("Event Date is required"),
+    images: yup
+      .array()
+      .of(yup.string())
+      .min(1, "At least one image is required")
+      .required("Images are required"),
   });
 
   const [files, setFiles] = useState([]);
@@ -88,13 +93,14 @@ const AddGallery = () => {
   const { getRootProps, getInputProps } = useDropzone({
     accept: "image/*",
     onDrop: (acceptedFiles) => {
-      setFiles(
-        acceptedFiles.map((file) =>
+      setFiles((prevFiles) => [
+        ...prevFiles,
+        ...acceptedFiles.map((file) =>
           Object.assign(file, {
             preview: URL.createObjectURL(file),
           })
-        )
-      );
+        ),
+      ]);
     },
   });
 
@@ -286,10 +292,12 @@ const AddGallery = () => {
                     <Typography variant="body1">Banner Image :-</Typography>
                     <div
                       {...getRootBannerImageProps({ className: "dropzone" })}
-                      style={{ marginTop: "10px" }}
+                      style={{ marginTop: "10px", width: "112px" }}
                     >
                       <input {...getInputBannerImageProps()} />
-                      <Button size="small" variant="contained">Select Image</Button>
+                      <Button size="small" variant="contained">
+                        Select Image
+                      </Button>
                     </div>
                     <aside style={thumbsContainer}>{thumbss}</aside>
                   </Grid>
@@ -297,15 +305,22 @@ const AddGallery = () => {
                     <Typography variant="body1">Images :-</Typography>
                     <div
                       {...getRootProps({ className: "dropzone" })}
-                      style={{ marginTop: "10px" }}
+                      style={{ marginTop: "10px", width: "120px" }}
                     >
                       <input {...getInputProps()} />
-                      <Button size="small" variant="contained">Select Images</Button>
+                      <Button size="small" variant="contained">
+                        Select Images
+                      </Button>
                     </div>
                     <aside style={thumbsContainer}>{thumbs}</aside>
+                    {errors.images && touched.images && (
+                      <FormHelperText error>{errors.images}</FormHelperText>
+                    )}
                   </Grid>
                 </Grid>{" "}
-                <Typography variant="body1" marginTop={1}>Description :-</Typography>
+                <Typography variant="body1" marginTop={1}>
+                  Description :-
+                </Typography>
                 <Grid container rowSpacing={3} columnSpacing={3} marginTop={-1}>
                   <Grid item xs={12}>
                     <ReactQuill

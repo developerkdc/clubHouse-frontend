@@ -9,7 +9,8 @@ import Swal from "sweetalert2";
 import { useNavigate, useParams } from "react-router-dom";
 import ToastAlerts from "app/components/Toast";
 import { Axios } from "app/services/config";
-const UserChangePassword = () => {
+
+const MemberChangePassword = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const showAlert = ToastAlerts();
@@ -24,9 +25,9 @@ const UserChangePassword = () => {
 
   const handleUpdatePassword = async (data) => {
     try {
-      await Axios.patch(`/user/change-password/${id}`, data);
+      await Axios.patch(`/member/change-password/${id}`, data);
       showAlert("success", "Password updated successfully.");
-      navigate("/user");
+      navigate("/member");
     } catch (error) {
       showAlert("error", error.response.data.message);
     }
@@ -34,7 +35,7 @@ const UserChangePassword = () => {
   return (
     <React.Fragment>
       <Typography variant="h1" mb={3}>
-        User Change Password
+        Member Change Password
       </Typography>
       <Card>
         <CardContent>
@@ -85,7 +86,7 @@ const UserChangePassword = () => {
                           cancelButtonText: "No",
                         }).then((result) => {
                           if (result.isConfirmed) {
-                            navigate("/user");
+                            navigate("/member");
                           }
                         });
                       }}
@@ -103,4 +104,4 @@ const UserChangePassword = () => {
   );
 };
 
-export default UserChangePassword;
+export default MemberChangePassword;

@@ -48,13 +48,14 @@ const EditGalleryImage = ({
     accept: "image/*",
     onDrop: (acceptedFiles) => {
       console.log("Accepted Files:", acceptedFiles);
-      setNewPhotos(
-        acceptedFiles.map((file) =>
+      setNewPhotos((prevFiles) => [
+        ...prevFiles,
+        ...acceptedFiles.map((file) =>
           Object.assign(file, {
             preview: URL.createObjectURL(file),
           })
-        )
-      );
+        ),
+      ]);
     },
   });
 
@@ -107,7 +108,7 @@ const EditGalleryImage = ({
         <ImageListItem>
           <div
             {...getRootProps({ className: "dropzone" })}
-            style={{ marginTop: "10px" }}
+            style={{ marginTop: "10px", width: "95px" }}
           >
             <input {...getInputProps()} />
             <Button size="small" variant="contained">Add Photo</Button>

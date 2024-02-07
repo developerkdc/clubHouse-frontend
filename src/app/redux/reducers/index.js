@@ -9,6 +9,7 @@ import EventReducer from "./Event"
 import BanquetReducer from "./Banquet"
 import SportReducer from "./Sport"
 import GalleryReducer from "./Gallery"
+import SalonReducer from "./Salon"
 
 const exportReducers = history => {
     return combineReducers({
@@ -21,6 +22,7 @@ const exportReducers = history => {
         banquetReducer: BanquetReducer,
         sportReducer: SportReducer,
         galleryReducer: GalleryReducer,
+        salonReducer: SalonReducer,
         contactsApp: contactsApp
     });
 };

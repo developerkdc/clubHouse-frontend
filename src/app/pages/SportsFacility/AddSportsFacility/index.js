@@ -129,13 +129,14 @@ const AddSport = () => {
   const { getRootProps, getInputProps } = useDropzone({
     accept: "image/*",
     onDrop: (acceptedFiles) => {
-      setFiles(
-        acceptedFiles.map((file) =>
+      setFiles((prevFiles) => [
+        ...prevFiles,
+        ...acceptedFiles.map((file) =>
           Object.assign(file, {
             preview: URL.createObjectURL(file),
           })
-        )
-      );
+        ),
+      ]);
     },
   });
 
@@ -355,7 +356,7 @@ const AddSport = () => {
                     <Typography variant="body1">Banner Image :-</Typography>
                     <div
                       {...getRootBannerImageProps({ className: "dropzone" })}
-                      style={{ marginTop: "10px" }}
+                      style={{ marginTop: "10px", width: "112px" }}
                     >
                       <input {...getInputBannerImageProps()} />
                       <Button size="small" variant="contained">Select Image</Button>
@@ -366,7 +367,7 @@ const AddSport = () => {
                     <Typography variant="body1">Images :-</Typography>
                     <div
                       {...getRootProps({ className: "dropzone" })}
-                      style={{ marginTop: "10px" }}
+                      style={{ marginTop: "10px", width: "120px" }}
                     >
                       <input {...getInputProps()} />
                       <Button size="small" variant="contained">Select Images</Button>

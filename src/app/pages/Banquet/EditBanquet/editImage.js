@@ -46,13 +46,15 @@ const EditBanquetImage = ({
     accept: "image/*",
     onDrop: (acceptedFiles) => {
       console.log("Accepted Files:", acceptedFiles);
-      setNewPhotos(
-        acceptedFiles.map((file) =>
+
+      setNewPhotos((prevFiles) => [
+        ...prevFiles,
+        ...acceptedFiles.map((file) =>
           Object.assign(file, {
             preview: URL.createObjectURL(file),
           })
-        )
-      );
+        ),
+      ]);
     },
   });
 
@@ -105,10 +107,10 @@ const EditBanquetImage = ({
         <ImageListItem>
           <div
             {...getRootProps({ className: "dropzone" })}
-            style={{ marginTop: "10px" }}
+            style={{ marginTop: "10px", width: "118px" }}
           >
             <input {...getInputProps()} />
-            <Button variant="contained">Add Photo</Button>
+            <Button size="small" variant="contained">Add Photo</Button>
           </div>
         </ImageListItem>
         <ImageList
