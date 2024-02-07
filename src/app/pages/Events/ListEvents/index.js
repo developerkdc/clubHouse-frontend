@@ -2,8 +2,10 @@ import Div from "@jumbo/shared/Div/Div";
 import React, { useEffect, useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import {
+  Autocomplete,
   Avatar,
   Button,
+  Grid,
   InputAdornment,
   TextField,
   Typography,
@@ -18,7 +20,9 @@ import ToastAlerts from "app/components/Toast";
 import { onEventList } from "app/redux/actions/Event";
 import ViewEvent from "../ViewEvent";
 import { getCustomDateTime } from "@jumbo/utils";
-
+import { formatDate } from "./date.js";
+import { Axios } from "app/services/config";
+import Swal from "sweetalert2";
 export default function ListEvent() {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
@@ -26,6 +30,10 @@ export default function ListEvent() {
   const dispatch = useDispatch();
   const [openView, setOpenView] = useState(false);
   const [eventDetails, setMmberDetails] = useState(false);
+
+
+  const [selectedEventDate, setSelectedEventDate] = useState(null);
+
   const { eventList, totalPages, error, successMessage } = useSelector(
     (state) => state.eventReducer
   );
@@ -76,10 +84,41 @@ export default function ListEvent() {
       field: "status",
       headerName: "Status",
       sortable: true,
-      render: (value, elm) => (value ? "Active" : "Inactive"),
+      render: (value, elm) =>
+        value ? (
+          <Button size="small" variant="outlined" color="success">
+            Active
+          </Button>
+        ) : (
+          <Button size="small" variant="outlined" color="error">
+            Inactive
+          </Button>
+        ),
+      onClick: async (elm) => {
+        try {
+          console.log(elm, "elmelm");
+          let status = elm.status;
+          const result = await Swal.fire({
+            title: `Change event status to ${status ? "inactive" : "active"} ?`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes",
+            cancelButtonText: "No",
+          });
+          if (result.isConfirmed) {
+            await Axios.patch(`/event/edit/${elm._id}`, { status: !status });
+            showAlert("success", "Event status updated successfully.");
+            navigate("/event");
+            dispatch(onEventList(query));
+          }
+        } catch (error) {
+          console.error("Error updating event:", error);
+          showAlert("error", "Failed to update event.");
+        }
+      },
     },
   ];
-
+  const [inputs, setInputs] = useState({});
   const actions = [
     {
       label: "View Details",
@@ -97,7 +136,7 @@ export default function ListEvent() {
       icon: <ModeEditOutlinedIcon />,
     },
   ];
-  
+
   const fetchData = (props) => {
     setQuery({ ...query, ...props });
   };
@@ -113,6 +152,22 @@ export default function ListEvent() {
   useEffect(() => {
     dispatch(onEventList(query));
   }, [query]);
+
+  const handleFilter = () => {
+    setQuery({
+      ...query,
+      event_start_date: selectedEventDate?.start_date
+        ? formatDate(selectedEventDate?.start_date)
+        : "",
+      end_date: selectedEventDate?.end_date
+        ? formatDate(selectedEventDate?.end_date)
+        : "",
+    });
+  };
+  const handleClearFilter = () => {
+    setSelectedEventDate(null);
+    setQuery({ ...query, event_start_date: "", end_date: "" });
+  };
   return (
     <Div
       sx={{
@@ -131,6 +186,61 @@ export default function ListEvent() {
         }}
       >
         <Typography variant="h1">Event Master</Typography>
+        <Div
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            flexDirection: "column",
+            marginBottom: 3,
+          }}
+        >
+          <Grid container rowSpacing={3} columnSpacing={3} marginTop={-1}>
+            <Grid item xs={3}>
+              <Autocomplete
+                size="small"
+                id="tags-standard"
+                options={eventList}
+                getOptionLabel={(option) =>
+                  getCustomDateTime(option?.start_date, "days", "DD MMM YYYY")
+                }
+                value={selectedEventDate}
+                onChange={(e, newValue) => setSelectedEventDate(newValue)}
+                renderInput={(params) => (
+                  <TextField {...params} label="Event Date" />
+                )}
+              />
+            </Grid>
+            <Grid item xs={2}>
+            
+            </Grid>
+            <Grid item xs={2}>
+            
+            </Grid>
+          </Grid>
+
+          <Div
+            sx={{ display: "flex", gap: 1, flex: "1", flexDirection: "row" }}
+          >
+            <Button
+              size="small"
+              variant="outlined"
+              sx={{ mt: 1, height: "35px" }}
+              onClick={handleFilter}
+            >
+              Apply
+            </Button>
+
+            <Button
+              size="small"
+              variant="outlined"
+              sx={{ mt: 1, height: "35px" }}
+              onClick={handleClearFilter}
+            >
+              Clear
+            </Button>
+          </Div>
+        </Div>
+
         <Div
           sx={{
             display: "flex",
@@ -165,7 +275,7 @@ export default function ListEvent() {
               sx={{ p: 1, pl: 4, pr: 4 }}
               onClick={() => navigate("/event/add")}
             >
-              Add Member
+              Add Event
             </Button>
             {/* )} */}
           </Div>

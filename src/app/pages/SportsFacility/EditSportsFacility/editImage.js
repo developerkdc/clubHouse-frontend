@@ -16,7 +16,12 @@ import { Axios } from "app/services/config";
 import ToastAlerts from "app/components/Toast";
 import { useNavigate, useParams } from "react-router-dom";
 
-const EditEventImage = ({ openView, setOpenView, data, setAddImageFiles }) => {
+const EditSportImage = ({
+  openView,
+  setOpenView,
+  data,
+  setAddImageFiles,
+}) => {
   // const [newPhotos, setNewPhotos] = useState([]);
   const navigate = useNavigate();
   const showAlert = ToastAlerts();
@@ -24,10 +29,9 @@ const EditEventImage = ({ openView, setOpenView, data, setAddImageFiles }) => {
   const [oldImage, setOldImageImages] = useState(data);
   const [newPhotos, setNewPhotos] = useState([]);
   const [deleteImage, setDeleteImages] = useState([]);
-  
 
   const handleRemovePhoto = (fileToRemove) => {
-    console.log(fileToRemove,'fileToRemove');
+    console.log(fileToRemove, "fileToRemove");
     const updatedData = oldImage.filter((file) => file !== fileToRemove);
     console.log(deleteImage, "111111111");
     setDeleteImages((prevDeletedImages) => [
@@ -37,7 +41,7 @@ const EditEventImage = ({ openView, setOpenView, data, setAddImageFiles }) => {
     setOldImageImages(updatedData);
   };
   console.log(deleteImage, "2222222222");
-  
+
   const handleRemoveNewPhoto = (fileToRemove) => {
     const updatedData = newPhotos.filter((file) => file !== fileToRemove);
     setNewPhotos(updatedData);
@@ -70,10 +74,10 @@ const EditEventImage = ({ openView, setOpenView, data, setAddImageFiles }) => {
     });
     formData.append(`deleteImages`, JSON.stringify([...deleteImage]));
     try {
-      await Axios.post(`/event/update-images/${id}`,formData);
-      showAlert("success", "Event updated successfully.");
+      await Axios.post(`/sport/update-images/${id}`, formData);
+      showAlert("success", "Sport updated successfully.");
 
-      setOpenView(false)
+      setOpenView(false);
     } catch (error) {
       showAlert("error", error.response.data.message);
     }
@@ -117,7 +121,6 @@ const EditEventImage = ({ openView, setOpenView, data, setAddImageFiles }) => {
           rowHeight={110}
         >
           {oldImage?.map((file) => (
-          
             <ImageListItem key={file}>
               <HighlightOffIcon
                 style={{
@@ -130,7 +133,7 @@ const EditEventImage = ({ openView, setOpenView, data, setAddImageFiles }) => {
                 onClick={() => handleRemovePhoto(file)}
               />
               <img
-                src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/event/${file}`}
+                src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/sport/${file}`}
                 alt=""
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
@@ -178,4 +181,4 @@ const EditEventImage = ({ openView, setOpenView, data, setAddImageFiles }) => {
   );
 };
 
-export default EditEventImage;
+export default EditSportImage;

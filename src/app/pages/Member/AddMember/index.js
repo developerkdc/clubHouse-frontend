@@ -123,7 +123,6 @@ const AddMember = () => {
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={(data, { setSubmitting }) => {
-           
               validationSchema
                 .validate(data, { abortEarly: false })
                 .then(() => {
@@ -156,10 +155,10 @@ const AddMember = () => {
                     <JumboTextField fullWidth id="password" name="password" label="Password" />
                   </Grid>
                   <Grid item xs={6}>
-                    <JumboTextField fullWidth type="number" id="mobile_no" name="mobile_no" label="Phone No." />
+                    <JumboTextField fullWidth type="number" id="mobile_no" name="mobile_no" label="Phone No" />
                   </Grid>
                   <Grid item xs={6}>
-                    <JumboTextField fullWidth id="member_type" name="member_type" label="Member Type." />
+                    <JumboTextField fullWidth id="member_type" name="member_type" label="Member Type" />
                   </Grid>
                   <Grid item xs={3}>
                     <JumboTextField
@@ -227,7 +226,10 @@ const AddMember = () => {
                                     id="dob"
                                     name={`family_member.${index}.dob`}
                                     label="Date of Birth"
-                                    defaultValue={null}
+                                    InputLabelProps={{
+                                      shrink: true,
+                                  }}
+                                 
                                   />
                                 </Grid>
                                 <Grid item xs={2}>
@@ -249,6 +251,7 @@ const AddMember = () => {
                         <Div
                           sx={{
                             display: "flex",
+                            mt: 2,
                             alignItems: "center",
                             width: "200px",
                             ":hover": {
@@ -274,6 +277,7 @@ const AddMember = () => {
                               fontSize: "15px",
                               fontWeight: "500",
                               ml: 1.5,
+                            
                               ":hover": { cursor: "pointer", color: "black" },
                             }}
                           >

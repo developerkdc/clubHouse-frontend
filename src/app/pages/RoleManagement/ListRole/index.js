@@ -1,7 +1,7 @@
 import Div from "@jumbo/shared/Div/Div";
 import React, { useEffect, useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
-import {Button, InputAdornment, TextField, Typography } from "@mui/material";
+import { Button, InputAdornment, TextField, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import CustomTable from "app/components/Table";
@@ -11,7 +11,8 @@ import ViewRole from "../ViewRole";
 import { onRoleList } from "app/redux/actions/Roles";
 import { useSelector } from "react-redux";
 import ToastAlerts from "app/components/Toast";
-
+import { Axios } from "app/services/config";
+import Swal from "sweetalert2";
 export default function ListRole() {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
@@ -19,11 +20,49 @@ export default function ListRole() {
   const dispatch = useDispatch();
   const [openView, setOpenView] = useState(false);
   const [roleDetails, setRoleDetails] = useState(false);
-  const { roleList, totalPages, error, successMessage } = useSelector((state) => state.roleReducer);
+  const { roleList, totalPages, error, successMessage } = useSelector(
+    (state) => state.roleReducer
+  );
   const [query, setQuery] = useState({});
   const columns = [
-    { field: "role_name", headerName: "Role",sortable: true,},
-    { field: "status", headerName: "Status", render: (value, elm) => (value ? "Active" : "Inactive") },
+    { field: "role_name", headerName: "Role", sortable: true },
+    {
+      field: "status",
+      headerName: "Status",
+      sortable: true,
+      render: (value, elm) =>
+        value ? (
+          <Button size="small" variant="outlined" color="success">
+            Active
+          </Button>
+        ) : (
+          <Button size="small" variant="outlined" color="error">
+            Inactive
+          </Button>
+        ),
+      onClick: async (elm) => {
+        try {
+          console.log(elm, "elmelm");
+          let status = elm.status;
+          const result = await Swal.fire({
+            title: `Change role status to ${status ? "inactive" : "active"} ?`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes",
+            cancelButtonText: "No",
+          });
+          if (result.isConfirmed) {
+            await Axios.patch(`/role/edit/${elm._id}`, { status: !status });
+            showAlert("success", "Role status updated successfully.");
+            navigate("/roles");
+            dispatch(onRoleList(query));
+          }
+        } catch (error) {
+          console.error("Error updating role:", error);
+          showAlert("error", "Failed to update role.");
+        }
+      },
+    },
   ];
 
   const actions = [
@@ -31,7 +70,6 @@ export default function ListRole() {
       label: "View Details",
       color: "secondary",
       onClick: (row) => {
-
         setRoleDetails(row);
         setOpenView(true);
       },
@@ -40,8 +78,7 @@ export default function ListRole() {
     {
       label: "Edit",
       color: "secondary",
-      onClick: (row) => 
-      navigate(`/roles/edit/${row._id}`,{state: row }),
+      onClick: (row) => navigate(`/roles/edit/${row._id}`, { state: row }),
       icon: <ModeEditOutlinedIcon />,
     },
   ];
@@ -63,7 +100,14 @@ export default function ListRole() {
     dispatch(onRoleList(query));
   }, [query]);
   return (
-    <Div sx={{ mt: -4, maxHeight: "89vh", overflowY: "scroll", paddingRight:"10px" }}>
+    <Div
+      sx={{
+        mt: -4,
+        maxHeight: "89vh",
+        overflowY: "scroll",
+        paddingRight: "10px",
+      }}
+    >
       <Div
         sx={{
           position: "sticky",
@@ -103,7 +147,12 @@ export default function ListRole() {
           />
           <Div>
             {/* {permissions?.role_create == true && ( */}
-            <Button  size="small" variant="contained" sx={{ p: 1, pl: 4, pr: 4 }} onClick={() => navigate("/roles/add")}>
+            <Button
+              size="small"
+              variant="contained"
+              sx={{ p: 1, pl: 4, pr: 4 }}
+              onClick={() => navigate("/roles/add")}
+            >
               Add Role
             </Button>
             {/* )} */}
@@ -111,9 +160,21 @@ export default function ListRole() {
         </Div>
       </Div>
       <Div>
-        <CustomTable data={roleList} columns={columns} actions={actions} fetchData={fetchData} totalCount={totalPages} />
+        <CustomTable
+          data={roleList}
+          columns={columns}
+          actions={actions}
+          fetchData={fetchData}
+          totalCount={totalPages}
+        />
       </Div>
-      {openView && roleDetails && <ViewRole openView={openView} setOpenView={setOpenView} data={roleDetails} />}
+      {openView && roleDetails && (
+        <ViewRole
+          openView={openView}
+          setOpenView={setOpenView}
+          data={roleDetails}
+        />
+      )}
     </Div>
   );
 }

@@ -1,7 +1,14 @@
 import Div from "@jumbo/shared/Div/Div";
 import React, { useEffect, useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
-import { Autocomplete, Avatar, Button, InputAdornment, TextField, Typography } from "@mui/material";
+import {
+  Autocomplete,
+  Avatar,
+  Button,
+  InputAdornment,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import ModeEditOutlinedIcon from "@mui/icons-material/ModeEditOutlined";
@@ -13,16 +20,20 @@ import { onUserList } from "app/redux/actions/User";
 import ToastAlerts from "app/components/Toast";
 import { GlobalRoleList } from "app/redux/actions/Roles";
 import Swal from "sweetalert2";
+import { Axios } from "app/services/config";
 
 export default function ListUser() {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const showAlert = ToastAlerts();
   const dispatch = useDispatch();
-  // const [rolesList, setRolesList] = useState([{ role_name: "user" }, { role_name: "admin" }, { role_name: "owner" }]);
+
   const { role_id } = JSON.parse(localStorage.getItem("authUser"));
-  const { userList, totalPages, error } = useSelector((state) => state.userReducer);
+  const { userList, totalPages, error } = useSelector(
+    (state) => state.userReducer
+  );
   const rolesList = useSelector((state) => state.roleReducer.globalRoleList);
+  console.log(rolesList, "rolesList");
   const [selectedRole, setSelectedRole] = useState(null);
   const [openView, setOpenView] = useState(false);
   const [userDetails, setUserDetails] = useState(false);
@@ -30,7 +41,12 @@ export default function ListUser() {
 
   const columns = [
     { field: "user_id", headerName: "User ID", sortable: true },
-    { field: "first_name", headerName: "Name", sortable: true, render: (_, elm) => elm.first_name + " " + elm.last_name },
+    {
+      field: "first_name",
+      headerName: "Name",
+      sortable: true,
+      render: (_, elm) => elm.first_name + " " + elm.last_name,
+    },
     { field: "mobile_no", headerName: "Mobile", sortable: true },
     { field: "email_id", headerName: "Email Id", sortable: true },
     {
@@ -47,36 +63,34 @@ export default function ListUser() {
             Inactive
           </Button>
         ),
-      onClick: (elm) => {
-        let status = elm.status;
-        Swal.fire({
-          title: `Change user status to ${status ? "inactive" : "active"} ?`,
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonText: "Yes",
-          cancelButtonText: "No",
-        }).then((result) => {
+      onClick: async (elm) => {
+        try {
+          console.log(elm, "elmelm");
+          let status = elm.status;
+          const result = await Swal.fire({
+            title: `Change user status to ${status ? "inactive" : "active"} ?`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes",
+            cancelButtonText: "No",
+          });
           if (result.isConfirmed) {
+            await Axios.patch(`/user/edit/${elm._id}`, { status: !status });
+            showAlert("success", "User status updated successfully.");
             navigate("/user");
+            dispatch(onUserList(query));
           }
-        });
+        } catch (error) {
+          console.error("Error updating user:", error);
+          showAlert("error", "Failed to update user.");
+        }
       },
     },
-    { field: "role_id", headerName: "Role", render: (value, elm) => value.role_name },
-    // {
-    //   field: "thumb",
-    //   headerName: "Thumb",
-    //   render: (value) => (
-    //     <Avatar
-    //       sx={{
-    //         width: 56,
-    //         height: 56,
-    //       }}
-    //       variant="square"
-    //       src={value}
-    //     />
-    //   ),
-    // },
+    {
+      field: "role_id",
+      headerName: "Role",
+      render: (value, elm) => value.role_name,
+    },
   ];
 
   const actions = [
@@ -92,7 +106,7 @@ export default function ListUser() {
     {
       label: "Edit",
       color: "secondary",
-      onClick: (row) => navigate(`/user/edit/${row._id}`,{state:row}),
+      onClick: (row) => navigate(`/user/edit/${row._id}`, { state: row }),
       icon: <ModeEditOutlinedIcon />,
     },
     {
@@ -113,6 +127,7 @@ export default function ListUser() {
     setSelectedRole(null);
     setQuery({ ...query, role: "" });
   };
+
   useEffect(() => {
     setQuery({ ...query, search: searchTerm });
   }, [searchTerm]);
@@ -129,7 +144,14 @@ export default function ListUser() {
   }, [query]);
 
   return (
-    <Div sx={{ mt: -4, maxHeight: "89vh", overflowY: "scroll", paddingRight: "10px" }}>
+    <Div
+      sx={{
+        mt: -4,
+        maxHeight: "89vh",
+        overflowY: "scroll",
+        paddingRight: "10px",
+      }}
+    >
       <Div
         sx={{
           position: "sticky",
@@ -156,11 +178,21 @@ export default function ListUser() {
             />
 
             <Div sx={{ display: "flex", gap: 1, flex: "1" }}>
-              <Button size="small" variant="outlined" sx={{ mt: 1, height: "35px" }} onClick={handleFilter}>
+              <Button
+                size="small"
+                variant="outlined"
+                sx={{ mt: 1, height: "35px" }}
+                onClick={handleFilter}
+              >
                 Apply
               </Button>
 
-              <Button size="small" variant="outlined" sx={{ mt: 1, height: "35px" }} onClick={handleClearFilter}>
+              <Button
+                size="small"
+                variant="outlined"
+                sx={{ mt: 1, height: "35px" }}
+                onClick={handleClearFilter}
+              >
                 Clear
               </Button>
             </Div>
@@ -194,7 +226,12 @@ export default function ListUser() {
           />
           <Div>
             {/* {permissions?.role_create == true && ( */}
-            <Button size="small" variant="contained" sx={{ p: 1, pl: 4, pr: 4 }} onClick={() => navigate("/user/add")}>
+            <Button
+              size="small"
+              variant="contained"
+              sx={{ p: 1, pl: 4, pr: 4 }}
+              onClick={() => navigate("/user/add")}
+            >
               Add User
             </Button>
             {/* )} */}
@@ -202,9 +239,21 @@ export default function ListUser() {
         </Div>
       </Div>
       <Div>
-        <CustomTable data={userList} columns={columns} actions={actions} fetchData={fetchData} totalCount={totalPages} />
+        <CustomTable
+          data={userList}
+          columns={columns}
+          actions={actions}
+          fetchData={fetchData}
+          totalCount={totalPages}
+        />
       </Div>
-      {openView && userDetails && <ViewUser openView={openView} setOpenView={setOpenView} data={userDetails} />}
+      {openView && userDetails && (
+        <ViewUser
+          openView={openView}
+          setOpenView={setOpenView}
+          data={userDetails}
+        />
+      )}
     </Div>
   );
 }

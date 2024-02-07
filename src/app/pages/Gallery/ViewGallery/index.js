@@ -7,24 +7,19 @@ import {
   ImageList,
   ImageListItem,
 } from "@mui/material";
-import CardHeader from "@mui/material/CardHeader";
-import {
-  ButtonGroup,
-  Card,
-  CardActions,
-  CardContent,
-  IconButton,
-  Typography,
-} from "@mui/material";
-
+import { CardActions, CardContent, Typography } from "@mui/material";
+import Chip from "@mui/material/Chip";
 import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
-
+import styled from "@mui/material/styles/styled";
 import Div from "@jumbo/shared/Div";
-import { getCustomDateTime } from "@jumbo/utils";
-import React from "react";
-import List from "@mui/material/List";
 
+import React from "react";
+import { getCustomDateTime } from "@jumbo/utils";
+
+const ListItem = styled("li")(({ theme }) => ({
+  margin: theme.spacing(0.5),
+}));
 const Item = ({ children, sx }) => (
   <Div
     sx={{
@@ -37,7 +32,7 @@ const Item = ({ children, sx }) => (
     {children}
   </Div>
 );
-const ViewEvent = ({ openView, setOpenView, data }) => {
+const ViewGallery = ({ openView, setOpenView, data }) => {
   console.log(data, "data");
   const convertHtmlToPlainText = (htmlString) => {
     const parser = new DOMParser();
@@ -56,7 +51,7 @@ const ViewEvent = ({ openView, setOpenView, data }) => {
         style={{ backgroundColor: "#7352C7", color: "white" }}
         id="alert-dialog-title"
       >
-        Event Details
+        Gallery Details
       </DialogTitle>
       <DialogContent
         headerSx={{
@@ -80,26 +75,19 @@ const ViewEvent = ({ openView, setOpenView, data }) => {
             <Avatar
               sx={{ width: 100, height: 100 }}
               alt=""
-              src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/event/${data?.banner_image}`}
+              src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/gallery/${data?.banner_image}`}
             />
           </Div>
           <Stack direction={"row"} color={"text.secondary"} mb={2}>
             <Item>
               <Typography variant={"h6"} color="text.secondary" fontSize={13}>
-                Title
+                Name
               </Typography>
               <Typography variant={"h6"} mb={0.5}>
-                {data?.title}
+                {data?.album_name}
               </Typography>
             </Item>
-            <Item>
-              <Typography variant={"h6"} color="text.secondary" fontSize={13}>
-                Category
-              </Typography>
-              <Typography variant={"h6"} mb={0.5}>
-                {data?.category}
-              </Typography>
-            </Item>
+
             <Item>
               <Typography variant={"h6"} color="text.secondary" fontSize={13}>
                 Status
@@ -109,57 +97,40 @@ const ViewEvent = ({ openView, setOpenView, data }) => {
               </Typography>
             </Item>
           </Stack>
-          <Typography
-            fontSize={"12px"}
-            variant={"body1"}
-            color="text.secondary"
-            mb={2}
-          >
-            {data?.handle}
-          </Typography>
 
           <Stack direction={"row"} alignSelf="stretch">
             <Item>
-              <Typography variant={"h6"} color="text.secondary">
-                Duration Type
+              <Typography variant={"h6"} color="text.secondary" fontSize={13}>
+              Source
               </Typography>
               <Typography variant={"h6"} mb={0.5}>
-                {data?.duration_type}
+                {data?.source}
               </Typography>
             </Item>
             <Item>
               <Typography variant={"h6"} color="text.secondary">
-                Start Date
+
               </Typography>
               <Typography variant={"h6"} mb={0.5}>
-                {getCustomDateTime(data?.start_date, "days", "DD MMM YYYY")}
+           
+               
               </Typography>
             </Item>
             <Item>
               <Typography variant={"h6"} color="text.secondary">
-                End Date
+              Event Date
               </Typography>
               <Typography variant={"h6"} mb={0.5}>
-                {getCustomDateTime(data?.end_date, "days", "DD MMM YYYY")}
+              {getCustomDateTime(data?.event_date, "days", "DD MMM YYYY")}
+               
               </Typography>
             </Item>
-            <Item>
-              <Typography variant={"h6"} color="text.secondary">
-                Event Type
-              </Typography>
-              <Typography variant={"h6"} mb={0.5}>
-                {data?.event_type}
-              </Typography>
-            </Item>
-            <Item>
-              <Typography variant={"h6"} color="text.secondary">
-                Entry Fee
-              </Typography>
-              <Typography variant={"h6"} mb={0.5}>
-                {data?.entry_fee ? data?.entry_fee : "-"}
-              </Typography>
-            </Item>
+          
+           
+   
           </Stack>
+          
+
           <Stack direction={"row"} alignSelf="stretch">
             <Item>
               <Typography variant={"h6"} color="text.secondary">
@@ -180,6 +151,32 @@ const ViewEvent = ({ openView, setOpenView, data }) => {
               </Typography>
             </Item>
           </Stack>
+          <Stack direction={"row"} alignSelf="stretch">
+            <Item style={{ flex: 1, width: "50%" }}>
+              <Typography variant={"h6"} color="text.secondary">
+                Amenities
+              </Typography>
+              <Typography variant={"h6"} mb={0.5}>
+                <div
+                  style={{
+                    overflowY: "scroll",
+                    maxHeight: "80px",
+                    display: "flex",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  {data &&
+                    data?.length &&
+                    data.amenities?.map((data, Index) => (
+                      <ListItem key={Index}>
+                        <Chip variant="outlined" label={data} />
+                      </ListItem>
+                    ))}
+                </div>
+              </Typography>
+            </Item>
+          </Stack>
+
           <Typography variant={"h6"} color="text.secondary">
             Images
           </Typography>
@@ -193,7 +190,7 @@ const ViewEvent = ({ openView, setOpenView, data }) => {
               data?.images?.map((file) => (
                 <ImageListItem key={file}>
                   <img
-                    src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/event/${file}`}
+                    src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/gallery/${file}`}
                     alt=""
                     style={{
                       width: "100%",
@@ -214,4 +211,4 @@ const ViewEvent = ({ openView, setOpenView, data }) => {
   );
 };
 
-export default ViewEvent;
+export default ViewGallery;
