@@ -17,7 +17,8 @@ import { useSelector } from "react-redux";
 import ToastAlerts from "app/components/Toast";
 import { onBanquetList } from "app/redux/actions/Banquet";
 import ViewBanquet from "../ViewBanquet";
-
+import { Axios } from "app/services/config";
+import Swal from "sweetalert2";
 export default function ListBanquet() {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
@@ -58,10 +59,40 @@ export default function ListBanquet() {
       field: "status",
       headerName: "Status",
       sortable: true,
-      render: (value, elm) => (value ? "Active" : "Inactive"),
+      render: (value, elm) =>
+        value ? (
+          <Button size="small" variant="outlined" color="success">
+            Active
+          </Button>
+        ) : (
+          <Button size="small" variant="outlined" color="error">
+            Inactive
+          </Button>
+        ),
+      onClick: async (elm) => {
+        try {
+          console.log(elm, "elmelm");
+          let status = elm.status;
+          const result = await Swal.fire({
+            title: `Change banquet status to ${status ? "inactive" : "active"} ?`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes",
+            cancelButtonText: "No",
+          });
+          if (result.isConfirmed) {
+            await Axios.patch(`/banquet/edit/${elm._id}`, { status: !status });
+            showAlert("success", "Banquet status updated successfully.");
+            navigate("/banquet");
+            dispatch(onBanquetList(query));
+          }
+        } catch (error) {
+          console.error("Error updating banquet:", error);
+          showAlert("error", "Failed to update banquet.");
+        }
+      },
     },
   ];
-  const [inputs, setInputs] = useState({});
   const actions = [
     {
       label: "View Details",

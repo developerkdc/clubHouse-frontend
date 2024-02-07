@@ -12,7 +12,8 @@ import { useSelector } from "react-redux";
 import { onMemberList } from "app/redux/actions/Member";
 import ToastAlerts from "app/components/Toast";
 import { getCustomDateTime } from "@jumbo/utils";
-
+import { Axios } from "app/services/config";
+import Swal from "sweetalert2";
 export default function ListMember() {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
@@ -20,21 +21,68 @@ export default function ListMember() {
   const dispatch = useDispatch();
   const [openView, setOpenView] = useState(false);
   const [memberDetails, setMmberDetails] = useState(false);
-  const { memberList, totalPages, error, successMessage } = useSelector((state) => state.memberReducer);
+  const { memberList, totalPages, error, successMessage } = useSelector(
+    (state) => state.memberReducer
+  );
   const [query, setQuery] = useState({});
-
 
   const columns = [
     { field: "member_id", headerName: "Member ID" },
-    { field: "first_name", headerName: "Name", sortable: true, render: (_, elm) => elm.first_name + " " + elm.last_name },
+    {
+      field: "first_name",
+      headerName: "Name",
+      sortable: true,
+      render: (_, elm) => elm.first_name + " " + elm.last_name,
+    },
     { field: "email_id", headerName: "Email ID", sortable: true },
     { field: "mobile_no", headerName: "Mobil NO", sortable: true },
-    
-    { field: "dob", headerName: "Date Of Birth", sortable: true ,render: (_, elm) =>
-    getCustomDateTime(elm?.dob, "days", "DD MMM YYYY"),
-},
-    { field: "member_type", headerName: "Member Type", sortable: true, },
-    { field: "status", headerName: "Status", sortable: true, render: (value, elm) => (value ? "Active" : "Inactive") },
+
+    {
+      field: "dob",
+      headerName: "Date Of Birth",
+      sortable: true,
+      render: (_, elm) => getCustomDateTime(elm?.dob, "days", "DD MMM YYYY"),
+    },
+    { field: "member_type", headerName: "Member Type", sortable: true },
+    {
+      field: "status",
+      headerName: "Status",
+      sortable: true,
+      render: (value, elm) =>
+        value ? (
+          <Button size="small" variant="outlined" color="success">
+            Active
+          </Button>
+        ) : (
+          <Button size="small" variant="outlined" color="error">
+            Inactive
+          </Button>
+        ),
+      onClick: async (elm) => {
+        try {
+          console.log(elm, "elmelm");
+          let status = elm.status;
+          const result = await Swal.fire({
+            title: `Change member status to ${
+              status ? "inactive" : "active"
+            } ?`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes",
+            cancelButtonText: "No",
+          });
+          if (result.isConfirmed) {
+            await Axios.patch(`/member/edit/${elm._id}`, { status: !status });
+            showAlert("success", "Member status updated successfully.");
+            navigate("/member");
+            dispatch(onMemberList(query));
+          }
+        } catch (error) {
+          console.error("Error updating member:", error);
+          showAlert("error", "Failed to update member.");
+        }
+      },
+    },
   ];
 
   const actions = [
@@ -50,7 +98,7 @@ export default function ListMember() {
     {
       label: "Edit",
       color: "secondary",
-      onClick: (row) => navigate(`/member/edit/${row._id}`,{state:row}),
+      onClick: (row) => navigate(`/member/edit/${row._id}`, { state: row }),
       icon: <ModeEditOutlinedIcon />,
     },
   ];
@@ -70,7 +118,14 @@ export default function ListMember() {
     dispatch(onMemberList(query));
   }, [query]);
   return (
-    <Div sx={{ mt: -4, maxHeight: "89vh", overflowY: "scroll", paddingRight: "10px" }}>
+    <Div
+      sx={{
+        mt: -4,
+        maxHeight: "89vh",
+        overflowY: "scroll",
+        paddingRight: "10px",
+      }}
+    >
       <Div
         sx={{
           position: "sticky",
@@ -108,7 +163,12 @@ export default function ListMember() {
           />
           <Div>
             {/* {permissions?.role_create == true && ( */}
-            <Button  size="small" variant="contained" sx={{ p: 1, pl: 4, pr: 4 }} onClick={() => navigate("/member/add")}>
+            <Button
+              size="small"
+              variant="contained"
+              sx={{ p: 1, pl: 4, pr: 4 }}
+              onClick={() => navigate("/member/add")}
+            >
               Add Member
             </Button>
             {/* )} */}
@@ -116,9 +176,21 @@ export default function ListMember() {
         </Div>
       </Div>
       <Div>
-        <CustomTable data={memberList} columns={columns} actions={actions} fetchData={fetchData} totalCount={totalPages} />
+        <CustomTable
+          data={memberList}
+          columns={columns}
+          actions={actions}
+          fetchData={fetchData}
+          totalCount={totalPages}
+        />
       </Div>
-      {openView && memberDetails && <ViewMember openView={openView} setOpenView={setOpenView} data={memberDetails} />}
+      {openView && memberDetails && (
+        <ViewMember
+          openView={openView}
+          setOpenView={setOpenView}
+          data={memberDetails}
+        />
+      )}
     </Div>
   );
 }

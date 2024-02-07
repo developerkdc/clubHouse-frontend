@@ -18,7 +18,8 @@ import ToastAlerts from "app/components/Toast";
 import { onGalleryList } from "app/redux/actions/Gallery";
 import { getCustomDateTime } from "@jumbo/utils";
 import ViewGallery from "../ViewGallery";
-
+import Swal from "sweetalert2";
+import { Axios } from "app/services/config";
 
 export default function ListGallery() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -60,15 +61,46 @@ export default function ListGallery() {
         render: (_, elm) =>
           getCustomDateTime(elm?.event_date, "days", "DD MMM YYYY"),
       },
-    {
-      field: "status",
-      headerName: "Status",
-      sortable: true,
-      render: (value, elm) => (value ? "Active" : "Inactive"),
-    },
+      {
+        field: "status",
+        headerName: "Status",
+        sortable: true,
+        render: (value, elm) =>
+          value ? (
+            <Button size="small" variant="outlined" color="success">
+              Active
+            </Button>
+          ) : (
+            <Button size="small" variant="outlined" color="error">
+              Inactive
+            </Button>
+          ),
+        onClick: async (elm) => {
+          try {
+            console.log(elm, "elmelm");
+            let status = elm.status;
+            const result = await Swal.fire({
+              title: `Change gallery status to ${status ? "inactive" : "active"} ?`,
+              icon: "warning",
+              showCancelButton: true,
+              confirmButtonText: "Yes",
+              cancelButtonText: "No",
+            });
+            if (result.isConfirmed) {
+              await Axios.patch(`/gallery/edit/${elm._id}`, { status: !status });
+              showAlert("success", "Gallery status updated successfully.");
+              navigate("/gallery");
+              dispatch(onGalleryList(query));
+            }
+          } catch (error) {
+            console.error("Error updating gallery:", error);
+            showAlert("error", "Failed to update gallery.");
+          }
+        },
+      },
   ];
  
-  const [inputs, setInputs] = useState({});
+
   const actions = [
     {
       label: "View Details",

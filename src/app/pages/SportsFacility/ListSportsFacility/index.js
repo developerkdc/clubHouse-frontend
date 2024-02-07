@@ -17,6 +17,8 @@ import { useSelector } from "react-redux";
 import ToastAlerts from "app/components/Toast";
 import { onSportList } from "app/redux/actions/Sport";
 import ViewSport from "../ViewSport";
+import Swal from "sweetalert2";
+import { Axios } from "app/services/config";
 // import ViewBanquet from "../ViewBanquet";
 
 export default function ListSport() {
@@ -57,7 +59,38 @@ export default function ListSport() {
       field: "status",
       headerName: "Status",
       sortable: true,
-      render: (value, elm) => (value ? "Active" : "Inactive"),
+      render: (value, elm) =>
+        value ? (
+          <Button size="small" variant="outlined" color="success">
+            Active
+          </Button>
+        ) : (
+          <Button size="small" variant="outlined" color="error">
+            Inactive
+          </Button>
+        ),
+      onClick: async (elm) => {
+        try {
+          console.log(elm, "elmelm");
+          let status = elm.status;
+          const result = await Swal.fire({
+            title: `Change sport status to ${status ? "inactive" : "active"} ?`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes",
+            cancelButtonText: "No",
+          });
+          if (result.isConfirmed) {
+            await Axios.patch(`/sport/edit/${elm._id}`, { status: !status });
+            showAlert("success", "Sport status updated successfully.");
+            navigate("/sport");
+            dispatch(onSportList(query));
+          }
+        } catch (error) {
+          console.error("Error updating sport:", error);
+          showAlert("error", "Failed to update sport.");
+        }
+      },
     },
   ];
   const actions = [

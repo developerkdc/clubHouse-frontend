@@ -21,7 +21,8 @@ import { onEventList } from "app/redux/actions/Event";
 import ViewEvent from "../ViewEvent";
 import { getCustomDateTime } from "@jumbo/utils";
 import { formatDate } from "./date.js";
-
+import { Axios } from "app/services/config";
+import Swal from "sweetalert2";
 export default function ListEvent() {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
@@ -83,7 +84,38 @@ export default function ListEvent() {
       field: "status",
       headerName: "Status",
       sortable: true,
-      render: (value, elm) => (value ? "Active" : "Inactive"),
+      render: (value, elm) =>
+        value ? (
+          <Button size="small" variant="outlined" color="success">
+            Active
+          </Button>
+        ) : (
+          <Button size="small" variant="outlined" color="error">
+            Inactive
+          </Button>
+        ),
+      onClick: async (elm) => {
+        try {
+          console.log(elm, "elmelm");
+          let status = elm.status;
+          const result = await Swal.fire({
+            title: `Change event status to ${status ? "inactive" : "active"} ?`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes",
+            cancelButtonText: "No",
+          });
+          if (result.isConfirmed) {
+            await Axios.patch(`/event/edit/${elm._id}`, { status: !status });
+            showAlert("success", "Event status updated successfully.");
+            navigate("/event");
+            dispatch(onEventList(query));
+          }
+        } catch (error) {
+          console.error("Error updating event:", error);
+          showAlert("error", "Failed to update event.");
+        }
+      },
     },
   ];
   const [inputs, setInputs] = useState({});
