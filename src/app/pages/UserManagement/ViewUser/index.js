@@ -1,18 +1,30 @@
+
 import {
-  Box,
   Button,
-  Card,
-  CardContent,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  Grid,
-  Typography
 } from "@mui/material";
 import React from "react";
+import List from "@mui/material/List";
+import { ListItem, ListItemText, Typography } from "@mui/material";
+import {  Card, CardContent } from "@mui/material";
+import Stack from "@mui/material/Stack";
+import Div from "@jumbo/shared/Div";
+
+
+const Item = ({ children, sx }) => (
+  <Div sx={{ textAlign: 'center', flexBasis: '50%', ...sx }}>
+    {children}
+  </Div>
+);
+
+
 
 const ViewUser = ({ openView, setOpenView, data }) => {
+
+
   return (
 
     <Dialog
@@ -20,37 +32,112 @@ const ViewUser = ({ openView, setOpenView, data }) => {
       onClose={() => setOpenView(false)}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
+      maxWidth="md"
+
     >
-      <DialogTitle id="alert-dialog-title">User Details</DialogTitle>
-      <DialogContent>
+      <DialogTitle style={{ backgroundColor: "#7352C7", color: "white" }} id="alert-dialog-title">User Details</DialogTitle>
+      <DialogContent headerSx={{
+        borderBottom: 1, borderColor: 'divider'
+      }}
+        sx={{ mb: 3.75 }}>
+        <List
+          disablePadding
+          sx={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            margin: theme => theme.spacing(0, -2),
+          }}
+        >
+          <ListItem
+            sx={{
+              width: { xs: '100%', sm: '50%', xl: '33.33%' },
+              textAlign: 'center',
+            }}
+          >
+            <ListItemText
+              primary={<Typography fontSize={"12px"} variant="h6" color="text.secondary" mb={.5}>
+                USER ID </Typography>}
+              secondary={<Typography variant="body1" color="text.primary">
+                {data?.user_id || "--"}</Typography>}
+            />
+          </ListItem>
+          <ListItem
+            sx={{
+              width: { xs: '100%', sm: '50%', xl: '33.33%' },
+              textAlign: 'center',
+            }}
+          >
+            <ListItemText
+              primary={<Typography fontSize={"12px"} variant="h6" color="text.secondary" mb={.5}>
+                First Name  </Typography>}
+              secondary={<Typography variant="body1" color="text.primary">
+                {data?.first_name || "--"}</Typography>}
+            />
+          </ListItem>
+          <ListItem
+            sx={{
+              width: { xs: '100%', sm: '50%', xl: '33.33%' },
+              textAlign: 'center',
+            }}
+          >
+            <ListItemText
+              primary={<Typography fontSize={"12px"} variant="h6" color="text.secondary"
+                mb={.5}>Last Name</Typography>}
+              secondary={<Typography variant="body1" color="text.primary">{data?.last_name || "--"}</Typography>}
+            />
+          </ListItem>
+          <ListItem
+            sx={{
+              width: { xs: '100%', sm: '50%', xl: '33.33%' },
+              textAlign: 'center',
+            }}
+          >
+            <ListItemText
+              primary={<Typography fontSize={"12px"} variant="h6" color="text.secondary" mb={.5}>Phone No
+              </Typography>}
+              secondary={<Typography variant="body1" color="text.primary">{data?.mobile_no || "--"}</Typography>}
+            />
+          </ListItem>
+          <ListItem
+            sx={{
+              width: { xs: '100%', sm: '50%', xl: '33.33%' },
+              textAlign: 'center',
+            }}
+          >
+            <ListItemText
+              primary={<Typography fontSize={"12px"} variant="h6" color="text.secondary" mb={.5}>
+                Email ID</Typography>}
+              secondary={<Typography variant="body1" color="text.primary">{data?.email_id || "--"}</Typography>}
+            />
+          </ListItem>
+      
+          <ListItem
+            sx={{
+              width: { xs: '100%', sm: '50%', xl: '33.33%' },
+              textAlign: 'center',
+            }}
+          >
 
-        <Card style={{ marginBottom: "10px" }}>
-          <CardContent>
-            <Grid container style={{ display: "flex", justifyContent: "space-around" }}>
-              <Box>
-                <Typography variant="h5" component="div">
-                  User Details
-                </Typography>
-                <Typography variant="body2">
-                  <span style={{ opacity: "0.5" }}>Name:</span> {data.first_name || "--"}
-                </Typography>
-                <Typography variant="body2">
-                  <span style={{ opacity: "0.5" }}>Email:</span> {data.email_id || "--"}
-                </Typography>
-                <Typography variant="body2">
-                  <span style={{ opacity: "0.5" }}>Contact:</span> {data.mobile_no || "--"}
-                </Typography>
-                <Typography variant="body2">
-                  <span style={{ opacity: "0.5" }}>City:</span> {data.status || "--"}
-                </Typography>
-                <Typography variant="body2">
-                  <span style={{ opacity: "0.5" }}>Feedback:</span> {data.user_id || "--"}
-                </Typography>
-              </Box>
-            </Grid>
-          </CardContent>
-        </Card>
+            <ListItemText
+              primary={<Typography fontSize={"12px"} variant="h6" color="text.secondary" mb={.5}>
+              Role</Typography>}
+              secondary={<Typography variant="body1" color="text.primary">{data?.role_id?.role_name || "--"}</Typography>}
+            />
+          </ListItem>
+          <ListItem
+            sx={{
+              width: { xs: '100%', sm: '50%', xl: '33.33%' },
+              textAlign: 'center',
+            }}
+          >
 
+            <ListItemText
+              primary={<Typography fontSize={"12px"} variant="h6" color="text.secondary" mb={.5}>
+              Status</Typography>}
+              secondary={<Typography variant="body1" color="text.primary">   {data?.status ? "Active" : "Inactive"}</Typography>}
+            />
+          </ListItem>
+        </List>
       </DialogContent>
       <DialogActions>
         <Button onClick={() => setOpenView(false)}>Close</Button>

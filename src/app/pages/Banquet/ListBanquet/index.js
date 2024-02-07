@@ -2,10 +2,8 @@ import Div from "@jumbo/shared/Div/Div";
 import React, { useEffect, useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import {
-  Autocomplete,
   Avatar,
   Button,
-  Grid,
   InputAdornment,
   TextField,
   Typography,
@@ -17,9 +15,8 @@ import PreviewOutlinedIcon from "@mui/icons-material/PreviewOutlined";
 import ModeEditOutlinedIcon from "@mui/icons-material/ModeEditOutlined";
 import { useSelector } from "react-redux";
 import ToastAlerts from "app/components/Toast";
-import { onEventList } from "app/redux/actions/Event";
-// import ViewEvent from "../ViewEvent";
-import { getCustomDateTime } from "@jumbo/utils";
+import { onBanquetList } from "app/redux/actions/Banquet";
+import ViewBanquet from "../ViewBanquet";
 
 export default function ListBanquet() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -32,13 +29,14 @@ export default function ListBanquet() {
 
   const [selectedEventDate, setSelectedEventDate] = useState(null);
 
-  const { eventList, totalPages, error, successMessage } = useSelector(
-    (state) => state.eventReducer
+  const { banquetList, totalPages, error, successMessage } = useSelector(
+    (state) => state.banquetReducer
   );
+  console.log(banquetList,'ddddddd');
   const [query, setQuery] = useState({});
 
   const columns = [
-    { field: "title", headerName: "Title", sortable: true },
+    { field: "name", headerName: "Name", sortable: true },
     {
       field: "banner_image",
       headerName: "Image",
@@ -49,35 +47,13 @@ export default function ListBanquet() {
             height: 56,
           }}
           variant="rounded"
-          src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/event/${value}`}
+          src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/banquet/${value}`}
         />
       ),
     },
-    { field: "category", headerName: "Category", sortable: true },
-    { field: "duration_type", headerName: "Duration Type", sortable: true },
-    {
-      field: "start_date",
-      headerName: "Start Date",
-      sortable: true,
-      render: (_, elm) =>
-        getCustomDateTime(elm?.start_date, "days", "DD MMM YYYY"),
-    },
-    {
-      field: "end_date",
-      headerName: "End Date",
-      sortable: true,
-      render: (_, elm) =>
-        elm?.end_date
-          ? getCustomDateTime(elm.end_date, "days", "DD MMM YYYY")
-          : "-",
-    },
-    { field: "event_type", headerName: "Event Type", sortable: true },
-    {
-      field: "entry_fee",
-      headerName: "Entry Fees",
-      render: (_, elm) => (elm?.entry_fee ? elm?.entry_fee : "-"),
-    },
-
+    { field: "location", headerName: "Location", sortable: true },
+    { field: "capacity", headerName: "Capacity", sortable: true },
+    { field: "rate", headerName: "Rate", sortable: true },
     {
       field: "status",
       headerName: "Status",
@@ -99,7 +75,7 @@ export default function ListBanquet() {
     {
       label: "Edit",
       color: "secondary",
-      onClick: (row) => navigate(`/event/edit/${row._id}`, { state: row }),
+      onClick: (row) => navigate(`/banquet/edit/${row._id}`, { state: row }),
       icon: <ModeEditOutlinedIcon />,
     },
   ];
@@ -117,7 +93,7 @@ export default function ListBanquet() {
   }
 
   useEffect(() => {
-    dispatch(onEventList(query));
+    dispatch(onBanquetList(query));
   }, [query]);
 
   const handleFilter = () => {
@@ -145,61 +121,8 @@ export default function ListBanquet() {
           zIndex: 10, // Ensure the header stays above the body
         }}
       >
-        <Typography variant="h1">BANQUET Master</Typography>
-        <Div
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            flexDirection: "column",
-            marginBottom: 3,
-          }}
-        >
-          <Grid container rowSpacing={3} columnSpacing={3} marginTop={-1}>
-            <Grid item xs={3}>
-              <Autocomplete
-                size="small"
-                id="tags-standard"
-                options={eventList}
-                getOptionLabel={(option) =>
-                  getCustomDateTime(option?.start_date, "days", "DD MMM YYYY")
-                }
-                value={selectedEventDate}
-                onChange={(e, newValue) => setSelectedEventDate(newValue)}
-                renderInput={(params) => (
-                  <TextField {...params} label="Event Date" />
-                )}
-              />
-            </Grid>
-            <Grid item xs={2}>
-            
-            </Grid>
-            <Grid item xs={2}>
-            
-            </Grid>
-          </Grid>
-
-          <Div
-            sx={{ display: "flex", gap: 1, flex: "1", flexDirection: "row" }}
-          >
-            <Button
-              size="small"
-              variant="outlined"
-              sx={{ mt: 1, height: "35px" }}
-              onClick={handleFilter}
-            >
-              Apply
-            </Button>
-
-            <Button
-              size="small"
-              variant="outlined"
-              sx={{ mt: 1, height: "35px" }}
-              onClick={handleClearFilter}
-            >
-              Clear
-            </Button>
-          </Div>
-        </Div>
+        <Typography variant="h1">Banquet Master</Typography>
+        
 
         <Div
           sx={{
@@ -243,20 +166,20 @@ export default function ListBanquet() {
       </Div>
       <Div>
         <CustomTable
-          data={eventList}
+          data={banquetList}
           columns={columns}
           actions={actions}
           fetchData={fetchData}
           totalCount={totalPages}
         />
       </Div>
-      {/* {openView && eventDetails && (
-        <ViewEvent
+      {openView && eventDetails && (
+        <ViewBanquet
           openView={openView}
           setOpenView={setOpenView}
           data={eventDetails}
         />
-      )} */}
+      )}
     </Div>
   );
 }

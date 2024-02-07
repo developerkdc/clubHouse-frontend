@@ -414,10 +414,23 @@ const AddEvent = () => {
                     <Typography variant="body1">Banner Image :-</Typography>
                     <div
                       {...getRootBannerImageProps({ className: "dropzone" })}
-                      style={{ marginTop: "10px" }}
+                      style={{
+                        marginTop: "10px",
+                        position: "relative",
+                        width: "fit-content",
+                      }}
                     >
-                      <input {...getInputBannerImageProps()} />
-                      <Button variant="contained">Select Image</Button>
+                      <input
+                        {...getInputBannerImageProps()}
+                        style={{
+                          position: "absolute",
+                          opacity: 0,
+                          cursor: "pointer",
+                        }}
+                      />
+                      <Button size="small" variant="contained">
+                        Select Image
+                      </Button>
                     </div>
                     <aside style={thumbsContainer}>{thumbss}</aside>
                   </Grid>
@@ -425,15 +438,31 @@ const AddEvent = () => {
                     <Typography variant="body1">Images :-</Typography>
                     <div
                       {...getRootProps({ className: "dropzone" })}
-                      style={{ marginTop: "10px" }}
+                      style={{
+                        marginTop: "10px",
+                        position: "relative",
+                        width: "fit-content",
+                      }}
                     >
-                      <input {...getInputProps()} />
-                      <Button variant="contained">Select Images</Button>
+                      <input
+                        {...getInputProps()}
+                        style={{
+                          position: "absolute",
+                          opacity: 0,
+                          cursor: "pointer",
+                        }}
+                      />
+                      <Button size="small" variant="contained">
+                        Select Images
+                      </Button>
                     </div>
                     <aside style={thumbsContainer}>{thumbs}</aside>
                   </Grid>
                 </Grid>{" "}
-                <Grid container rowSpacing={3} columnSpacing={3} marginTop={2}>
+                <Typography variant="body1" marginTop={1}>
+                  Description :-
+                </Typography>
+                <Grid container rowSpacing={3} columnSpacing={3} marginTop={-1}>
                   <Grid item xs={12}>
                     <ReactQuill
                       theme="snow"

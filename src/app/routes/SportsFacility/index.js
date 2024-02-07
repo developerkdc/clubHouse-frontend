@@ -1,29 +1,26 @@
 import Page from "@jumbo/shared/Page";
 import PermissionMiddleware from "../Middleware/permission";
-import AddBanquet from "app/pages/Banquet/AddBanquet";
-import ListBanquet from "app/pages/Banquet/ListBanquet";
-import EditBanquet from "app/pages/Banquet/EditBanquet";
+import AddSport from "app/pages/SportsFacility/AddSportsFacility";
+import ListSport from "app/pages/SportsFacility/ListSportsFacility";
+import EditSport from "app/pages/SportsFacility/EditSportsFacility";
 
-
-
-
-const routesName = "/banquet";
-const modules = "banquet";
+const routesName = "/sport";
+const modules = "sport";
 
 var routes = [
   {
     path: `${routesName}`,
-    element: <Page component={ListBanquet} layout={"vertical-default"} />,
+    element: <Page component={ListSport} layout={"vertical-default"} />,
     permission: "view",
   },
   {
     path: `${routesName}/add`,
-    element: <Page component={AddBanquet} layout={"vertical-default"} />,
+    element: <Page component={AddSport} layout={"vertical-default"} />,
     permission: "add",
   },
   {
     path: `${routesName}/edit/:id`,
-    element: <Page component={EditBanquet} layout={"vertical-default"} />,
+    element: <Page component={EditSport} layout={"vertical-default"} />,
     permission: "edit",
   },
 ];
@@ -48,5 +45,4 @@ const createRoutes = () => {
   return allRoutes;
 };
 
-export const banquetRoute = [...createRoutes()];
-
+export const sportRoute = [...createRoutes()];

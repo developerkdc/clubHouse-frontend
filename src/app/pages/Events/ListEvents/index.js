@@ -22,7 +22,6 @@ import ViewEvent from "../ViewEvent";
 import { getCustomDateTime } from "@jumbo/utils";
 import { formatDate } from "./date.js";
 
-import JumboTextField from "@jumbo/components/JumboFormik/JumboTextField";
 export default function ListEvent() {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
@@ -30,7 +29,7 @@ export default function ListEvent() {
   const dispatch = useDispatch();
   const [openView, setOpenView] = useState(false);
   const [eventDetails, setMmberDetails] = useState(false);
-  // const [clear, setClear] = useState(false);
+
 
   const [selectedEventDate, setSelectedEventDate] = useState(null);
 

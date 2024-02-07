@@ -6,6 +6,9 @@ import RoleReducer from "./Roles"
 import NewsReducer from "./NewsAndCircular"
 import MemberReducer from "./Member"
 import EventReducer from "./Event"
+import BanquetReducer from "./Banquet"
+import SportReducer from "./Sport"
+import GalleryReducer from "./Gallery"
 
 const exportReducers = history => {
     return combineReducers({
@@ -15,6 +18,9 @@ const exportReducers = history => {
         newsReducer: NewsReducer,
         memberReducer: MemberReducer,
         eventReducer: EventReducer,
+        banquetReducer: BanquetReducer,
+        sportReducer: SportReducer,
+        galleryReducer: GalleryReducer,
         contactsApp: contactsApp
     });
 };

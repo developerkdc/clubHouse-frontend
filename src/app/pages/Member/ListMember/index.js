@@ -11,6 +11,7 @@ import ViewMember from "../ViewMember";
 import { useSelector } from "react-redux";
 import { onMemberList } from "app/redux/actions/Member";
 import ToastAlerts from "app/components/Toast";
+import { getCustomDateTime } from "@jumbo/utils";
 
 export default function ListMember() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -28,7 +29,10 @@ export default function ListMember() {
     { field: "first_name", headerName: "Name", sortable: true, render: (_, elm) => elm.first_name + " " + elm.last_name },
     { field: "email_id", headerName: "Email ID", sortable: true },
     { field: "mobile_no", headerName: "Mobil NO", sortable: true },
-    { field: "dob", headerName: "Date Of Birth", sortable: true },
+    
+    { field: "dob", headerName: "Date Of Birth", sortable: true ,render: (_, elm) =>
+    getCustomDateTime(elm?.dob, "days", "DD MMM YYYY"),
+},
     { field: "member_type", headerName: "Member Type", sortable: true, },
     { field: "status", headerName: "Status", sortable: true, render: (value, elm) => (value ? "Active" : "Inactive") },
   ];

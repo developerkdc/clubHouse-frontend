@@ -384,18 +384,7 @@ const EditEvent = () => {
                     labelPlacement="start"
                   />
                 </Grid>
-                <Grid container rowSpacing={3} columnSpacing={3} marginTop={2}>
-                  <Grid item xs={12}>
-                    <ReactQuill
-                      theme="snow"
-                      value={values?.description}
-                      onChange={(content, delta, source, editor) => {
-                        console.log(content);
-                        setFieldValue("description", content);
-                      }}
-                    />
-                  </Grid>
-                </Grid>
+           
 
                 <Grid container rowSpacing={3} columnSpacing={3} marginTop={5}>
                   <Grid item xs={3}>
@@ -456,6 +445,20 @@ const EditEvent = () => {
                         </ImageListItem>
                       ))}
                     </ImageList>
+                  </Grid>
+                </Grid>
+                
+                <Typography variant="body1" marginTop={1}>Description :-</Typography>
+                <Grid container rowSpacing={3} columnSpacing={3} marginTop={2}>
+                  <Grid item xs={12}>
+                    <ReactQuill
+                      theme="snow"
+                      value={values?.description}
+                      onChange={(content, delta, source, editor) => {
+                        console.log(content);
+                        setFieldValue("description", content);
+                      }}
+                    />
                   </Grid>
                 </Grid>
 

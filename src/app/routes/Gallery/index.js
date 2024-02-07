@@ -1,29 +1,26 @@
 import Page from "@jumbo/shared/Page";
 import PermissionMiddleware from "../Middleware/permission";
-import AddBanquet from "app/pages/Banquet/AddBanquet";
-import ListBanquet from "app/pages/Banquet/ListBanquet";
-import EditBanquet from "app/pages/Banquet/EditBanquet";
+import AddGallery from "app/pages/Gallery/AddGallery";
+import ListGallery from "app/pages/Gallery/ListGallery";
+import EditGallery from "app/pages/Gallery/EditGallery";
 
-
-
-
-const routesName = "/banquet";
-const modules = "banquet";
+const routesName = "/gallery";
+const modules = "gallery";
 
 var routes = [
   {
     path: `${routesName}`,
-    element: <Page component={ListBanquet} layout={"vertical-default"} />,
+    element: <Page component={ListGallery} layout={"vertical-default"} />,
     permission: "view",
   },
   {
     path: `${routesName}/add`,
-    element: <Page component={AddBanquet} layout={"vertical-default"} />,
+    element: <Page component={AddGallery} layout={"vertical-default"} />,
     permission: "add",
   },
   {
     path: `${routesName}/edit/:id`,
-    element: <Page component={EditBanquet} layout={"vertical-default"} />,
+    element: <Page component={EditGallery} layout={"vertical-default"} />,
     permission: "edit",
   },
 ];
@@ -48,5 +45,5 @@ const createRoutes = () => {
   return allRoutes;
 };
 
-export const banquetRoute = [...createRoutes()];
+export const galleryRoute = [...createRoutes()];
 

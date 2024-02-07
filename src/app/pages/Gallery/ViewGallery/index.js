@@ -4,11 +4,9 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Grid,
   ImageList,
   ImageListItem,
 } from "@mui/material";
-import CardHeader from "@mui/material/CardHeader";
 import { CardActions, CardContent, Typography } from "@mui/material";
 import Chip from "@mui/material/Chip";
 import Avatar from "@mui/material/Avatar";
@@ -17,12 +15,10 @@ import styled from "@mui/material/styles/styled";
 import Div from "@jumbo/shared/Div";
 
 import React from "react";
+import { getCustomDateTime } from "@jumbo/utils";
 
 const ListItem = styled("li")(({ theme }) => ({
-  margin: theme.spacing(0.1),
-  borderRadius: "4px",
-  display: "inline-block",
-  padding: theme.spacing(0.1),
+  margin: theme.spacing(0.5),
 }));
 const Item = ({ children, sx }) => (
   <Div
@@ -36,7 +32,7 @@ const Item = ({ children, sx }) => (
     {children}
   </Div>
 );
-const ViewBanquet = ({ openView, setOpenView, data }) => {
+const ViewGallery = ({ openView, setOpenView, data }) => {
   console.log(data, "data");
   const convertHtmlToPlainText = (htmlString) => {
     const parser = new DOMParser();
@@ -55,7 +51,7 @@ const ViewBanquet = ({ openView, setOpenView, data }) => {
         style={{ backgroundColor: "#7352C7", color: "white" }}
         id="alert-dialog-title"
       >
-        Banquet Details
+        Gallery Details
       </DialogTitle>
       <DialogContent
         headerSx={{
@@ -79,7 +75,7 @@ const ViewBanquet = ({ openView, setOpenView, data }) => {
             <Avatar
               sx={{ width: 100, height: 100 }}
               alt=""
-              src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/banquet/${data?.banner_image}`}
+              src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/gallery/${data?.banner_image}`}
             />
           </Div>
           <Stack direction={"row"} color={"text.secondary"} mb={2}>
@@ -88,7 +84,7 @@ const ViewBanquet = ({ openView, setOpenView, data }) => {
                 Name
               </Typography>
               <Typography variant={"h6"} mb={0.5}>
-                {data?.name}
+                {data?.album_name}
               </Typography>
             </Item>
 
@@ -101,41 +97,40 @@ const ViewBanquet = ({ openView, setOpenView, data }) => {
               </Typography>
             </Item>
           </Stack>
-          <Typography
-            fontSize={"12px"}
-            variant={"body1"}
-            color="text.secondary"
-            mb={2}
-          >
-            {data?.handle}
-          </Typography>
 
           <Stack direction={"row"} alignSelf="stretch">
             <Item>
               <Typography variant={"h6"} color="text.secondary" fontSize={13}>
-                Location
+              Source
               </Typography>
               <Typography variant={"h6"} mb={0.5}>
-                {data?.location}
+                {data?.source}
               </Typography>
             </Item>
             <Item>
               <Typography variant={"h6"} color="text.secondary">
-                Capacity
+
               </Typography>
               <Typography variant={"h6"} mb={0.5}>
-                {data?.capacity}
+           
+               
               </Typography>
             </Item>
             <Item>
               <Typography variant={"h6"} color="text.secondary">
-                Rate
+              Event Date
               </Typography>
               <Typography variant={"h6"} mb={0.5}>
-                {data?.rate}
+              {getCustomDateTime(data?.event_date, "days", "DD MMM YYYY")}
+               
               </Typography>
             </Item>
+          
+           
+   
           </Stack>
+          
+
           <Stack direction={"row"} alignSelf="stretch">
             <Item>
               <Typography variant={"h6"} color="text.secondary">
@@ -146,7 +141,6 @@ const ViewBanquet = ({ openView, setOpenView, data }) => {
               </Typography>
             </Item>
           </Stack>
-
           <Stack direction={"row"} alignSelf="stretch">
             <Item>
               <Typography variant={"h6"} color="text.secondary">
@@ -157,56 +151,31 @@ const ViewBanquet = ({ openView, setOpenView, data }) => {
               </Typography>
             </Item>
           </Stack>
-          <Grid container rowSpacing={1} columnSpacing={1} marginTop={-1}>
-            <Grid item xs={6}>
-              <Item style={{ flex: 1, width: "50%" }}>
-                <Typography variant={"h6"} color="text.secondary">
-                  Tags
-                </Typography>
-                <Typography variant={"h6"} mb={0.5}>
-                  <div
-                    style={{
-                      overflowY: "scroll",
-                      maxHeight: "80px",
-                      display: "flex",
-                      flexWrap: "wrap",
-                    }}
-                  >
-                    {data &&
-                      data?.tags.map((tags, Index) => (
-                        <ListItem key={Index}>
-                          <Chip variant="outlined" label={tags} />
-                        </ListItem>
-                      ))}
-                  </div>
-                </Typography>
-              </Item>
-            </Grid>
-            <Grid item xs={6}>
-              <Item>
-                <Typography variant={"h6"} color="text.secondary">
-                  Amenities
-                </Typography>
-                <Typography variant={"h6"} mb={0.5}>
-                  <div
-                    style={{
-                      overflowY: "scroll",
-                      maxHeight: "80px",
-                      display: "flex",
-                      flexWrap: "wrap",
-                    }}
-                  >
-                    {data &&
-                      data?.amenities.map((amenity, index) => (
-                        <ListItem key={index}>
-                          <Chip variant="outlined" label={amenity} />
-                        </ListItem>
-                      ))}
-                  </div>
-                </Typography>
-              </Item>
-            </Grid>
-          </Grid>
+          <Stack direction={"row"} alignSelf="stretch">
+            <Item style={{ flex: 1, width: "50%" }}>
+              <Typography variant={"h6"} color="text.secondary">
+                Amenities
+              </Typography>
+              <Typography variant={"h6"} mb={0.5}>
+                <div
+                  style={{
+                    overflowY: "scroll",
+                    maxHeight: "80px",
+                    display: "flex",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  {data &&
+                    data?.length &&
+                    data.amenities?.map((data, Index) => (
+                      <ListItem key={Index}>
+                        <Chip variant="outlined" label={data} />
+                      </ListItem>
+                    ))}
+                </div>
+              </Typography>
+            </Item>
+          </Stack>
 
           <Typography variant={"h6"} color="text.secondary">
             Images
@@ -221,7 +190,7 @@ const ViewBanquet = ({ openView, setOpenView, data }) => {
               data?.images?.map((file) => (
                 <ImageListItem key={file}>
                   <img
-                    src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/banquet/${file}`}
+                    src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/gallery/${file}`}
                     alt=""
                     style={{
                       width: "100%",
@@ -242,4 +211,4 @@ const ViewBanquet = ({ openView, setOpenView, data }) => {
   );
 };
 
-export default ViewBanquet;
+export default ViewGallery;

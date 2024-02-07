@@ -54,28 +54,58 @@ const img = {
   height: "100%",
 };
 
-const ListItem = styled("li")(({ theme }) => ({
-  margin: theme.spacing(0.5),
+const ListItem = styled('li')(({ theme }) => ({
+  margin: theme.spacing(0.1),
+  borderRadius: '4px',
+  display: 'inline-block', 
+  padding: theme.spacing(.1),
 }));
 
 const AddBanquet = () => {
-  const [chipData, setChipData] = useState([]);
-  console.log(chipData,'chipData');
-  const [item, setItem] = useState("");
+  const [tagsData, setTagsData] = useState([]);
+  const [amenitiesData, setAmenitiesData] = useState([]);
+  const [tags, setTages] = useState("");
+  const [amenities, setAmenities] = useState("");
 
-  const handleDelete = (chipToDelete) => {
-    setChipData((chips) =>
-      chips.filter((chip) => chip.key !== chipToDelete.key)
-    );
+  const handleTagsDelete = (chipToDelete) => {
+    let found = false;
+    setTagsData((chips) => chips.filter((chip) => {
+      if (chip === chipToDelete && !found) {
+        found = true;
+        return false;
+      }
+      return true;
+    }));
   };
+  const handleAmenitiesDelete = (chipToDelete) => {
+    let found = false;
+    setAmenitiesData((chips) => chips.filter((chip) => {
+      if (chip === chipToDelete && !found) {
+        found = true;
+        return false;
+      }
+      return true;
+    }));
+  };
+  
 
-  const addChipItem = (event) => {
+  const addTagsItem = (event) => {
     const message = event.target.value.trim();
     if (event.key === "Enter" && message) {
-      const newItem = chipData.concat(item);
+      const newItem = tagsData.concat(tags);
+      setTagsData(newItem);
+      setTages("");
+      event.preventDefault();
+    }
+  };
 
-      setChipData(newItem);
-      setItem("");
+  const addAmenitiesItem = (event) => {
+    const message = event.target.value.trim();
+    if (event.key === "Enter" && message) {
+      const newItem = amenitiesData.concat(amenities);
+      setAmenitiesData(newItem);
+      setAmenities("");
+      event.preventDefault();
     }
   };
 
@@ -197,8 +227,8 @@ const AddBanquet = () => {
     formData.append("description", data.description);
     formData.append("capacity", data.capacity);
     formData.append("rate", data.rate);
-    formData.append("amenities", JSON.stringify([...chipData]));
-    formData.append("tags", JSON.stringify([...chipData]));
+    formData.append("amenities", JSON.stringify([...tagsData]));
+    formData.append("tags", JSON.stringify([...tagsData]));
     formData.append("end_date", data.tags);
     formData.append("terms_condition", data.terms_condition);
     formData.append("status", data.status);
@@ -301,10 +331,10 @@ const AddBanquet = () => {
                     <Typography variant="body1">Tags :-</Typography>
                     <TextField
                       variant="standard"
-                      label="Add Chips..."
-                      value={item}
-                      onChange={(e) => setItem(e.target.value)}
-                      onKeyPress={addChipItem}
+                      label="Add Tags..."
+                      value={tags}
+                      onChange={(e) => setTages(e.target.value)}
+                      onKeyPress={addTagsItem}
                       component="li"
                       sx={{
                         mx: 1,
@@ -317,15 +347,16 @@ const AddBanquet = () => {
                         overflowY: "scroll",
                         maxHeight: "80px",
                         display: "flex",
+
                         flexWrap: "wrap",
                       }}
                     >
-                      {chipData.map((data,Index) => (
+                      {tagsData?.map((data, Index) => (
                         <ListItem key={Index}>
                           <Chip
                             variant="outlined"
                             label={data}
-                            onDelete={() => handleDelete(data)}
+                            onDelete={() => handleTagsDelete(data)}
                           />
                         </ListItem>
                       ))}
@@ -335,10 +366,10 @@ const AddBanquet = () => {
                     <Typography variant="body1">Amenities :-</Typography>
                     <TextField
                       variant="standard"
-                      label="Add Chips..."
-                      value={item}
-                      onChange={(e) => setItem(e.target.value)}
-                      onKeyPress={addChipItem}
+                      label="Add Amenities..."
+                      value={amenities}
+                      onChange={(e) => setAmenities(e.target.value)}
+                      onKeyPress={addAmenitiesItem}
                       component="li"
                       sx={{
                         mx: 1,
@@ -354,12 +385,12 @@ const AddBanquet = () => {
                         flexWrap: "wrap",
                       }}
                     >
-                      {chipData.map((data,Index) => (
-                        <ListItem key={Index}>
+                      {amenitiesData?.map((data, index) => (
+                        <ListItem key={index}>
                           <Chip
                             variant="outlined"
                             label={data}
-                            onDelete={() => handleDelete(data)}
+                            onDelete={() => handleAmenitiesDelete(data)}
                           />
                         </ListItem>
                       ))}
@@ -391,7 +422,9 @@ const AddBanquet = () => {
                       style={{ marginTop: "10px" }}
                     >
                       <input {...getInputBannerImageProps()} />
-                      <Button variant="contained">Select Image</Button>
+                      <Button size="small" variant="contained">
+                        Select Image
+                      </Button>
                     </div>
                     <aside style={thumbsContainer}>{thumbss}</aside>
                   </Grid>
@@ -402,11 +435,16 @@ const AddBanquet = () => {
                       style={{ marginTop: "10px" }}
                     >
                       <input {...getInputProps()} />
-                      <Button variant="contained">Select Images</Button>
+                      <Button size="small" variant="contained">
+                        Select Images
+                      </Button>
                     </div>
                     <aside style={thumbsContainer}>{thumbs}</aside>
                   </Grid>
                 </Grid>{" "}
+                <Typography variant="body1" marginTop={1}>
+                  Description :-
+                </Typography>
                 <Grid container columnSpacing={3} marginTop={2}>
                   <Grid item xs={12}>
                     <ReactQuill
