@@ -14,6 +14,7 @@ import ToastAlerts from "app/components/Toast";
 import { getCustomDateTime } from "@jumbo/utils";
 import { Axios } from "app/services/config";
 import Swal from "sweetalert2";
+import LockResetOutlinedIcon from "@mui/icons-material/LockResetOutlined";
 export default function ListMember() {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
@@ -101,6 +102,12 @@ export default function ListMember() {
       onClick: (row) => navigate(`/member/edit/${row._id}`, { state: row }),
       icon: <ModeEditOutlinedIcon />,
     },
+    {
+      label: "Change Password",
+      color: "primary",
+      onClick: (row) => navigate(`/member/change-password/${row._id}`),
+      icon: <LockResetOutlinedIcon />,
+    },
   ];
   const fetchData = (props) => {
     setQuery({ ...query, ...props });
@@ -147,6 +154,7 @@ export default function ListMember() {
             label="Search"
             value={searchTerm}
             size="small"
+            type="search"
             onChange={(e) => {
               setSearchTerm(e.target.value);
             }}

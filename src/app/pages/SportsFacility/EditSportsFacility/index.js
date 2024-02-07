@@ -332,10 +332,10 @@ const EditSport = () => {
                     <Typography variant="body1">Banner Images :-</Typography>
                     <div
                       {...getRootBannerImageProps({ className: "dropzone" })}
-                      style={{ marginTop: "10px" }}
+                      style={{ marginTop: "10px", width: "114px" }}
                     >
                       <input {...getInputBannerImageProps()} />
-                      <Button variant="contained">Select Image</Button>
+                      <Button size="small" variant="contained">Select Image</Button>
                     </div>
                     <aside style={thumbsContainer}>
                       {/* Display initial image or selected images */}

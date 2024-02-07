@@ -17,6 +17,8 @@ import ResetPassword from "app/pages/Auth/OtpVerify";
 import { banquetRoute } from "./Banquet";
 import { sportRoute } from "./SportsFacility";
 import { galleryRoute } from "./Gallery";
+import { salonRoute } from "./Salon";
+import { spaRoute } from "./Spa";
 
 /**
  routes which you want to make accessible to both authenticated and anonymous users
@@ -63,6 +65,8 @@ const routesForAuthenticatedOnly = [
   ...banquetRoute,
   ...sportRoute,
   ...galleryRoute,
+  ...salonRoute,
+  ...spaRoute,
 ];
 
 /**

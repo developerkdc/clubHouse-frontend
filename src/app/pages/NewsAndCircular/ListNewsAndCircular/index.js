@@ -1,20 +1,28 @@
 import Div from "@jumbo/shared/Div/Div";
 import React, { useEffect, useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
-import { Autocomplete, Avatar, Button, InputAdornment, TextField, Typography } from "@mui/material";
+import {
+  Avatar,
+  Button,
+  InputAdornment,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import ModeEditOutlinedIcon from "@mui/icons-material/ModeEditOutlined";
 import CustomTable from "app/components/Table";
-import LockResetOutlinedIcon from "@mui/icons-material/LockResetOutlined";
+
 import PreviewOutlinedIcon from "@mui/icons-material/PreviewOutlined";
-import { onUserList } from "app/redux/actions/User";
+
 import ToastAlerts from "app/components/Toast";
-import { GlobalRoleList } from "app/redux/actions/Roles";
+
 import Swal from "sweetalert2";
-import ViewNews from "../ViewNews";
+
 import { onNewsList } from "app/redux/actions/NewsAndCircular";
 import { getCustomDateTime } from "@jumbo/utils";
+import { Axios } from "app/services/config";
+import ViewNewsAndCircular from "../ViewNewsAndCircular";
 
 export default function ListNews() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -23,7 +31,9 @@ export default function ListNews() {
   const dispatch = useDispatch();
   // const [rolesList, setRolesList] = useState([{ role_name: "user" }, { role_name: "admin" }, { role_name: "owner" }]);
   const { role_id } = JSON.parse(localStorage.getItem("authUser"));
-  const { newsList, totalPages, error } = useSelector((state) => state.newsReducer);
+  const { newsList, totalPages, error } = useSelector(
+    (state) => state.newsReducer
+  );
   const [openView, setOpenView] = useState(false);
   const [newsDetails, setNewsDetails] = useState(false);
   const [query, setQuery] = useState({});
@@ -52,7 +62,8 @@ export default function ListNews() {
       headerName: "Created Date",
       sortable: true,
       // render: (_, elm) => getCustomDateTime(elm?.created_at, "days", "DD MMMM YYYY hh:mm A"),
-      render: (_, elm) => getCustomDateTime(elm?.created_at, "days", "DD MMM YYYY"),
+      render: (_, elm) =>
+        getCustomDateTime(elm?.created_at, "days", "DD MMM YYYY"),
     },
 
     {
@@ -69,19 +80,27 @@ export default function ListNews() {
             Inactive
           </Button>
         ),
-      onClick: (elm) => {
-        let status = elm.status;
-        Swal.fire({
-          title: `Change user status to ${status ? "inactive" : "active"} ?`,
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonText: "Yes",
-          cancelButtonText: "No",
-        }).then((result) => {
+      onClick: async (elm) => {
+        try {
+          console.log(elm, "elmelm");
+          let status = elm.status;
+          const result = await Swal.fire({
+            title: `Change news status to ${status ? "inactive" : "active"} ?`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes",
+            cancelButtonText: "No",
+          });
           if (result.isConfirmed) {
-            navigate("/user");
+            await Axios.patch(`/news/edit/${elm._id}`, { status: !status });
+            showAlert("success", "News status updated successfully.");
+            navigate("/news");
+            dispatch(onNewsList(query));
           }
-        });
+        } catch (error) {
+          console.error("Error updating news:", error);
+          showAlert("error", "Failed to update news.");
+        }
       },
     },
   ];
@@ -120,7 +139,14 @@ export default function ListNews() {
   }, [query]);
 
   return (
-    <Div sx={{ mt: -4, maxHeight: "89vh", overflowY: "scroll", paddingRight: "10px" }}>
+    <Div
+      sx={{
+        mt: -4,
+        maxHeight: "89vh",
+        overflowY: "scroll",
+        paddingRight: "10px",
+      }}
+    >
       <Div
         sx={{
           position: "sticky",
@@ -130,8 +156,9 @@ export default function ListNews() {
         }}
       >
         <Typography variant="h1">News Master</Typography>
-        <Div sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
-        </Div>
+        <Div
+          sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}
+        ></Div>
         <Div
           sx={{
             display: "flex",
@@ -141,10 +168,11 @@ export default function ListNews() {
         >
           <TextField
             id="search"
-            autoComplete='onInputChange'
+            autoComplete="onInputChange"
             label="Search"
             value={searchTerm}
             size="small"
+            type="search"
             onChange={(e) => {
               setSearchTerm(e.target.value);
             }}
@@ -161,17 +189,34 @@ export default function ListNews() {
           />
           <Div>
             {role_id?.permissions?.news?.add && (
-              <Button size="small" variant="contained" sx={{ p: 1, pl: 4, pr: 4 }} onClick={() => navigate("/news/add")}>
-                Add User
+              <Button
+                size="small"
+                variant="contained"
+                sx={{ p: 1, pl: 4, pr: 4 }}
+                onClick={() => navigate("/news/add")}
+              >
+                Add news
               </Button>
             )}
           </Div>
         </Div>
       </Div>
       <Div>
-        <CustomTable data={newsList} columns={columns} actions={actions} fetchData={fetchData} totalCount={totalPages} />
+        <CustomTable
+          data={newsList}
+          columns={columns}
+          actions={actions}
+          fetchData={fetchData}
+          totalCount={totalPages}
+        />
       </Div>
-      {openView && newsDetails && <ViewNews openView={openView} setOpenView={setOpenView} data={newsDetails} />}
+      {openView && newsDetails && (
+        <ViewNewsAndCircular
+          openView={openView}
+          setOpenView={setOpenView}
+          data={newsDetails}
+        />
+      )}
     </Div>
   );
 }

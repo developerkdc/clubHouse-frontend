@@ -1,26 +1,26 @@
 import Page from "@jumbo/shared/Page";
 import PermissionMiddleware from "../Middleware/permission";
-import ListNews from "app/pages/NewsAndCircular/ListNewsAndCircular";
-import AddNews from "app/pages/NewsAndCircular/AddNewsAndCircular";
-import EditNews from "app/pages/NewsAndCircular/EditNewsAndCircular";
+import ListSalon from "app/pages/Salon/ListSalon";
+import EditSalon from "app/pages/Salon/EditSalon";
+import AddSalon from "app/pages/Salon/AddSalon";
 
-const routesName = "/news";
-const modules = "news";
+const routesName = "/salon";
+const modules = "salon";
 
 var routes = [
   {
     path: `${routesName}`,
-    element: <Page component={ListNews} layout={"vertical-default"} />,
+    element: <Page component={ListSalon} layout={"vertical-default"} />,
     permission: "view",
   },
   {
     path: `${routesName}/add`,
-    element: <Page component={AddNews} layout={"vertical-default"} />,
+    element: <Page component={AddSalon} layout={"vertical-default"} />,
     permission: "add",
   },
   {
     path: `${routesName}/edit/:id`,
-    element: <Page component={EditNews} layout={"vertical-default"} />,
+    element: <Page component={EditSalon} layout={"vertical-default"} />,
     permission: "edit",
   },
 ];
@@ -45,5 +45,4 @@ const createRoutes = () => {
   return allRoutes;
 };
 
-export const newsRoute = [...createRoutes()];
-
+export const salonRoute = [...createRoutes()];

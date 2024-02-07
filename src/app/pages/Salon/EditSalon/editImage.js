@@ -14,16 +14,14 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { Axios } from "app/services/config";
 import ToastAlerts from "app/components/Toast";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
-const EditSportImage = ({
+const EditSalonImage = ({
   openView,
   setOpenView,
   data,
-  setAddImageFiles,
 }) => {
-  // const [newPhotos, setNewPhotos] = useState([]);
-  const navigate = useNavigate();
+
   const showAlert = ToastAlerts();
   const { id } = useParams();
   const [oldImage, setOldImageImages] = useState(data);
@@ -31,16 +29,14 @@ const EditSportImage = ({
   const [deleteImage, setDeleteImages] = useState([]);
 
   const handleRemovePhoto = (fileToRemove) => {
-    console.log(fileToRemove, "fileToRemove");
     const updatedData = oldImage.filter((file) => file !== fileToRemove);
-    console.log(deleteImage, "111111111");
     setDeleteImages((prevDeletedImages) => [
       ...prevDeletedImages,
       fileToRemove,
     ]);
     setOldImageImages(updatedData);
   };
-  console.log(deleteImage, "2222222222");
+
 
   const handleRemoveNewPhoto = (fileToRemove) => {
     const updatedData = newPhotos.filter((file) => file !== fileToRemove);
@@ -50,6 +46,7 @@ const EditSportImage = ({
     accept: "image/*",
     onDrop: (acceptedFiles) => {
       console.log("Accepted Files:", acceptedFiles);
+
       setNewPhotos((prevFiles) => [
         ...prevFiles,
         ...acceptedFiles.map((file) =>
@@ -75,8 +72,8 @@ const EditSportImage = ({
     });
     formData.append(`deleteImages`, JSON.stringify([...deleteImage]));
     try {
-      await Axios.post(`/sport/update-images/${id}`, formData);
-      showAlert("success", "Sport updated successfully.");
+      await Axios.post(`/salon/update-images/${id}`, formData);
+      showAlert("success", "Salon updated successfully.");
 
       setOpenView(false);
     } catch (error) {
@@ -110,7 +107,7 @@ const EditSportImage = ({
         <ImageListItem>
           <div
             {...getRootProps({ className: "dropzone" })}
-            style={{ marginTop: "10px", width: "95px" }}
+            style={{ marginTop: "10px", width: "118px" }}
           >
             <input {...getInputProps()} />
             <Button size="small" variant="contained">Add Photo</Button>
@@ -134,7 +131,7 @@ const EditSportImage = ({
                 onClick={() => handleRemovePhoto(file)}
               />
               <img
-                src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/sport/${file}`}
+                src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/salon/${file}`}
                 alt=""
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
@@ -182,4 +179,4 @@ const EditSportImage = ({
   );
 };
 
-export default EditSportImage;
+export default EditSalonImage;

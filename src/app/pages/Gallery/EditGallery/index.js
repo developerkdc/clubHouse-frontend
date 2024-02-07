@@ -260,10 +260,13 @@ const EditGallery = () => {
                     <Typography variant="body1">Banner Images :-</Typography>
                     <div
                       {...getRootBannerImageProps({ className: "dropzone" })}
-                      style={{ marginTop: "10px" }}
+                      style={{ marginTop: "10px", width: "120px" }}
                     >
                       <input {...getInputBannerImageProps()} />
-                      <Button size="small" variant="contained">  <ModeEditIcon /></Button>
+                      <Button size="small" variant="contained">
+                        {" "}
+                        Selecte Image
+                      </Button>
                     </div>
                     <aside style={thumbsContainer}>
                       {/* Display initial image or selected images */}
@@ -319,7 +322,7 @@ const EditGallery = () => {
                 <Typography variant="body1" marginTop={1}>
                   Description :-
                 </Typography>
-           
+
                 <Grid container rowSpacing={3} columnSpacing={3} marginTop={-1}>
                   <Grid item xs={12}>
                     <ReactQuill

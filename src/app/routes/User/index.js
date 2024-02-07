@@ -3,7 +3,7 @@ import AddUser from "app/pages/UserManagement/AddUser";
 import ListUser from "app/pages/UserManagement/ListUser";
 import EditUser from "app/pages/UserManagement/EditUser";
 import PermissionMiddleware from "../Middleware/permission";
-import AdminChangePassword from "app/pages/UserManagement/UserChangePassword";
+import UserChangePassword from "app/pages/UserManagement/UserChangePassword";
 
 const routesName = "/user";
 const modules = "user";
@@ -26,7 +26,7 @@ var routes = [
   },
   {
     path: `${routesName}/change-password/:id`,
-    element: <Page component={AdminChangePassword} layout={"vertical-default"} />,
+    element: <Page component={UserChangePassword} layout={"vertical-default"} />,
     permission: "edit",
   },
 ];

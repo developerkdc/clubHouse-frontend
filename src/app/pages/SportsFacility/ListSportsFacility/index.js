@@ -158,6 +158,7 @@ export default function ListSport() {
             label="Search"
             value={searchTerm}
             size="small"
+            type="search"
             onChange={(e) => {
               setSearchTerm(e.target.value);
             }}

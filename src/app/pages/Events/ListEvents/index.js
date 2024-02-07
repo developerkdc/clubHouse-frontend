@@ -253,6 +253,7 @@ export default function ListEvent() {
             label="Search"
             value={searchTerm}
             size="small"
+            type="search"
             onChange={(e) => {
               setSearchTerm(e.target.value);
             }}

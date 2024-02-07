@@ -23,8 +23,11 @@ import Swal from "sweetalert2";
 import * as yup from "yup";
 import { Axios } from "app/services/config";
 import ToastAlerts from "app/components/Toast";
-import ReactQuill from "react-quill";
+import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import { css } from "@emotion/react";
+import "quill-emoji/dist/quill-emoji.css";
+import QuillEmoji from "quill-emoji";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import EditEventImage from "./editImage";
 
@@ -57,7 +60,23 @@ const thumbInner = {
   minWidth: 0,
   overflow: "hidden",
 };
+Quill.register("modules/emoji", QuillEmoji);
 
+const modules = {
+  toolbar: [
+    [{ header: "1" }, { header: "2" }, { font: [] }],
+    [{ size: [] }],
+    ["bold", "italic", "underline", "strike", "blockquote"],
+    [{ list: "ordered" }, { list: "bullet" }],
+    ["link", "image", "emoji"],
+    ["clean"],
+  ],
+  clipboard: {
+    matchVisual: false,
+  },
+  "emoji-toolbar": true,
+  "emoji-textarea": false,
+};
 const EditEvent = () => {
   const [category, SetCategory] = useState(["sport", "religion"]);
   const [eventType, SetEventType] = useState(["free", "paid"]);
@@ -75,7 +94,6 @@ const EditEvent = () => {
     event_type: state.event_type,
     short_description: state.short_description,
     description: state.description,
-
     start_date: new Date(state.start_date).toISOString().split("T")[0],
     entry_fee: state.entry_fee,
     end_date: new Date(state.end_date).toISOString().split("T")[0],
@@ -384,17 +402,18 @@ const EditEvent = () => {
                     labelPlacement="start"
                   />
                 </Grid>
-           
 
                 <Grid container rowSpacing={3} columnSpacing={3} marginTop={5}>
                   <Grid item xs={3}>
                     <Typography variant="body1">Banner Images :-</Typography>
                     <div
                       {...getRootBannerImageProps({ className: "dropzone" })}
-                      style={{ marginTop: "10px" }}
+                      style={{ marginTop: "10px", width: "112px" }}
                     >
                       <input {...getInputBannerImageProps()} />
-                      <Button variant="contained">Select Image</Button>
+                      <Button size="small" variant="contained">
+                        Select Image
+                      </Button>
                     </div>
                     <aside style={thumbsContainer}>
                       {/* Display initial image or selected images */}
@@ -447,8 +466,10 @@ const EditEvent = () => {
                     </ImageList>
                   </Grid>
                 </Grid>
-                
-                <Typography variant="body1" marginTop={1}>Description :-</Typography>
+
+                <Typography variant="body1" marginTop={1}>
+                  Description :-
+                </Typography>
                 <Grid container rowSpacing={3} columnSpacing={3} marginTop={2}>
                   <Grid item xs={12}>
                     <ReactQuill
@@ -458,6 +479,31 @@ const EditEvent = () => {
                         console.log(content);
                         setFieldValue("description", content);
                       }}
+                      modules={modules}
+                      formats={[
+                        "header",
+                        "font",
+                        "size",
+                        "bold",
+                        "italic",
+                        "underline",
+                        "strike",
+                        "blockquote",
+                        "list",
+                        "bullet",
+                        "link",
+                        "image",
+                        "emoji",
+                      ]}
+                      css={css`
+                        .ql-editor img {
+                          max-width: 100%; /* Fix width */
+                          height: auto; /* Maintain aspect ratio */
+                        }
+                        .ql-editor {
+                          min-height: 18em;
+                        }
+                      `}
                     />
                   </Grid>
                 </Grid>

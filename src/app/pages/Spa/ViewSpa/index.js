@@ -15,13 +15,12 @@ import PreviewOutlinedIcon from "@mui/icons-material/PreviewOutlined";
 import ModeEditOutlinedIcon from "@mui/icons-material/ModeEditOutlined";
 import { useSelector } from "react-redux";
 import ToastAlerts from "app/components/Toast";
-import { onGalleryList } from "app/redux/actions/Gallery";
-import { getCustomDateTime } from "@jumbo/utils";
-import ViewGallery from "../ViewGallery";
-import Swal from "sweetalert2";
+import { onBanquetList } from "app/redux/actions/Banquet";
+// import ViewBanquet from "../ViewBanquet";
 import { Axios } from "app/services/config";
+import Swal from "sweetalert2";
 
-export default function ListGallery() {
+export default function ListSpa() {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const showAlert = ToastAlerts();
@@ -32,14 +31,14 @@ export default function ListGallery() {
 
   const [selectedEventDate, setSelectedEventDate] = useState(null);
 
-  const { galleryList, totalPages, error, successMessage } = useSelector(
-    (state) => state.galleryReducer
+  const { banquetList, totalPages, error, successMessage } = useSelector(
+    (state) => state.banquetReducer
   );
-  console.log(galleryList,'ddddddd');
+
   const [query, setQuery] = useState({});
 
   const columns = [
-    { field: "album_name", headerName: "Album Name", sortable: true },
+    { field: "name", headerName: "Name", sortable: true },
     {
       field: "banner_image",
       headerName: "Image",
@@ -50,57 +49,51 @@ export default function ListGallery() {
             height: 56,
           }}
           variant="rounded"
-          src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/gallery/${value}`}
+          src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/banquet/${value}`}
         />
       ),
     },
+    { field: "location", headerName: "Location", sortable: true },
+    { field: "capacity", headerName: "Capacity", sortable: true },
+    { field: "rate", headerName: "Rate", sortable: true },
     {
-        field: "event_date",
-        headerName: "Event Date",
-        sortable: true,
-        render: (_, elm) =>
-          getCustomDateTime(elm?.event_date, "days", "DD MMM YYYY"),
-      },
-      {
-        field: "status",
-        headerName: "Status",
-        sortable: true,
-        render: (value, elm) =>
-          value ? (
-            <Button size="small" variant="outlined" color="success">
-              Active
-            </Button>
-          ) : (
-            <Button size="small" variant="outlined" color="error">
-              Inactive
-            </Button>
-          ),
-        onClick: async (elm) => {
-          try {
-            console.log(elm, "elmelm");
-            let status = elm.status;
-            const result = await Swal.fire({
-              title: `Change gallery status to ${status ? "inactive" : "active"} ?`,
-              icon: "warning",
-              showCancelButton: true,
-              confirmButtonText: "Yes",
-              cancelButtonText: "No",
-            });
-            if (result.isConfirmed) {
-              await Axios.patch(`/gallery/edit/${elm._id}`, { status: !status });
-              showAlert("success", "Gallery status updated successfully.");
-              navigate("/gallery");
-              dispatch(onGalleryList(query));
-            }
-          } catch (error) {
-            console.error("Error updating gallery:", error);
-            showAlert("error", "Failed to update gallery.");
+      field: "status",
+      headerName: "Status",
+      sortable: true,
+      render: (value, elm) =>
+        value ? (
+          <Button size="small" variant="outlined" color="success">
+            Active
+          </Button>
+        ) : (
+          <Button size="small" variant="outlined" color="error">
+            Inactive
+          </Button>
+        ),
+      onClick: async (elm) => {
+        try {
+          console.log(elm, "elmelm");
+          let status = elm.status;
+          const result = await Swal.fire({
+            title: `Change banquet status to ${status ? "inactive" : "active"} ?`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes",
+            cancelButtonText: "No",
+          });
+          if (result.isConfirmed) {
+            await Axios.patch(`/banquet/edit/${elm._id}`, { status: !status });
+            showAlert("success", "Banquet status updated successfully.");
+            navigate("/banquet");
+            dispatch(onBanquetList(query));
           }
-        },
+        } catch (error) {
+          console.error("Error updating banquet:", error);
+          showAlert("error", "Failed to update banquet.");
+        }
       },
+    },
   ];
- 
-
   const actions = [
     {
       label: "View Details",
@@ -114,7 +107,7 @@ export default function ListGallery() {
     {
       label: "Edit",
       color: "secondary",
-      onClick: (row) => navigate(`/gallery/edit/${row._id}`, { state: row }),
+      onClick: (row) => navigate(`/banquet/edit/${row._id}`, { state: row }),
       icon: <ModeEditOutlinedIcon />,
     },
   ];
@@ -132,7 +125,7 @@ export default function ListGallery() {
   }
 
   useEffect(() => {
-    dispatch(onGalleryList(query));
+    dispatch(onBanquetList(query));
   }, [query]);
 
   const handleFilter = () => {
@@ -160,7 +153,7 @@ export default function ListGallery() {
           zIndex: 10, // Ensure the header stays above the body
         }}
       >
-        <Typography variant="h1">Gallery Master</Typography>
+        <Typography variant="h1">Salon Master</Typography>
         
 
         <Div
@@ -196,9 +189,9 @@ export default function ListGallery() {
               size="small"
               variant="contained"
               sx={{ p: 1, pl: 4, pr: 4 }}
-              onClick={() => navigate("/gallery/add")}
+              onClick={() => navigate("/banquet/add")}
             >
-              Add Gallery
+              Add Salon
             </Button>
             {/* )} */}
           </Div>
@@ -206,20 +199,20 @@ export default function ListGallery() {
       </Div>
       <Div>
         <CustomTable
-          data={galleryList}
+          data={banquetList}
           columns={columns}
           actions={actions}
           fetchData={fetchData}
           totalCount={totalPages}
         />
       </Div>
-      {openView && eventDetails && (
-        <ViewGallery
+      {/* {openView && eventDetails && (
+        <ViewBanquet
           openView={openView}
           setOpenView={setOpenView}
           data={eventDetails}
         />
-      )}
+      )} */}
     </Div>
   );
 }

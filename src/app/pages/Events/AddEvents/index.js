@@ -21,9 +21,27 @@ import * as yup from "yup";
 import { Axios } from "app/services/config";
 import ToastAlerts from "app/components/Toast";
 import { useDropzone } from "react-dropzone";
-import ReactQuill from "react-quill";
+import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import "quill-emoji/dist/quill-emoji.css";
+import QuillEmoji from "quill-emoji";
+Quill.register("modules/emoji", QuillEmoji);
 
+const modules = {
+  toolbar: [
+    [{ header: "1" }, { header: "2" }, { font: [] }],
+    [{ size: [] }],
+    ["bold", "italic", "underline", "strike", "blockquote"],
+    [{ list: "ordered" }, { list: "bullet" }],
+    ["link", "image", "emoji"],
+    ["clean"],
+  ],
+  clipboard: {
+    matchVisual: false,
+  },
+  "emoji-toolbar": true,
+  "emoji-textarea": false,
+};
 const thumbsContainer = {
   display: "flex",
   flexDirection: "row",
@@ -112,13 +130,14 @@ const AddEvent = () => {
   const { getRootProps, getInputProps } = useDropzone({
     accept: "image/*",
     onDrop: (acceptedFiles) => {
-      setFiles(
-        acceptedFiles.map((file) =>
+      setFiles((prevFiles) => [
+        ...prevFiles,
+        ...acceptedFiles.map((file) =>
           Object.assign(file, {
             preview: URL.createObjectURL(file),
           })
-        )
-      );
+        ),
+      ]);
     },
   });
 
@@ -414,20 +433,9 @@ const AddEvent = () => {
                     <Typography variant="body1">Banner Image :-</Typography>
                     <div
                       {...getRootBannerImageProps({ className: "dropzone" })}
-                      style={{
-                        marginTop: "10px",
-                        position: "relative",
-                        width: "fit-content",
-                      }}
+                      style={{ marginTop: "10px", width: "112px" }}
                     >
-                      <input
-                        {...getInputBannerImageProps()}
-                        style={{
-                          position: "absolute",
-                          opacity: 0,
-                          cursor: "pointer",
-                        }}
-                      />
+                      <input {...getInputBannerImageProps()} />
                       <Button size="small" variant="contained">
                         Select Image
                       </Button>
@@ -438,20 +446,9 @@ const AddEvent = () => {
                     <Typography variant="body1">Images :-</Typography>
                     <div
                       {...getRootProps({ className: "dropzone" })}
-                      style={{
-                        marginTop: "10px",
-                        position: "relative",
-                        width: "fit-content",
-                      }}
+                      style={{ marginTop: "10px", width: "120px" }}
                     >
-                      <input
-                        {...getInputProps()}
-                        style={{
-                          position: "absolute",
-                          opacity: 0,
-                          cursor: "pointer",
-                        }}
-                      />
+                      <input {...getInputProps()} />
                       <Button size="small" variant="contained">
                         Select Images
                       </Button>
@@ -471,6 +468,23 @@ const AddEvent = () => {
                         console.log(content);
                         setFieldValue("description", content);
                       }}
+                      modules={modules}
+                      formats={[
+                        "header",
+                        "font",
+                        "size",
+                        "bold",
+                        "italic",
+                        "underline",
+                        "strike",
+                        "blockquote",
+                        "list",
+                        "bullet",
+                        "link",
+                        "image",
+                        "emoji",
+                      ]}
+               
                     />
                   </Grid>
                 </Grid>
