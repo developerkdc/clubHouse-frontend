@@ -326,7 +326,7 @@ const AddSport = () => {
                           cancelButtonText: "No",
                         }).then((result) => {
                           if (result.isConfirmed) {
-                            navigate("/banquet");
+                            navigate("/sport");
                           }
                         });
                       }}

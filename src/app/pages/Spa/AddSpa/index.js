@@ -83,7 +83,7 @@ const AddSpa = () => {
     [bannerImage]
   );
 
-  const handleSalonAdd = async (data) => {
+  const handleSpaAdd = async (data) => {
     console.log(data, "data");
     const formData = new FormData();
     files.forEach((file) => {
@@ -105,9 +105,9 @@ const AddSpa = () => {
     formData.append("status", data.status);
 
     try {
-      await Axios.post("/salon/add", formData);
-      showAlert("success", "Salon added successfully.");
-      navigate("/salon");
+      await Axios.post("/spa/add", formData);
+      showAlert("success", "Spa added successfully.");
+      navigate("/spa");
     } catch (error) {
       showAlert("error", error.response.data.message);
     }
@@ -128,7 +128,7 @@ const AddSpa = () => {
               validationSchema
                 .validate(data, { abortEarly: false })
                 .then(() => {
-                  handleSalonAdd(data);
+                  handleSpaAdd(data);
                   setSubmitting(false);
                 })
                 .catch((validationErrors) => {
@@ -283,7 +283,7 @@ const AddSpa = () => {
                           cancelButtonText: "No",
                         }).then((result) => {
                           if (result.isConfirmed) {
-                            navigate("/banquet");
+                            navigate("/spa");
                           }
                         });
                       }}

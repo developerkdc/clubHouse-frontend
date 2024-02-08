@@ -4,7 +4,8 @@ import  { Axios } from "app/services/config";
 const setError = (type, error) => ({ type, payload: error });
 const clearError = (type) => ({ type, payload: null });
 
-export const onSpatList = (query) => async (dispatch) => {
+export const onSpaList = (query) => async (dispatch) => {
+  console.log(query,'');
   try {
     dispatch(clearError(SPA_ERROR));
 

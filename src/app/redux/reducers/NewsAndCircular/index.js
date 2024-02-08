@@ -1,15 +1,22 @@
 import {
+  NEWS_ADDED,
+  NEWS_DELETE,
+  NEWS_EDIT,
   NEWS_LIST,
   NEWS_ERROR,
+  GLOBAL_NEWS_LIST,
+  NEWS_SUCCESS,
 } from "../../actions/NewsAndCircular/newsConstant";
 
 const initialState = {
   newsList: [],
+  globalNewsList: [],
   loading: false,
   error: null,
   successMessage: null,
-  totalPages:0
+  totalPages: null,
 };
+
 
 const reducerFunc = (state = initialState, action) => {
   switch (action.type) {
@@ -19,8 +26,26 @@ const reducerFunc = (state = initialState, action) => {
         newsList: action.payload?.data || [],
         loading: false,
         error: null,
-        successMessage:action.payload?.message,
-        totalPages:action.payload?.totalPages,
+        successMessage: action.payload?.message,
+        totalPages: action.payload?.totalPages,
+      };
+    case GLOBAL_NEWS_LIST:
+      return {
+        ...state,
+        globalNewsList: action.payload?.data || [],
+        loading: false,
+        error: null,
+        successMessage: action.payload?.message,
+      };
+
+    case NEWS_ADDED:
+    case NEWS_EDIT:
+    case NEWS_DELETE:
+      return {
+        ...state,
+        loading: false,
+        successMessage: action.payload?.message,
+        error: null,
       };
 
     case NEWS_ERROR:
@@ -28,7 +53,7 @@ const reducerFunc = (state = initialState, action) => {
         ...state,
         loading: false,
         successMessage: null,
-        error: action.payload
+        error: action.payload,
       };
 
     default:

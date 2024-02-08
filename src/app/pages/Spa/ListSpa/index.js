@@ -17,7 +17,9 @@ import { useSelector } from "react-redux";
 import ToastAlerts from "app/components/Toast";
 import { Axios } from "app/services/config";
 import Swal from "sweetalert2";
-import { onSalontList } from "app/redux/actions/Salon";
+
+import { onSpaList } from "app/redux/actions/Spa";
+import ViewSpa from "../ViewSpa";
 
 export default function ListSpa() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -27,8 +29,8 @@ export default function ListSpa() {
   const [openView, setOpenView] = useState(false);
   const [eventDetails, setMmberDetails] = useState(false);
   const [selectedEventDate, setSelectedEventDate] = useState(null);
-  const { salonList, totalPages, error, successMessage } = useSelector(
-    (state) => state.salonReducer
+  const { spaList, totalPages, error, successMessage } = useSelector(
+    (state) => state.spaReducer
   );
 
   const [query, setQuery] = useState({});
@@ -45,7 +47,7 @@ export default function ListSpa() {
             height: 56,
           }}
           variant="rounded"
-          src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/salon/${value}`}
+          src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/spa/${value}`}
         />
       ),
     },
@@ -71,21 +73,21 @@ export default function ListSpa() {
           console.log(elm, "elmelm");
           let status = elm.status;
           const result = await Swal.fire({
-            title: `Change salon status to ${status ? "inactive" : "active"} ?`,
+            title: `Change spa status to ${status ? "inactive" : "active"} ?`,
             icon: "warning",
             showCancelButton: true,
             confirmButtonText: "Yes",
             cancelButtonText: "No",
           });
           if (result.isConfirmed) {
-            await Axios.patch(`/salon/edit/${elm._id}`, { status: !status });
-            showAlert("success", "Salon status updated successfully.");
-            navigate("/salon");
-            dispatch(onSalontList(query));
+            await Axios.patch(`/spa/edit/${elm._id}`, { status: !status });
+            showAlert("success", "spa status updated successfully.");
+            navigate("/spa");
+            dispatch(onSpaList(query));
           }
         } catch (error) {
-          console.error("Error updating salon:", error);
-          showAlert("error", "Failed to update salon.");
+          console.error("Error updating spa:", error);
+          showAlert("error", "Failed to update spa.");
         }
       },
     },
@@ -103,7 +105,7 @@ export default function ListSpa() {
     {
       label: "Edit",
       color: "secondary",
-      onClick: (row) => navigate(`/salon/edit/${row._id}`, { state: row }),
+      onClick: (row) => navigate(`/spa/edit/${row._id}`, { state: row }),
       icon: <ModeEditOutlinedIcon />,
     },
   ];
@@ -121,7 +123,7 @@ export default function ListSpa() {
   }
 
   useEffect(() => {
-    dispatch(onSalontList(query));
+    dispatch(onSpaList(query));
   }, [query]);
 
 
@@ -187,20 +189,20 @@ export default function ListSpa() {
       </Div>
       <Div>
         <CustomTable
-          data={salonList}
+          data={spaList}
           columns={columns}
           actions={actions}
           fetchData={fetchData}
           totalCount={totalPages}
         />
       </Div>
-      {/* {openView && eventDetails && (
-        <ViewBanquet
+      {openView && eventDetails && (
+        <ViewSpa
           openView={openView}
           setOpenView={setOpenView}
           data={eventDetails}
         />
-      )} */}
+      )}
     </Div>
   );
 }

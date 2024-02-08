@@ -14,14 +14,13 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { Axios } from "app/services/config";
 import ToastAlerts from "app/components/Toast";
-import { useNavigate, useParams } from "react-router-dom";
+import {useParams } from "react-router-dom";
 
 const EditGalleryImage = ({
   openView,
   setOpenView,
   data,
 }) => {
-  const navigate = useNavigate();
   const showAlert = ToastAlerts();
   const { id } = useParams();
   const [oldImage, setOldImageImages] = useState(data);
@@ -82,7 +81,6 @@ const EditGalleryImage = ({
     }
   };
 
-  // console.log(data, "data");
   return (
     <Dialog
       open={openView}

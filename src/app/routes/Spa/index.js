@@ -18,11 +18,11 @@ var routes = [
     element: <Page component={AddSpa} layout={"vertical-default"} />,
     permission: "add",
   },
-  // {
-  //   path: `${routesName}/edit/:id`,
-  //   element: <Page component={EditSpa} layout={"vertical-default"} />,
-  //   permission: "edit",
-  // },
+  {
+    path: `${routesName}/edit/:id`,
+    element: <Page component={EditSpa} layout={"vertical-default"} />,
+    permission: "edit",
+  },
 ];
 
 const createRoutes = () => {

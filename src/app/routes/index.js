@@ -19,6 +19,9 @@ import { sportRoute } from "./SportsFacility";
 import { galleryRoute } from "./Gallery";
 import { salonRoute } from "./Salon";
 import { spaRoute } from "./Spa";
+import { libraryRoute } from "./Library";
+import { TrainerRoute } from "./Trainer";
+import { NutritionistRoute } from "./Nutritionist";
 
 /**
  routes which you want to make accessible to both authenticated and anonymous users
@@ -67,6 +70,9 @@ const routesForAuthenticatedOnly = [
   ...galleryRoute,
   ...salonRoute,
   ...spaRoute,
+  ...libraryRoute,
+  ...TrainerRoute,
+  ...NutritionistRoute,
 ];
 
 /**
