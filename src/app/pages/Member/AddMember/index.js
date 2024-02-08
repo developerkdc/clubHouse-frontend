@@ -71,11 +71,11 @@ const AddMember = () => {
     family_member: yup.array(
       yup.object({
         first_name: yup.string().required('First Name is required'),
-        last_name: yup.string().required('Last Name is required'),
+        last_name: yup.string().required('Last Name is required').nullable() ,
         mobile_no: yup.string()
           .typeError("Phone number must be a number")
 
-          .matches(/^\d{10}$/, "Number should be 10 digits."),
+          .matches(/^\d{10}$/, "Number should be 10 digits.").nullable() ,
         dob: yup
           .date()
           .nullable() // Allow null or empty string as valid values
@@ -89,7 +89,7 @@ const AddMember = () => {
             return value < currentDate;
           })
         ,
-        email_id: yup.string("Enter your Email ID").email("Enter a valid Email ID"),
+        email_id: yup.string("Enter your Email ID").email("Enter a valid Email ID").nullable() ,
         relation: yup.string().required('Relation is required'),
       })
     )

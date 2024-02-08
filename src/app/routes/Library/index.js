@@ -1,26 +1,29 @@
 import Page from "@jumbo/shared/Page";
 import PermissionMiddleware from "../Middleware/permission";
-import ListSpa from "app/pages/Spa/ListSpa";
-import AddSpa from "app/pages/Spa/AddSpa";
-import EditSpa from "app/pages/Spa/EditSpa";
+import AddLibrary from "app/pages/Library/AddLibrary";
+import ListLibrary from "app/pages/Library/ListLibrary";
+import EditLibrary from "app/pages/Library/EditLibrary";
 
-const routesName = "/spa";
-const modules = "spa";
+
+
+
+const routesName = "/library";
+const modules = "library";
 
 var routes = [
   {
     path: `${routesName}`,
-    element: <Page component={ListSpa} layout={"vertical-default"} />,
+    element: <Page component={ListLibrary} layout={"vertical-default"} />,
     permission: "view",
   },
   {
     path: `${routesName}/add`,
-    element: <Page component={AddSpa} layout={"vertical-default"} />,
+    element: <Page component={AddLibrary} layout={"vertical-default"} />,
     permission: "add",
   },
   {
     path: `${routesName}/edit/:id`,
-    element: <Page component={EditSpa} layout={"vertical-default"} />,
+    element: <Page component={EditLibrary} layout={"vertical-default"} />,
     permission: "edit",
   },
 ];
@@ -45,4 +48,5 @@ const createRoutes = () => {
   return allRoutes;
 };
 
-export const spaRoute = [...createRoutes()];
+export const libraryRoute = [...createRoutes()];
+

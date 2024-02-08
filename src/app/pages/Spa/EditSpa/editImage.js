@@ -14,13 +14,14 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { Axios } from "app/services/config";
 import ToastAlerts from "app/components/Toast";
-import {useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
-const EditGalleryImage = ({
+const EditSpaImage = ({
   openView,
   setOpenView,
   data,
 }) => {
+
   const showAlert = ToastAlerts();
   const { id } = useParams();
   const [oldImage, setOldImageImages] = useState(data);
@@ -28,16 +29,14 @@ const EditGalleryImage = ({
   const [deleteImage, setDeleteImages] = useState([]);
 
   const handleRemovePhoto = (fileToRemove) => {
-    console.log(fileToRemove, "fileToRemove");
     const updatedData = oldImage.filter((file) => file !== fileToRemove);
-    console.log(deleteImage, "111111111");
     setDeleteImages((prevDeletedImages) => [
       ...prevDeletedImages,
       fileToRemove,
     ]);
     setOldImageImages(updatedData);
   };
-  console.log(deleteImage, "2222222222");
+
 
   const handleRemoveNewPhoto = (fileToRemove) => {
     const updatedData = newPhotos.filter((file) => file !== fileToRemove);
@@ -47,6 +46,7 @@ const EditGalleryImage = ({
     accept: "image/*",
     onDrop: (acceptedFiles) => {
       console.log("Accepted Files:", acceptedFiles);
+
       setNewPhotos((prevFiles) => [
         ...prevFiles,
         ...acceptedFiles.map((file) =>
@@ -72,8 +72,9 @@ const EditGalleryImage = ({
     });
     formData.append(`deleteImages`, JSON.stringify([...deleteImage]));
     try {
-      await Axios.post(`/gallery/update-images/${id}`, formData);
-      showAlert("success", "Gallery updated successfully.");
+      
+      await Axios.post(`/spa/update-images/${id}`, formData);
+      showAlert("success", "Spa updated successfully.");
 
       setOpenView(false);
     } catch (error) {
@@ -81,6 +82,7 @@ const EditGalleryImage = ({
     }
   };
 
+  // console.log(data, "data");
   return (
     <Dialog
       open={openView}
@@ -106,7 +108,7 @@ const EditGalleryImage = ({
         <ImageListItem>
           <div
             {...getRootProps({ className: "dropzone" })}
-            style={{ marginTop: "10px", width: "95px" }}
+            style={{ marginTop: "10px", width: "118px" }}
           >
             <input {...getInputProps()} />
             <Button size="small" variant="contained">Add Photo</Button>
@@ -130,7 +132,7 @@ const EditGalleryImage = ({
                 onClick={() => handleRemovePhoto(file)}
               />
               <img
-                src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/gallery/${file}`}
+                src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/spa/${file}`}
                 alt=""
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
@@ -178,4 +180,4 @@ const EditGalleryImage = ({
   );
 };
 
-export default EditGalleryImage;
+export default EditSpaImage;
