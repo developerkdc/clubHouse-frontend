@@ -373,7 +373,7 @@ const AddSalon = () => {
                           cancelButtonText: "No",
                         }).then((result) => {
                           if (result.isConfirmed) {
-                            navigate("/banquet");
+                            navigate("/salon");
                           }
                         });
                       }}

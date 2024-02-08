@@ -18,6 +18,7 @@ import ToastAlerts from "app/components/Toast";
 import { Axios } from "app/services/config";
 import Swal from "sweetalert2";
 import { onSalontList } from "app/redux/actions/Salon";
+import ViewSalon from "../ViewSalon";
 
 export default function ListSalon() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -194,13 +195,13 @@ export default function ListSalon() {
           totalCount={totalPages}
         />
       </Div>
-      {/* {openView && eventDetails && (
-        <ViewBanquet
+      {openView && eventDetails && (
+        <ViewSalon
           openView={openView}
           setOpenView={setOpenView}
           data={eventDetails}
         />
-      )} */}
+      )}
     </Div>
   );
 }

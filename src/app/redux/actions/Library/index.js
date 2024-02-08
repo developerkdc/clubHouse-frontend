@@ -1,45 +1,45 @@
-import { SPA_LIST, SPA_ERROR,GLOBAL_SPA_LIST } from "./spaConstant";
+import { LIBRARY_LIST, LIBRARY_ERROR,GLOBAL_LIBRARY_LIST } from "./libraryConstant";
 import  { Axios } from "app/services/config";
 
 const setError = (type, error) => ({ type, payload: error });
 const clearError = (type) => ({ type, payload: null });
 
-export const onSpaList = (query) => async (dispatch) => {
-  console.log(query,'');
+export const onLibraryList = (query) => async (dispatch) => {
   try {
-    dispatch(clearError(SPA_ERROR));
+    dispatch(clearError(LIBRARY_ERROR));
 
-    let apiUrl = `/spa/list`;
+    let apiUrl = `/library/list`;
     if (query) {
       const queryParams = new URLSearchParams(query);
       apiUrl = apiUrl + (queryParams.toString() ? `?${queryParams.toString()}` : "");
     }
     const { data } = await Axios.get(apiUrl);
 
-    dispatch({ type: SPA_LIST, payload: data });
+
+    dispatch({ type: LIBRARY_LIST, payload: data });
   } catch (error) {
     // setLoading(false);
-    dispatch(setError(SPA_ERROR, error.message));
+    dispatch(setError(LIBRARY_ERROR, error.message));
   } finally {
     // setLoading(false);
   }
 };
 
-export const GlobalSpaList = (query) => async (dispatch) => {
+export const GlobalLibraryList = (query) => async (dispatch) => {
   try {
-    dispatch(clearError(SPA_ERROR));
+    dispatch(clearError(LIBRARY_ERROR));
 
-    let apiUrl = `/spa/spaList`;
+    let apiUrl = `/library/libraryList`;
     if (query) {
       const queryParams = new URLSearchParams(query);
       apiUrl = apiUrl + (queryParams.toString() ? `?${queryParams.toString()}` : "");
     }
     const { data } = await Axios.get(apiUrl);
 
-    dispatch({ type: GLOBAL_SPA_LIST, payload: data });
+    dispatch({ type: GLOBAL_LIBRARY_LIST, payload: data });
   } catch (error) {
     // setLoading(false);
-    dispatch(setError(SPA_ERROR, error.message));
+    dispatch(setError(LIBRARY_ERROR, error.message));
   } finally {
     // setLoading(false);
   }

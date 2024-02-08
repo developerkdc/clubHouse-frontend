@@ -1,18 +1,30 @@
 import {
   Button,
+  Chip,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  Grid,
   ImageList,
   ImageListItem,
 } from "@mui/material";
+
 import { CardActions, CardContent, Typography } from "@mui/material";
+
 import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
-import Div from "@jumbo/shared/Div";
-import React from "react";
 
+import Div from "@jumbo/shared/Div";
+
+import React from "react";
+import styled from "@mui/material/styles/styled";
+const ListItem = styled("li")(({ theme }) => ({
+  margin: theme.spacing(0.1),
+  borderRadius: "4px",
+  display: "inline-block",
+  padding: theme.spacing(0.1),
+}));
 const Item = ({ children, sx }) => (
   <Div
     sx={{
@@ -25,8 +37,7 @@ const Item = ({ children, sx }) => (
     {children}
   </Div>
 );
-const ViewSalon = ({ openView, setOpenView, data }) => {
-  console.log(data, "data");
+const ViewLibrary = ({ openView, setOpenView, data }) => {
   const convertHtmlToPlainText = (htmlString) => {
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlString, "text/html");
@@ -44,7 +55,7 @@ const ViewSalon = ({ openView, setOpenView, data }) => {
         style={{ backgroundColor: "#7352C7", color: "white" }}
         id="alert-dialog-title"
       >
-        Salon Details
+        Trainer Details
       </DialogTitle>
       <DialogContent
         headerSx={{
@@ -68,19 +79,26 @@ const ViewSalon = ({ openView, setOpenView, data }) => {
             <Avatar
               sx={{ width: 100, height: 100 }}
               alt=""
-              src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/salon/${data?.banner_image}`}
+              src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/library/${data?.banner_image}`}
             />
           </Div>
           <Stack direction={"row"} color={"text.secondary"} mb={2}>
             <Item>
               <Typography variant={"h6"} color="text.secondary" fontSize={13}>
-                Service Name
+                Book Name
               </Typography>
               <Typography variant={"h6"} mb={0.5}>
-                {data?.album_name}
+                {data?.book_name}
               </Typography>
             </Item>
-
+            <Item>
+              <Typography variant={"h6"} color="text.secondary" fontSize={13}>
+                Author Name
+              </Typography>
+              <Typography variant={"h6"} mb={0.5}>
+                {data?.author_name}
+              </Typography>
+            </Item>
             <Item>
               <Typography variant={"h6"} color="text.secondary" fontSize={13}>
                 Status
@@ -89,44 +107,69 @@ const ViewSalon = ({ openView, setOpenView, data }) => {
                 {data?.status ? "Active" : "Inactive"}
               </Typography>
             </Item>
-            <Item>
-              <Typography variant={"h6"} color="text.secondary" fontSize={13}>
-                Rate
-              </Typography>
-              <Typography variant={"h6"} mb={0.5}>
-                {data?.source}
-              </Typography>
-            </Item>
-            <Item>
-              <Typography variant={"h6"} color="text.secondary">
-                Duration
-              </Typography>
-              <Typography variant={"h6"} mb={0.5}>
-                {data?.duration}
-              </Typography>
-            </Item>
           </Stack>
 
           <Stack direction={"row"} alignSelf="stretch">
             <Item>
               <Typography variant={"h6"} color="text.secondary">
-                Short Description
+                Category
               </Typography>
               <Typography variant={"h6"} mb={0.5}>
-                {data?.short_description}
+                {data?.category}
+              </Typography>
+            </Item>
+            <Item>
+              <Typography variant={"h6"} color="text.secondary">
+                Book Location
+              </Typography>
+              <Typography variant={"h6"} mb={0.5}>
+                {data?.book_location}
               </Typography>
             </Item>
 
             <Item>
               <Typography variant={"h6"} color="text.secondary">
-                Description
+                Total Quantity
               </Typography>
               <Typography variant={"h6"} mb={0.5}>
-                {convertHtmlToPlainText(data?.description)}
+                {data?.total_quantity}
+              </Typography>
+            </Item>
+            <Item>
+              <Typography variant={"h6"} color="text.secondary">
+                Booked Quantity
+              </Typography>
+              <Typography variant={"h6"} mb={0.5}>
+                {data?.booked_quantity}
+              </Typography>
+            </Item>
+            <Item>
+              <Typography variant={"h6"} color="text.secondary">
+                Issued Quantity
+              </Typography>
+              <Typography variant={"h6"} mb={0.5}>
+                {data?.issued_quantity}
+              </Typography>
+            </Item>
+            <Item>
+              <Typography variant={"h6"} color="text.secondary">
+                Available Quantity
+              </Typography>
+              <Typography variant={"h6"} mb={0.5}>
+                {data?.available_quantity}
               </Typography>
             </Item>
           </Stack>
-
+          <Stack direction={"row"} alignSelf="stretch">
+            <Item>
+              <Typography variant={"h6"} color="text.secondary">
+              Book Summary
+              </Typography>
+              <Typography variant={"h6"} mb={0.5}>
+                {data?.book_summary}
+              </Typography>
+            </Item>
+          </Stack>
           <Typography variant={"h6"} color="text.secondary">
             Images
           </Typography>
@@ -140,7 +183,7 @@ const ViewSalon = ({ openView, setOpenView, data }) => {
               data?.images?.map((file) => (
                 <ImageListItem key={file}>
                   <img
-                    src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/salon/${file}`}
+                    src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/library/${file}`}
                     alt=""
                     style={{
                       width: "100%",
@@ -161,4 +204,4 @@ const ViewSalon = ({ openView, setOpenView, data }) => {
   );
 };
 
-export default ViewSalon;
+export default ViewLibrary;

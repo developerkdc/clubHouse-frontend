@@ -156,7 +156,7 @@ const EditSalon = () => {
     formData.append("status", data.status);
 
     try {
-      await Axios.post("/salon/add", formData);
+        await Axios.patch(`/salon/edit/${id}`, formData);
       showAlert("success", "Salon added successfully.");
       navigate("/salon");
     } catch (error) {
@@ -211,6 +211,7 @@ const EditSalon = () => {
                         getOptionLabel={(option) => option}
                         options={serviceType}
                         name="service_type"
+                        value={values?.service_type}
                         onChange={(event, val) => {
                           setFieldValue("service_type", val);
                         }}
@@ -385,7 +386,7 @@ const EditSalon = () => {
                           cancelButtonText: "No",
                         }).then((result) => {
                           if (result.isConfirmed) {
-                            navigate("/banquet");
+                            navigate("/salon");
                           }
                         });
                       }}

@@ -14,13 +14,11 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { Axios } from "app/services/config";
 import ToastAlerts from "app/components/Toast";
-import {useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-const EditGalleryImage = ({
-  openView,
-  setOpenView,
-  data,
-}) => {
+const EditLibraryImage = ({ openView, setOpenView, data, setAddImageFiles }) => {
+  // const [newPhotos, setNewPhotos] = useState([]);
+  const navigate = useNavigate();
   const showAlert = ToastAlerts();
   const { id } = useParams();
   const [oldImage, setOldImageImages] = useState(data);
@@ -72,8 +70,8 @@ const EditGalleryImage = ({
     });
     formData.append(`deleteImages`, JSON.stringify([...deleteImage]));
     try {
-      await Axios.post(`/gallery/update-images/${id}`, formData);
-      showAlert("success", "Gallery updated successfully.");
+      await Axios.post(`/library/update-images/${id}`, formData);
+      showAlert("success", "Library updated successfully.");
 
       setOpenView(false);
     } catch (error) {
@@ -81,6 +79,7 @@ const EditGalleryImage = ({
     }
   };
 
+  // console.log(data, "data");
   return (
     <Dialog
       open={openView}
@@ -130,7 +129,7 @@ const EditGalleryImage = ({
                 onClick={() => handleRemovePhoto(file)}
               />
               <img
-                src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/gallery/${file}`}
+               src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/library/${file}`}
                 alt=""
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
@@ -178,4 +177,4 @@ const EditGalleryImage = ({
   );
 };
 
-export default EditGalleryImage;
+export default EditLibraryImage;
