@@ -450,8 +450,8 @@ const EditEvent = () => {
                     )}
 
                     <ImageList
-                      sx={{ width: "90%", maxHeight: 250 }}
-                      cols={5}
+                      sx={{ width: "100%", maxHeight: 250 }}
+                      cols={4}
                       rowHeight={110}
                     >
                       {files.map((file) => (
