@@ -23,43 +23,14 @@ import ToastAlerts from "app/components/Toast";
 import { useDropzone } from "react-dropzone";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-
-const thumbsContainer = {
-  display: "flex",
-  flexDirection: "row",
-  flexWrap: "wrap",
-  marginTop: 16,
-};
-
-const thumb = {
-  display: "inline-flex",
-  borderRadius: 2,
-  border: "1px solid #eaeaea",
-  marginBottom: 8,
-  marginRight: 8,
-  width: 100,
-  height: 100,
-  padding: 4,
-  boxSizing: "border-box",
-};
-
-const thumbInner = {
-  display: "flex",
-  minWidth: 0,
-  overflow: "hidden",
-};
-
-const img = {
-  display: "block",
-  width: "auto",
-  height: "100%",
-};
+import DropSingleImage from "app/components/DropZone/singleImage";
 
 const AddNews = () => {
-  const [type, SetType] = useState(["News", "Circular"]);
-
+  
   const navigate = useNavigate();
   const showAlert = ToastAlerts();
+  const [bannerImage, setBannerImage] = useState([]);
+  const [type, SetType] = useState(["News", "Circular"]);
 
   var initialValues = {
     title: "",
@@ -82,39 +53,12 @@ const AddNews = () => {
       .required("Short Description is required"),
   });
 
-  const [bannerImage, setBannerImage] = useState([]);
-
-  const {
-    getRootProps: getRootBannerImageProps,
-    getInputProps: getInputBannerImageProps,
-  } = useDropzone({
-    accept: "image/*",
-    onDrop: (acceptedFiles) => {
-      const selectedFile = acceptedFiles[0];
-      if (selectedFile) {
-        setBannerImage([
-          Object.assign(selectedFile, {
-            preview: URL.createObjectURL(selectedFile),
-          }),
-        ]);
-      }
-    },
-  });
-
   useEffect(
     () => () => {
       bannerImage.forEach((file) => URL.revokeObjectURL(file.preview));
     },
     [bannerImage]
   );
-
-  const thumbss = bannerImage.map((file) => (
-    <div style={thumb} key={file.name}>
-      <div style={thumbInner}>
-        <img src={file.preview} style={img} alt="" />
-      </div>
-    </div>
-  ));
 
   const handleEventAdd = async (data) => {
     console.log(data, "data");
@@ -242,17 +186,11 @@ const AddNews = () => {
                 <Grid container rowSpacing={3} columnSpacing={3} marginTop={-1}>
                   <Grid item xs={3}>
                     <Typography variant="body1">Banner Image :-</Typography>
-                    <div
-                      {...getRootBannerImageProps({ className: "dropzone" })}
-                      style={{ marginTop: "10px", width: "112px" }}
-                    >
-                      <input {...getInputBannerImageProps()} />
-                      <Button size="small" variant="contained">
-                        Select Image
-                      </Button>
-                    </div>
-                    <aside style={thumbsContainer}>{thumbss}</aside>
-                  </Grid>
+                    <DropSingleImage
+                      setImage={setBannerImage}
+                      image={bannerImage}
+                    />
+                   </Grid>
                 </Grid>{" "}
                 <Typography variant="body1" marginTop={1}>
                   Description :-
