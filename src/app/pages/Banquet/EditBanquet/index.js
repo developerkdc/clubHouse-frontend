@@ -57,19 +57,32 @@ const img = {
   height: "100%",
 };
 
-const ListItem = styled('li')(({ theme }) => ({
-    margin: theme.spacing(0.1),
-    borderRadius: '4px',
-    display: 'inline-block', 
-    padding: theme.spacing(.1),
-  }));
-
+const ListItem = styled("li")(({ theme }) => ({
+  margin: theme.spacing(0.1),
+  borderRadius: "4px",
+  display: "inline-block",
+  padding: theme.spacing(0.1),
+}));
 
 const EditBanquet = () => {
   const { id } = useParams();
   const { state } = useLocation();
   console.log(state, "state");
 
+
+  // const getListById = async () => {
+  //   try {
+  //     const res=await Axios.get(`/banquet/list?id=${id}`);
+  //     console.log(res,'res');
+
+  //   } catch (error) {
+  //     showAlert("error", error.response.data.message);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   getListById();
+  // }, []);
   const navigate = useNavigate();
   const showAlert = ToastAlerts();
 
@@ -86,10 +99,7 @@ const EditBanquet = () => {
       .string("Capacity")
       .nullable()
       .required("Capacity is required"),
-      tags: yup
-      .array("Tags")
-      .nullable()
-      .required("Tags is required"),
+    tags: yup.array("Tags").nullable().required("Tags is required"),
     rate: yup.number("Rate").nullable().required("Rate is required"),
     terms_condition: yup
       .string("Terms Condition ")
@@ -112,53 +122,58 @@ const EditBanquet = () => {
     status: state.status,
   };
 
+  const [openView, setOpenView] = useState(false);
+  const [tagsData, setTagsData] = useState(state.tags ? state.tags : []);
+  const [amenitiesData, setAmenitiesData] = useState(
+    state.amenities ? state.amenities : []
+  );
+  const [tags, setTages] = useState("");
+  const [amenities, setAmenities] = useState("");
 
-const [openView, setOpenView] = useState(false);
-const [tagsData, setTagsData] = useState(state.tags ? state.tags : []);
-const [amenitiesData, setAmenitiesData] = useState(state.amenities ? state.amenities : []);
-const [tags, setTages] = useState("");
-const [amenities, setAmenities] = useState("");
+  const handleTagsDelete = (chipToDelete) => {
+    let found = false;
+    setTagsData((chips) =>
+      chips.filter((chip) => {
+        if (chip === chipToDelete && !found) {
+          found = true;
+          return false;
+        }
+        return true;
+      })
+    );
+  };
+  const handleAmenitiesDelete = (chipToDelete) => {
+    let found = false;
+    setAmenitiesData((chips) =>
+      chips.filter((chip) => {
+        if (chip === chipToDelete && !found) {
+          found = true;
+          return false;
+        }
+        return true;
+      })
+    );
+  };
 
-const handleTagsDelete = (chipToDelete) => {
-  let found = false;
-  setTagsData((chips) => chips.filter((chip) => {
-    if (chip === chipToDelete && !found) {
-      found = true;
-      return false;
+  const addTagsItem = (event) => {
+    const message = event.target.value.trim();
+    if (event.key === "Enter" && message) {
+      const newItem = tagsData.concat(tags);
+      setTagsData(newItem);
+      setTages("");
+      event.preventDefault();
     }
-    return true;
-  }));
-};
-const handleAmenitiesDelete = (chipToDelete) => {
-  let found = false;
-  setAmenitiesData((chips) => chips.filter((chip) => {
-    if (chip === chipToDelete && !found) {
-      found = true;
-      return false;
+  };
+
+  const addAmenitiesItem = (event) => {
+    const message = event.target.value.trim();
+    if (event.key === "Enter" && message) {
+      const newItem = amenitiesData.concat(amenities);
+      setAmenitiesData(newItem);
+      setAmenities("");
+      event.preventDefault();
     }
-    return true;
-  }));
-};
-
-const addTagsItem = (event) => {
-  const message = event.target.value.trim();
-  if (event.key === "Enter" && message) {
-    const newItem = tagsData.concat(tags);
-    setTagsData(newItem);
-    setTages("");
-    event.preventDefault();
-  }
-};
-
-const addAmenitiesItem = (event) => {
-  const message = event.target.value.trim();
-  if (event.key === "Enter" && message) {
-    const newItem = amenitiesData.concat(amenities);
-    setAmenitiesData(newItem);
-    setAmenities("");
-    event.preventDefault();
-  }
-};
+  };
   const [files, setFiles] = useState(state.images ? state.images : []);
   const [bannerImage, setBannerImage] = useState([]);
 
@@ -406,7 +421,9 @@ const addAmenitiesItem = (event) => {
                       style={{ marginTop: "10px", width: "112px" }}
                     >
                       <input {...getInputBannerImageProps()} />
-                      <Button size="small" variant="contained">Select Image</Button>
+                      <Button size="small" variant="contained">
+                        Select Image
+                      </Button>
                     </div>
                     <aside style={thumbsContainer}>
                       {/* Display initial image or selected images */}

@@ -29,7 +29,7 @@ export default function ListEvent() {
   const showAlert = ToastAlerts();
   const dispatch = useDispatch();
   const [openView, setOpenView] = useState(false);
-  const [eventDetails, setMmberDetails] = useState(false);
+  const [eventDetails, setEventDetails] = useState(false);
 
 
   const [selectedEventDate, setSelectedEventDate] = useState(null);
@@ -124,7 +124,7 @@ export default function ListEvent() {
       label: "View Details",
       color: "secondary",
       onClick: (row) => {
-        setMmberDetails(row);
+        setEventDetails(row);
         setOpenView(true);
       },
       icon: <PreviewOutlinedIcon />,
