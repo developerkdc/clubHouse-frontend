@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import {
   Autocomplete,
-  Avatar,
   Button,
   InputAdornment,
   TextField,

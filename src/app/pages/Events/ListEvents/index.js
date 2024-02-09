@@ -23,6 +23,9 @@ import { getCustomDateTime } from "@jumbo/utils";
 import { formatDate } from "./date.js";
 import { Axios } from "app/services/config";
 import Swal from "sweetalert2";
+
+// Inside your component:
+
 export default function ListEvent() {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
@@ -31,8 +34,12 @@ export default function ListEvent() {
   const [openView, setOpenView] = useState(false);
   const [eventDetails, setEventDetails] = useState(false);
 
-
-  const [selectedEventDate, setSelectedEventDate] = useState(null);
+  const [selectedEventDate, setSelectedEventDate] = useState({
+    start_date: "",
+    end_date: "",
+    event_start_date: "",
+  });
+  console.log(selectedEventDate, "selectedEventDate");
 
   const { eventList, totalPages, error, successMessage } = useSelector(
     (state) => state.eventReducer
@@ -118,7 +125,6 @@ export default function ListEvent() {
       },
     },
   ];
-  const [inputs, setInputs] = useState({});
   const actions = [
     {
       label: "View Details",
@@ -154,19 +160,23 @@ export default function ListEvent() {
   }, [query]);
 
   const handleFilter = () => {
+    console.log("111111");
+
     setQuery({
       ...query,
-      event_start_date: selectedEventDate?.start_date
-        ? formatDate(selectedEventDate?.start_date)
-        : "",
-      end_date: selectedEventDate?.end_date
-        ? formatDate(selectedEventDate?.end_date)
-        : "",
+      event_start_date: selectedEventDate?.event_start_date,
+      start_date: selectedEventDate?.start_date,
+      end_date: selectedEventDate?.end_date,
     });
   };
+
   const handleClearFilter = () => {
-    setSelectedEventDate(null);
-    setQuery({ ...query, event_start_date: "", end_date: "" });
+    setSelectedEventDate({
+      start_date: "",
+      end_date: "",
+      event_start_date: "",
+    });
+    setQuery({ event_start_date: "", start_date: "", end_date: "" });
   };
   return (
     <Div
@@ -182,7 +192,7 @@ export default function ListEvent() {
           position: "sticky",
           top: 0,
           background: "#F5F7FA",
-          zIndex: 10, // Ensure the header stays above the body
+          zIndex: 10,
         }}
       >
         <Typography variant="h1">Event Master</Typography>
@@ -196,28 +206,71 @@ export default function ListEvent() {
         >
           <Grid container rowSpacing={3} columnSpacing={3} marginTop={-1}>
             <Grid item xs={3}>
-              <Autocomplete
+              
+              <TextField
+                fullWidth
+                type="date"
+                id="event_start_date"
+                name="event_start_date"
+                label="Event Date"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                onChange={(e) => {
+                  const selectedDate = e.target.value;
+                  setSelectedEventDate((prevDate) => ({
+                    ...prevDate,
+                    event_start_date: selectedDate,
+                  }));
+                }}
                 size="small"
-                id="tags-standard"
-                options={eventList}
-                getOptionLabel={(option) =>
-                  getCustomDateTime(option?.start_date, "days", "DD MMM YYYY")
-                }
-                value={selectedEventDate}
-                onChange={(e, newValue) => setSelectedEventDate(newValue)}
-                renderInput={(params) => (
-                  <TextField {...params} label="Event Date" />
-                )}
+                value={selectedEventDate.event_start_date}
               />
             </Grid>
-            <Grid item xs={2}>
 
+            <Grid item xs={3}>
+              <TextField
+                fullWidth
+                type="date"
+                id="start_date"
+                name="start_date"
+                label="From Date"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                onChange={(e) => {
+                  const selectedDate = e.target.value;
+                  setSelectedEventDate((prevDate) => ({
+                    ...prevDate,
+                    start_date: selectedDate,
+                  }));
+                }}
+                size="small"
+                value={selectedEventDate.start_date}
+              />
             </Grid>
-            <Grid item xs={2}>
-            
+            <Grid item xs={3}>
+              <TextField
+                fullWidth
+                type="date"
+                id="end_date"
+                name="end_date"
+                label="To Date"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                onChange={(e) => {
+                  const selectedDate = e.target.value;
+                  setSelectedEventDate((prevDate) => ({
+                    ...prevDate,
+                    end_date: selectedDate,
+                  }));
+                }}
+                size="small"
+                value={selectedEventDate.end_date}
+              />
             </Grid>
           </Grid>
-
           <Div
             sx={{ display: "flex", gap: 1, flex: "1", flexDirection: "row" }}
           >
