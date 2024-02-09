@@ -30,36 +30,29 @@ import "quill-emoji/dist/quill-emoji.css";
 import QuillEmoji from "quill-emoji";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import EditEventImage from "./editImage";
+import DropSingleImage from "app/components/DropZone/singleImage";
 
-const img = {
-  display: "block",
-  width: "auto",
-  height: "100%",
-};
 const thumbsContainer = {
   display: "flex",
-  flexDirection: "row",
-  flexWrap: "wrap",
-  marginTop: 16,
+  marginTop: 0,
+  maxHeight: "250px",
 };
 
 const thumb = {
-  display: "inline-flex",
+  display: "flex",
   borderRadius: 2,
+  justifyContent: "center",
+  alignContent: "center",
   border: "1px solid #eaeaea",
+  // border: "1px solid red",
   marginBottom: 8,
   marginRight: 8,
-  width: 100,
-  height: 100,
+  width: "70%",
+  height: "150px",
   padding: 4,
   boxSizing: "border-box",
 };
 
-const thumbInner = {
-  display: "flex",
-  minWidth: 0,
-  overflow: "hidden",
-};
 Quill.register("modules/emoji", QuillEmoji);
 
 const modules = {
@@ -78,27 +71,55 @@ const modules = {
   "emoji-textarea": false,
 };
 const EditEvent = () => {
-  const [category, SetCategory] = useState(["sport", "religion"]);
-  const [eventType, SetEventType] = useState(["free", "paid"]);
-  const [durationType, SetDurationType] = useState(["single", "multi"]);
   const navigate = useNavigate();
   const showAlert = ToastAlerts();
   const { id } = useParams();
   const { state } = useLocation();
-  console.log(state, "state");
+  const [category, SetCategory] = useState(["sport", "religion"]);
+  const [eventType, SetEventType] = useState(["free", "paid"]);
+  const [durationType, SetDurationType] = useState(["single", "multi"]);
+  const [openView, setOpenView] = useState(false);
 
-  var initialValues = {
-    title: state.title,
-    category: state.category,
-    duration_type: state.duration_type,
-    event_type: state.event_type,
-    short_description: state.short_description,
-    description: state.description,
-    start_date: new Date(state.start_date).toISOString().split("T")[0],
-    entry_fee: state.entry_fee,
-    end_date: new Date(state.end_date).toISOString().split("T")[0],
-    status: state.status,
+  const [files, setFiles] = useState([]);
+  const [bannerImage, setBannerImage] = useState([]);
+
+  const [initialValues, setInitialValues] = useState({
+    title: "",
+    category: "",
+    duration_type: "",
+    event_type: "",
+    short_description: "",
+    description: "",
+    start_date: "",
+    entry_fee: "",
+    end_date: "",
+    status: false,
+    banner_image: [],
+  });
+
+  const getEventDetail = async () => {
+    try {
+      let res = await Axios.get(`/event/list?id=${id}`);
+      let data = res.data.data;
+      setInitialValues({
+        title: data.title,
+        category: data.category,
+        duration_type: data.duration_type,
+        event_type: data.event_type,
+        short_description: data.short_description,
+        description: data.description,
+        start_date: new Date(data.start_date).toISOString().split("T")[0],
+        entry_fee: data.entry_fee,
+        end_date: new Date(data.end_date).toISOString().split("T")[0],
+        status: data.status,
+        banner_image: data.banner_image || [],
+      });
+      setFiles(data.images || []);
+    } catch (error) {
+      showAlert("error", error.response.data.message);
+    }
   };
+
   const validationSchema = yup.object({
     title: yup.string("Enter Title").required("Title is required"),
     category: yup
@@ -129,10 +150,6 @@ const EditEvent = () => {
       otherwise: yup.string(),
     }),
   });
-  const [openView, setOpenView] = useState(false);
-
-  const [files, setFiles] = useState(state.images ? state.images : []);
-  const [bannerImage, setBannerImage] = useState([]);
 
   const handleEventAdd = async (data) => {
     const formData = new FormData();
@@ -157,22 +174,6 @@ const EditEvent = () => {
       showAlert("error", error.response.data.message);
     }
   };
-  const {
-    getRootProps: getRootBannerImageProps,
-    getInputProps: getInputBannerImageProps,
-  } = useDropzone({
-    accept: "image/*",
-    onDrop: (acceptedFiles) => {
-      const selectedFile = acceptedFiles[0];
-      if (selectedFile) {
-        setBannerImage([
-          Object.assign(selectedFile, {
-            preview: URL.createObjectURL(selectedFile),
-          }),
-        ]);
-      }
-    },
-  });
 
   useEffect(
     () => () => {
@@ -180,14 +181,11 @@ const EditEvent = () => {
     },
     [bannerImage]
   );
-  const thumbs = bannerImage.map((file) => (
-    <div style={thumb} key={file.name}>
-      <div style={thumbInner}>
-        <img src={file.preview} style={img} alt="" />
-      </div>
-    </div>
-  ));
-
+  useEffect(() => {
+    getEventDetail();
+  }, [openView]);
+ 
+  console.log(initialValues);
   return (
     <React.Fragment>
       <Typography variant="h1" mb={3}>
@@ -196,6 +194,7 @@ const EditEvent = () => {
       <Card>
         <CardContent>
           <Formik
+            key={JSON.stringify(initialValues)}
             validateOnChange={true}
             initialValues={initialValues}
             validationSchema={validationSchema}
@@ -403,36 +402,29 @@ const EditEvent = () => {
                   />
                 </Grid>
 
-                <Grid container rowSpacing={3} columnSpacing={3} marginTop={5}>
+                <Grid container rowSpacing={3} columnSpacing={3} marginTop={1}>
                   <Grid item xs={3}>
                     <Typography variant="body1">Banner Images :-</Typography>
-                    <div
-                      {...getRootBannerImageProps({ className: "dropzone" })}
-                      style={{ marginTop: "10px", width: "112px" }}
-                    >
-                      <input {...getInputBannerImageProps()} />
-                      <Button size="small" variant="contained">
-                        Select Image
-                      </Button>
-                    </div>
-                    <aside style={thumbsContainer}>
-                      {/* Display initial image or selected images */}
-                      {bannerImage.length > 0 ? (
-                        thumbs // Display selected images
-                      ) : (
+                    <DropSingleImage
+                      setImage={setBannerImage}
+                      image={bannerImage}
+                    />
+                    {bannerImage.length == 0 && (
+                      <aside style={thumbsContainer}>
                         <div style={thumb}>
-                          <div style={thumbInner}>
-                            <img
-                              src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/event/${state.banner_image}`}
-                              style={img}
-                              alt=""
-                            />
-                          </div>
+                          <img
+                            src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/event/${values.banner_image}`}
+                            style={{
+                              display: "block",
+                              width: "100%",
+                              height: "100%",
+                            }}
+                            alt=""
+                          />
                         </div>
-                      )}
-                    </aside>
+                      </aside>
+                    )}
                   </Grid>
-                  
                   <Grid item xs={9}>
                     <Typography variant="body1">Images:-</Typography>
                     <Button
@@ -459,7 +451,11 @@ const EditEvent = () => {
                         <ImageListItem key={file}>
                           <img
                             src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/event/${file}`}
-                            style={img}
+                            style={{
+                              display: "block",
+                              width: "100%",
+                              height: "100%",
+                            }}
                             alt=""
                           />
                         </ImageListItem>

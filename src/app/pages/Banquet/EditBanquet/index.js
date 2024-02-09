@@ -26,35 +26,26 @@ import "react-quill/dist/quill.snow.css";
 import styled from "@mui/material/styles/styled";
 import EditBanquetImage from "./editImage";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import DropSingleImage from "app/components/DropZone/singleImage";
 const thumbsContainer = {
   display: "flex",
-  flexDirection: "row",
-  flexWrap: "wrap",
   marginTop: 16,
+  maxHeight: "250px",
 };
 
 const thumb = {
-  display: "inline-flex",
+  display: "flex",
   borderRadius: 2,
+  justifyContent: "center",
+  alignContent: "center",
   border: "1px solid #eaeaea",
+  // border: "1px solid red",
   marginBottom: 8,
   marginRight: 8,
-  width: 100,
-  height: 100,
+  width: "70%",
+  height: "150px",
   padding: 4,
   boxSizing: "border-box",
-};
-
-const thumbInner = {
-  display: "flex",
-  minWidth: 0,
-  overflow: "hidden",
-};
-
-const img = {
-  display: "block",
-  width: "auto",
-  height: "100%",
 };
 
 const ListItem = styled("li")(({ theme }) => ({
@@ -65,26 +56,58 @@ const ListItem = styled("li")(({ theme }) => ({
 }));
 
 const EditBanquet = () => {
-  const { id } = useParams();
-  const { state } = useLocation();
-  console.log(state, "state");
-
-
-  // const getListById = async () => {
-  //   try {
-  //     const res=await Axios.get(`/banquet/list?id=${id}`);
-  //     console.log(res,'res');
-
-  //   } catch (error) {
-  //     showAlert("error", error.response.data.message);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   getListById();
-  // }, []);
   const navigate = useNavigate();
   const showAlert = ToastAlerts();
+  const { id } = useParams();
+  const { state } = useLocation();
+  const [openView, setOpenView] = useState(false);
+  const [tagsData, setTagsData] = useState([]);
+  const [amenitiesData, setAmenitiesData] = useState([]);
+  const [tags, setTages] = useState("");
+  const [amenities, setAmenities] = useState("");
+  const [files, setFiles] = useState([]);
+  const [bannerImage, setBannerImage] = useState([]);
+
+  const [initialValues, setInitialValues] = useState({
+    name: "",
+    location: "",
+    short_description: "",
+    description: "",
+    capacity: "",
+    rate: "",
+    amenities: [],
+    tags: [],
+    images: [],
+    banner_image: [],
+    terms_condition: "",
+    status: "",
+  });
+
+  const getBanquetDetails = async () => {
+    try {
+      const res = await Axios.get(`/banquet/list?id=${id}`);
+      let data = res.data.data;
+      setInitialValues({
+        name: data.name,
+        location: data.location,
+        short_description: data.short_description,
+        description: data.description,
+        capacity: data.capacity,
+        rate: data.rate,
+        amenities: [],
+        tags: [],
+        images: [],
+        banner_image: data.banner_image || [],
+        terms_condition: data.terms_condition,
+        status: data.status,
+      });
+      setAmenitiesData(data.amenities || []);
+      setTagsData(data.tags || []);
+      setFiles(data.images || []);
+    } catch (error) {
+      showAlert("error", error.response.data.message);
+    }
+  };
 
   const validationSchema = yup.object({
     name: yup.string("Enter Banquet Name").required("Banquet Name is required"),
@@ -106,29 +129,6 @@ const EditBanquet = () => {
       .nullable()
       .required("Terms & Condition is required"),
   });
-
-  var initialValues = {
-    name: state.name,
-    location: state.location,
-    short_description: state.short_description,
-    description: state.description,
-    capacity: state.capacity,
-    rate: state.rate,
-    amenities: [],
-    tags: [],
-    images: [],
-    banner_image: [],
-    terms_condition: state.terms_condition,
-    status: state.status,
-  };
-
-  const [openView, setOpenView] = useState(false);
-  const [tagsData, setTagsData] = useState(state.tags ? state.tags : []);
-  const [amenitiesData, setAmenitiesData] = useState(
-    state.amenities ? state.amenities : []
-  );
-  const [tags, setTages] = useState("");
-  const [amenities, setAmenities] = useState("");
 
   const handleTagsDelete = (chipToDelete) => {
     let found = false;
@@ -174,25 +174,6 @@ const EditBanquet = () => {
       event.preventDefault();
     }
   };
-  const [files, setFiles] = useState(state.images ? state.images : []);
-  const [bannerImage, setBannerImage] = useState([]);
-
-  const {
-    getRootProps: getRootBannerImageProps,
-    getInputProps: getInputBannerImageProps,
-  } = useDropzone({
-    accept: "image/*",
-    onDrop: (acceptedFiles) => {
-      const selectedFile = acceptedFiles[0];
-      if (selectedFile) {
-        setBannerImage([
-          Object.assign(selectedFile, {
-            preview: URL.createObjectURL(selectedFile),
-          }),
-        ]);
-      }
-    },
-  });
 
   useEffect(
     () => () => {
@@ -200,13 +181,6 @@ const EditBanquet = () => {
     },
     [bannerImage]
   );
-  const thumbs = bannerImage.map((file) => (
-    <div style={thumb} key={file.name}>
-      <div style={thumbInner}>
-        <img src={file.preview} style={img} alt="" />
-      </div>
-    </div>
-  ));
 
   const handleBanquetAdd = async (data) => {
     console.log(data, "data");
@@ -244,6 +218,10 @@ const EditBanquet = () => {
       showAlert("error", error.response.data.message);
     }
   };
+
+  useEffect(() => {
+    getBanquetDetails();
+  }, [openView]);
   return (
     <React.Fragment>
       <Typography variant="h1" mb={3}>
@@ -252,6 +230,7 @@ const EditBanquet = () => {
       <Card>
         <CardContent>
           <Formik
+           key={JSON.stringify(initialValues)}
             validateOnChange={true}
             initialValues={initialValues}
             validationSchema={validationSchema}
@@ -413,34 +392,28 @@ const EditBanquet = () => {
                   />
                 </Grid>
 
-                <Grid container rowSpacing={3} columnSpacing={3} marginTop={5}>
+                <Grid container rowSpacing={3} columnSpacing={3} marginTop={1}>
                   <Grid item xs={3}>
                     <Typography variant="body1">Banner Images :-</Typography>
-                    <div
-                      {...getRootBannerImageProps({ className: "dropzone" })}
-                      style={{ marginTop: "10px", width: "112px" }}
-                    >
-                      <input {...getInputBannerImageProps()} />
-                      <Button size="small" variant="contained">
-                        Select Image
-                      </Button>
-                    </div>
-                    <aside style={thumbsContainer}>
-                      {/* Display initial image or selected images */}
-                      {bannerImage.length > 0 ? (
-                        thumbs // Display selected images
-                      ) : (
+                    <DropSingleImage
+                      setImage={setBannerImage}
+                      image={bannerImage}
+                    />
+                    {bannerImage.length == 0 && (
+                      <aside style={thumbsContainer}>
                         <div style={thumb}>
-                          <div style={thumbInner}>
-                            <img
-                              src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/banquet/${state.banner_image}`}
-                              style={img}
-                              alt=""
-                            />
-                          </div>
+                          <img
+                            src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/banquet/${values.banner_image}`}
+                            style={{
+                              display: "block",
+                              width: "100%",
+                              height: "100%",
+                            }}
+                            alt=""
+                          />
                         </div>
-                      )}
-                    </aside>
+                      </aside>
+                    )}
                   </Grid>
                   <Grid item xs={9}>
                     <Typography variant="body1">Images:-</Typography>
@@ -460,15 +433,19 @@ const EditBanquet = () => {
                     )}
 
                     <ImageList
-                      sx={{ width: "90%", maxHeight: 250 }}
-                      cols={5}
+                      sx={{ width: "100%", maxHeight: 250 }}
+                      cols={4}
                       rowHeight={110}
                     >
                       {files.map((file) => (
                         <ImageListItem key={file}>
                           <img
                             src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/banquet/${file}`}
-                            style={img}
+                            style={{
+                              display: "block",
+                              width: "100%",
+                              height: "100%",
+                            }}
                             alt=""
                           />
                         </ImageListItem>

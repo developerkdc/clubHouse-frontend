@@ -22,57 +22,77 @@ import ToastAlerts from "app/components/Toast";
 import { useDropzone } from "react-dropzone";
 import "react-quill/dist/quill.snow.css";
 import EditLibraryImage from "./editImage";
+import DropSingleImage from "app/components/DropZone/singleImage";
+
+const thumbsContainer = {
+  display: "flex",
+  marginTop: 16,
+  maxHeight: "250px",
+};
 
 const thumb = {
-  display: "inline-flex",
+  display: "flex",
   borderRadius: 2,
+  justifyContent: "center",
+  alignContent: "center",
   border: "1px solid #eaeaea",
+  // border: "1px solid red",
   marginBottom: 8,
   marginRight: 8,
-  width: 100,
-  height: 100,
+  width: "70%",
+  height: "150px",
   padding: 4,
   boxSizing: "border-box",
 };
-
-const thumbInner = {
-  display: "flex",
-  minWidth: 0,
-  overflow: "hidden",
-};
-
-const img = {
-  display: "block",
-  width: "auto",
-  height: "100%",
-};
-const thumbsContainer = {
-    display: "flex",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginTop: 16,
-  };
 
 const EditLibrary = () => {
   const navigate = useNavigate();
   const showAlert = ToastAlerts();
   const { id } = useParams();
   const { state } = useLocation();
+  const [files, setFiles] = useState([]);
+  const [bannerImage, setBannerImage] = useState([]);
+  const [openView, setOpenView] = useState(false);
 
-  var initialValues = {
-    book_name: state.book_name,
-    category: state.category,
-    author_name: state.author_name,
-    book_summary: state.book_summary,
-    book_location: state.book_location,
-    total_quantity: state.total_quantity,
-    booked_quantity: state.booked_quantity,
-    issued_quantity: state.issued_quantity,
-    available_quantity: state.available_quantity,
+  const [initialValues, setInitialValues] = useState({
+    book_name: "",
+    category: "",
+    author_name: "",
+    book_summary: "",
+    book_location: "",
+    total_quantity: "",
+    booked_quantity: "",
+    issued_quantity: "",
+    available_quantity: "",
     images: [],
     banner_image: [],
-    status: state.status,
+    status: "",
+  });
+
+  const getLibraryDetails = async () => {
+    try {
+      const res = await Axios.get(`/library/list?id=${id}`);
+      let data = res.data.data;
+      setInitialValues({
+        book_name: data.book_name,
+        category: data.category,
+        author_name: data.author_name,
+        book_summary: data.book_summary,
+        book_location: data.book_location,
+        total_quantity: data.total_quantity,
+        booked_quantity: data.booked_quantity,
+        issued_quantity: data.issued_quantity,
+        available_quantity: data.available_quantity,
+        images: [],
+        banner_image:data.banner_image || [],
+        status: data.status,
+      });
+      setFiles(data.images || []);
+    } catch (error) {
+      showAlert("error", error.response.data.message);
+    }
   };
+
   const validationSchema = yup.object({
     book_name: yup.string("Enter Book Name").required("Book Name is required"),
     author_name: yup
@@ -95,24 +115,6 @@ const EditLibrary = () => {
       .nullable()
       .required("Issued Quantity is required"),
   });
-
-  const [files, setFiles] = useState(state.images ? state.images : []);
-  const [bannerImage, setBannerImage] = useState([]);
-  const [openView, setOpenView] = useState(false);
-
-  useEffect(
-    () => () => {
-      files.forEach((file) => URL.revokeObjectURL(file.preview));
-    },
-    [files]
-  );
-
-  useEffect(
-    () => () => {
-      bannerImage.forEach((file) => URL.revokeObjectURL(file.preview));
-    },
-    [bannerImage]
-  );
 
   const handleLibraryAdd = async (data) => {
     console.log(data, "data");
@@ -148,36 +150,22 @@ const EditLibrary = () => {
       showAlert("error", error.response.data.message);
     }
   };
-  const {
-    getRootProps: getRootBannerImageProps,
-    getInputProps: getInputBannerImageProps,
-  } = useDropzone({
-    accept: "image/*",
-    onDrop: (acceptedFiles) => {
-      const selectedFile = acceptedFiles[0];
-      if (selectedFile) {
-        setBannerImage([
-          Object.assign(selectedFile, {
-            preview: URL.createObjectURL(selectedFile),
-          }),
-        ]);
-      }
-    },
-  });
 
+  useEffect(
+    () => () => {
+      files.forEach((file) => URL.revokeObjectURL(file.preview));
+    },
+    [files]
+  );
   useEffect(
     () => () => {
       bannerImage.forEach((file) => URL.revokeObjectURL(file.preview));
     },
     [bannerImage]
   );
-  const thumbs = bannerImage.map((file) => (
-    <div style={thumb} key={file.name}>
-      <div style={thumbInner}>
-        <img src={file.preview} style={img} alt="" />
-      </div>
-    </div>
-  ));
+  useEffect(() => {
+    getLibraryDetails();
+  }, [openView]);
   return (
     <React.Fragment>
       <Typography variant="h1" mb={3}>
@@ -186,6 +174,7 @@ const EditLibrary = () => {
       <Card>
         <CardContent>
           <Formik
+            key={JSON.stringify(initialValues)}
             validateOnChange={true}
             initialValues={initialValues}
             validationSchema={validationSchema}
@@ -304,31 +293,25 @@ const EditLibrary = () => {
                 <Grid container rowSpacing={3} columnSpacing={3} marginTop={5}>
                   <Grid item xs={3}>
                     <Typography variant="body1">Banner Images :-</Typography>
-                    <div
-                      {...getRootBannerImageProps({ className: "dropzone" })}
-                      style={{ marginTop: "10px", width: "112px" }}
-                    >
-                      <input {...getInputBannerImageProps()} />
-                      <Button size="small" variant="contained">
-                        Select Image
-                      </Button>
-                    </div>
-                    <aside style={thumbsContainer}>
-                      {/* Display initial image or selected images */}
-                      {bannerImage.length > 0 ? (
-                        thumbs // Display selected images
-                      ) : (
+                    <DropSingleImage
+                      setImage={setBannerImage}
+                      image={bannerImage}
+                    />
+                    {bannerImage.length == 0 && (
+                      <aside style={thumbsContainer}>
                         <div style={thumb}>
-                          <div style={thumbInner}>
-                            <img
-                              src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/library/${state.banner_image}`}
-                              style={img}
-                              alt=""
-                            />
-                          </div>
+                          <img
+                            src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/library/${values.banner_image}`}
+                            style={{
+                              display: "block",
+                              width: "100%",
+                              height: "100%",
+                            }}
+                            alt=""
+                          />
                         </div>
-                      )}
-                    </aside>
+                      </aside>
+                    )}
                   </Grid>
 
                   <Grid item xs={9}>
@@ -349,15 +332,19 @@ const EditLibrary = () => {
                     )}
 
                     <ImageList
-                      sx={{ width: "90%", maxHeight: 250 }}
-                      cols={5}
+                      sx={{ width: "100%", maxHeight: 250 }}
+                      cols={4}
                       rowHeight={110}
                     >
                       {files.map((file) => (
                         <ImageListItem key={file}>
                           <img
                             src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/library/${file}`}
-                            style={img}
+                            style={{
+                              display: "block",
+                              width: "100%",
+                              height: "100%",
+                            }}
                             alt=""
                           />
                         </ImageListItem>
