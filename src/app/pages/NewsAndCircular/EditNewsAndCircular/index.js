@@ -23,54 +23,64 @@ import ToastAlerts from "app/components/Toast";
 import { useDropzone } from "react-dropzone";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import DropSingleImage from "app/components/DropZone/singleImage";
 
 const thumbsContainer = {
   display: "flex",
-  flexDirection: "row",
-  flexWrap: "wrap",
   marginTop: 16,
+  maxHeight: "250px",
 };
 
 const thumb = {
-  display: "inline-flex",
+  display: "flex",
   borderRadius: 2,
+  justifyContent: "center",
+  alignContent: "center",
   border: "1px solid #eaeaea",
+  // border: "1px solid red",
   marginBottom: 8,
   marginRight: 8,
-  width: 100,
-  height: 100,
+  width: "70%",
+  height: "150px",
   padding: 4,
   boxSizing: "border-box",
 };
 
-const thumbInner = {
-  display: "flex",
-  minWidth: 0,
-  overflow: "hidden",
-};
-
-const img = {
-  display: "block",
-  width: "auto",
-  height: "100%",
-};
-
 const EditNews = () => {
-  const [type, SetType] = useState(["News", "Circular"]);
   const { id } = useParams();
-  const { state } = useLocation();
   const navigate = useNavigate();
   const showAlert = ToastAlerts();
+  const [type, SetType] = useState(["News", "Circular"]);
+  const [bannerImage, setBannerImage] = useState([]);
 
-  var initialValues = {
-    title: state.title,
-    type: state.type,
-    source: state.source,
-    short_description: state.short_description,
-    description: state.description,
+  const [initialValues, setInitialValues] = useState({
+    title: '',
+    type: '',
+    source: '',
+    short_description: '',
+    description: '',
     banner_image: [],
-    status: state.status,
+    status: '',
+  });
+
+  const getNewsDetail = async () => {
+    try {
+      let res = await Axios.get(`/news/list?id=${id}`);
+      let data = res.data.data;
+      setInitialValues({
+        title: data.title,
+        type: data.type,
+        source: data.source,
+        short_description: data.short_description,
+        description: data.description,
+        status: data.status,
+        banner_image: data.banner_image || [],
+      });
+    } catch (error) {
+      showAlert("error", error.response.data.message);
+    }
   };
+
   const validationSchema = yup.object({
     title: yup.string("Enter Title").required("Title is required"),
     type: yup.string("Enter Type").nullable().required("Type is required"),
@@ -82,39 +92,6 @@ const EditNews = () => {
       .string("Short Description")
       .required("Short Description is required"),
   });
-
-  const [bannerImage, setBannerImage] = useState([]);
-
-  const {
-    getRootProps: getRootBannerImageProps,
-    getInputProps: getInputBannerImageProps,
-  } = useDropzone({
-    accept: "image/*",
-    onDrop: (acceptedFiles) => {
-      const selectedFile = acceptedFiles[0];
-      if (selectedFile) {
-        setBannerImage([
-          Object.assign(selectedFile, {
-            preview: URL.createObjectURL(selectedFile),
-          }),
-        ]);
-      }
-    },
-  });
-
-  useEffect(
-    () => () => {
-      bannerImage.forEach((file) => URL.revokeObjectURL(file.preview));
-    },
-    [bannerImage]
-  );
-  const thumbs = bannerImage.map((file) => (
-    <div style={thumb} key={file.name}>
-      <div style={thumbInner}>
-        <img src={file.preview} style={img} alt="" />
-      </div>
-    </div>
-  ));
 
   const handleEventAdd = async (data) => {
     console.log(data, "data");
@@ -139,6 +116,17 @@ const EditNews = () => {
       showAlert("error", error.response.data.message);
     }
   };
+
+  
+  useEffect(
+    () => () => {
+      bannerImage.forEach((file) => URL.revokeObjectURL(file.preview));
+    },
+    [bannerImage]
+  );
+  useEffect(() => {
+    getNewsDetail();
+  }, []);
   return (
     <React.Fragment>
       <Typography variant="h1" mb={3}>
@@ -147,6 +135,7 @@ const EditNews = () => {
       <Card>
         <CardContent>
           <Formik
+           key={JSON.stringify(initialValues)}
             validateOnChange={true}
             initialValues={initialValues}
             validationSchema={validationSchema}
@@ -240,32 +229,28 @@ const EditNews = () => {
                     labelPlacement="start"
                   />
                 </Grid>
-                <Grid container rowSpacing={3} columnSpacing={3} marginTop={5}>
+                <Grid container rowSpacing={3} columnSpacing={3} marginTop={1}>
                   <Grid item xs={3}>
                     <Typography variant="body1">Banner Images :-</Typography>
-                    <div
-                      {...getRootBannerImageProps({ className: "dropzone" })}
-                      style={{ marginTop: "10px", width: "112px" }}
-                    >
-                      <input {...getInputBannerImageProps()} />
-                      <Button size="small" variant="contained">Select Image</Button>
-                    </div>
-                    <aside style={thumbsContainer}>
-                      {/* Display initial image or selected images */}
-                      {bannerImage.length > 0 ? (
-                        thumbs // Display selected images
-                      ) : (
+                    <DropSingleImage
+                      setImage={setBannerImage}
+                      image={bannerImage}
+                    />
+                    {bannerImage.length == 0 && (
+                      <aside style={thumbsContainer}>
                         <div style={thumb}>
-                          <div style={thumbInner}>
-                            <img
-                              src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/news/${state.banner_image}`}
-                              style={img}
-                              alt=""
-                            />
-                          </div>
+                          <img
+                            src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/news/${values.banner_image}`}
+                            style={{
+                              display: "block",
+                              width: "100%",
+                              height: "100%",
+                            }}
+                            alt=""
+                          />
                         </div>
-                      )}
-                    </aside>
+                      </aside>
+                    )}
                   </Grid>
                 </Grid>{" "}
                 <Typography variant="body1" marginTop={1}>

@@ -26,63 +26,82 @@ import styled from "@mui/material/styles/styled";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import EditSportImage from "./editImage";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import DropSingleImage from "app/components/DropZone/singleImage";
 const thumbsContainer = {
   display: "flex",
-  flexDirection: "row",
-  flexWrap: "wrap",
   marginTop: 16,
+  maxHeight: "250px",
 };
 
 const thumb = {
-  display: "inline-flex",
+  display: "flex",
   borderRadius: 2,
+  justifyContent: "center",
+  alignContent: "center",
   border: "1px solid #eaeaea",
+  // border: "1px solid red",
   marginBottom: 8,
   marginRight: 8,
-  width: 100,
-  height: 100,
+  width: "70%",
+  height: "150px",
   padding: 4,
   boxSizing: "border-box",
 };
 
-const thumbInner = {
-  display: "flex",
-  minWidth: 0,
-  overflow: "hidden",
-};
-
-const img = {
-  display: "block",
-  width: "auto",
-  height: "100%",
-};
-
-const ListItem = styled('li')(({ theme }) => ({
-    margin: theme.spacing(0.1),
-    borderRadius: '4px',
-    display: 'inline-block', 
-    padding: theme.spacing(.1),
-  }));
+const ListItem = styled("li")(({ theme }) => ({
+  margin: theme.spacing(0.1),
+  borderRadius: "4px",
+  display: "inline-block",
+  padding: theme.spacing(0.1),
+}));
 
 const EditSport = () => {
-  const { id } = useParams();
-  const { state } = useLocation();
-  console.log(state, "state");
   const navigate = useNavigate();
   const showAlert = ToastAlerts();
+  const { id } = useParams();
+  const { state } = useLocation();
+  const [amenitiesData, setAmenitiesData] = useState([]);
+  const [amenities, setAmenities] = useState("");
+  const [files, setFiles] = useState([]);
+  const [bannerImage, setBannerImage] = useState([]);
+  const [openView, setOpenView] = useState(false);
 
-  var initialValues = {
-    name: state.name,
-    location: state.location,
-    field_name: state.field_name,
-    field_no: state.field_no,
-    description: state.description,
-    rate: state.rate,
+  const [initialValues, setInitialValues] = useState({
+    name: "",
+    location: "",
+    field_name: "",
+    field_no: "",
+    description: "",
+    rate: "",
     amenities: [],
     images: [],
     banner_image: [],
-    terms_condition: state.terms_condition,
-    status: state.status,
+    terms_condition: "",
+    status: "",
+  });
+
+  const getSportDetails = async () => {
+    try {
+      const res = await Axios.get(`/sport/list?id=${id}`);
+      let data = res.data.data;
+      setInitialValues({
+        name: data.name,
+        location: data.location,
+        field_name: data.field_name,
+        field_no: data.field_no,
+        description: data.description,
+        rate: data.rate,
+        amenities: [],
+        images: [],
+        banner_image: data.banner_image || [],
+        terms_condition: data.terms_condition,
+        status: data.status,
+      });
+      setAmenitiesData(data.amenities || []);
+      setFiles(data.images || []);
+    } catch (error) {
+      showAlert("error", error.response.data.message);
+    }
   };
   const validationSchema = yup.object({
     name: yup.string("Enter Sport Name").required("Sport Name is required"),
@@ -105,8 +124,6 @@ const EditSport = () => {
       .required("Terms & Condition is required"),
   });
 
-  const [amenitiesData, setAmenitiesData] = useState(state?.amenities?state?.amenities :[]);
-  const [amenities, setAmenities] = useState("");
   const addAmenitiesItem = (event) => {
     const message = event.target.value.trim();
     if (event.key === "Enter" && message) {
@@ -128,40 +145,6 @@ const EditSport = () => {
       })
     );
   };
-
-  const [files, setFiles] = useState(state.images ? state.images : []);
-  const [bannerImage, setBannerImage] = useState([]);
-  const [openView, setOpenView] = useState(false);
-  const {
-    getRootProps: getRootBannerImageProps,
-    getInputProps: getInputBannerImageProps,
-  } = useDropzone({
-    accept: "image/*",
-    onDrop: (acceptedFiles) => {
-      const selectedFile = acceptedFiles[0];
-      if (selectedFile) {
-        setBannerImage([
-          Object.assign(selectedFile, {
-            preview: URL.createObjectURL(selectedFile),
-          }),
-        ]);
-      }
-    },
-  });
-
-  useEffect(
-    () => () => {
-      bannerImage.forEach((file) => URL.revokeObjectURL(file.preview));
-    },
-    [bannerImage]
-  );
-  const thumbs = bannerImage.map((file) => (
-    <div style={thumb} key={file.name}>
-      <div style={thumbInner}>
-        <img src={file.preview} style={img} alt="" />
-      </div>
-    </div>
-  ));
 
   const handleBanquetAdd = async (data) => {
     console.log(data, "data");
@@ -194,6 +177,16 @@ const EditSport = () => {
     }
   };
 
+  useEffect(
+    () => () => {
+      bannerImage.forEach((file) => URL.revokeObjectURL(file.preview));
+    },
+    [bannerImage]
+  );
+
+  useEffect(() => {
+    getSportDetails();
+  }, [openView]);
   return (
     <React.Fragment>
       <Typography variant="h1" mb={3}>
@@ -202,6 +195,7 @@ const EditSport = () => {
       <Card>
         <CardContent>
           <Formik
+            key={JSON.stringify(initialValues)}
             validateOnChange={true}
             initialValues={initialValues}
             validationSchema={validationSchema}
@@ -327,32 +321,28 @@ const EditSport = () => {
                   />
                 </Grid>
 
-                <Grid container rowSpacing={3} columnSpacing={3} marginTop={5}>
+                <Grid container rowSpacing={3} columnSpacing={3} marginTop={1}>
                   <Grid item xs={3}>
                     <Typography variant="body1">Banner Images :-</Typography>
-                    <div
-                      {...getRootBannerImageProps({ className: "dropzone" })}
-                      style={{ marginTop: "10px", width: "114px" }}
-                    >
-                      <input {...getInputBannerImageProps()} />
-                      <Button size="small" variant="contained">Select Image</Button>
-                    </div>
-                    <aside style={thumbsContainer}>
-                      {/* Display initial image or selected images */}
-                      {bannerImage.length > 0 ? (
-                        thumbs // Display selected images
-                      ) : (
+                    <DropSingleImage
+                      setImage={setBannerImage}
+                      image={bannerImage}
+                    />
+                    {bannerImage.length == 0 && (
+                      <aside style={thumbsContainer}>
                         <div style={thumb}>
-                          <div style={thumbInner}>
-                            <img
-                              src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/sport/${state.banner_image}`}
-                              style={img}
-                              alt=""
-                            />
-                          </div>
+                          <img
+                            src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/sport/${values.banner_image}`}
+                            style={{
+                              display: "block",
+                              width: "100%",
+                              height: "100%",
+                            }}
+                            alt=""
+                          />
                         </div>
-                      )}
-                    </aside>
+                      </aside>
+                    )}
                   </Grid>
                   <Grid item xs={9}>
                     <Typography variant="body1">Images:-</Typography>
@@ -372,15 +362,19 @@ const EditSport = () => {
                     )}
 
                     <ImageList
-                      sx={{ width: "90%", maxHeight: 250 }}
-                      cols={5}
+                      sx={{ width: "100%", maxHeight: 250 }}
+                      cols={4}
                       rowHeight={110}
                     >
                       {files.map((file) => (
                         <ImageListItem key={file}>
                           <img
                             src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/sport/${file}`}
-                            style={img}
+                            style={{
+                              display: "block",
+                              width: "100%",
+                              height: "100%",
+                            }}
                             alt=""
                           />
                         </ImageListItem>
