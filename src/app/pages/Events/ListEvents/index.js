@@ -5,6 +5,7 @@ import {
   Autocomplete,
   Avatar,
   Button,
+  FormControl,
   Grid,
   InputAdornment,
   TextField,
@@ -23,7 +24,9 @@ import { getCustomDateTime } from "@jumbo/utils";
 import { formatDate } from "./date.js";
 import { Axios } from "app/services/config";
 import Swal from "sweetalert2";
-
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 // Inside your component:
 
 export default function ListEvent() {
@@ -206,8 +209,30 @@ export default function ListEvent() {
         >
           <Grid container rowSpacing={3} columnSpacing={3} marginTop={-1}>
             <Grid item xs={3}>
-              
-              <TextField
+              <FormControl fullWidth>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    id="event_start_date"
+                    name="event_start_date"
+                    label="Event Date"
+                    format="DD-MM-YYYY"
+                    value={
+                      selectedEventDate?.event_start_date
+                        ? new Date(selectedEventDate?.event_start_date)
+                        : null
+                    }
+                    onChange={(selectedDate) => {
+                      setSelectedEventDate((prevDate) => ({
+                        ...prevDate,
+                        event_start_date: selectedDate,
+                      }));
+                    }}
+                    slotProps={{ textField: { size: "small" } }}
+                  />
+                </LocalizationProvider>
+              </FormControl>
+
+              {/* <TextField
                 fullWidth
                 type="date"
                 id="event_start_date"
@@ -225,11 +250,33 @@ export default function ListEvent() {
                 }}
                 size="small"
                 value={selectedEventDate.event_start_date}
-              />
+              /> */}
             </Grid>
 
             <Grid item xs={3}>
-              <TextField
+              <FormControl fullWidth>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    id="start_date"
+                    name="start_date"
+                    label="From Date"
+                    format="DD-MM-YYYY"
+                    value={
+                      selectedEventDate?.start_date
+                        ? new Date(selectedEventDate?.start_date)
+                        : null
+                    }
+                    onChange={(selectedDate) => {
+                      setSelectedEventDate((prevDate) => ({
+                        ...prevDate,
+                        start_date: selectedDate,
+                      }));
+                    }}
+                    slotProps={{ textField: { size: "small" } }}
+                  />
+                </LocalizationProvider>
+              </FormControl>
+              {/* <TextField
                 fullWidth
                 type="date"
                 id="start_date"
@@ -247,10 +294,32 @@ export default function ListEvent() {
                 }}
                 size="small"
                 value={selectedEventDate.start_date}
-              />
+              /> */}
             </Grid>
             <Grid item xs={3}>
-              <TextField
+              <FormControl fullWidth>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    id="end_date"
+                    name="end_date"
+                    label="To Date"
+                    format="DD-MM-YYYY"
+                    value={
+                      selectedEventDate?.end_date
+                        ? new Date(selectedEventDate?.end_date)
+                        : null
+                    }
+                    onChange={(selectedDate) => {
+                      setSelectedEventDate((prevDate) => ({
+                        ...prevDate,
+                        end_date: selectedDate,
+                      }));
+                    }}
+                    slotProps={{ textField: { size: "small" } }}
+                  />
+                </LocalizationProvider>
+              </FormControl>
+              {/* <TextField
                 fullWidth
                 type="date"
                 id="end_date"
@@ -268,7 +337,7 @@ export default function ListEvent() {
                 }}
                 size="small"
                 value={selectedEventDate.end_date}
-              />
+              /> */}
             </Grid>
           </Grid>
           <Div

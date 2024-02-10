@@ -6,5 +6,5 @@ export const formatDate = (dateString) => {
     const day = date.getDate().toString().padStart(2, '0');
   
     // console.log(`${month}-${day}-${year}`);
-    return `${month}-${day}-${year}`;
+    return `${day}-${month}-${year}`;
 };

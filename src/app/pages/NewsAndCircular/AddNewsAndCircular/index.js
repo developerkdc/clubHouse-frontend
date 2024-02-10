@@ -20,13 +20,33 @@ import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { Axios } from "app/services/config";
 import ToastAlerts from "app/components/Toast";
-import { useDropzone } from "react-dropzone";
-import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import DropSingleImage from "app/components/DropZone/singleImage";
+import ReactQuill, { Quill } from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import "quill-emoji/dist/quill-emoji.css";
+import QuillEmoji from "quill-emoji";
+
+Quill.register("modules/emoji", QuillEmoji);
+
+const modules = {
+  toolbar: [
+    [{ header: "1" }, { header: "2" }, { font: [] }],
+    [{ size: [] }],
+    ["bold", "italic", "underline", "strike", "blockquote"],
+    [{ list: "ordered" }, { list: "bullet" }],
+    ["link", "image", "emoji"],
+    ["clean"],
+  ],
+
+  clipboard: {
+    matchVisual: false,
+  },
+  "emoji-toolbar": true,
+  "emoji-textarea": false,
+};
 
 const AddNews = () => {
-  
   const navigate = useNavigate();
   const showAlert = ToastAlerts();
   const [bannerImage, setBannerImage] = useState([]);
@@ -190,24 +210,43 @@ const AddNews = () => {
                       setImage={setBannerImage}
                       image={bannerImage}
                     />
-                   </Grid>
+                  </Grid>
                 </Grid>{" "}
                 <Typography variant="body1" marginTop={1}>
                   Description :-
                 </Typography>
                 <Grid container rowSpacing={3} columnSpacing={3} marginTop={-1}>
                   <Grid item xs={12}>
-                    <ReactQuill
-                      theme="snow"
-                      value={values?.description}
-                      onChange={(content, delta, source, editor) => {
-                        console.log(content);
-                        setFieldValue("description", content);
-                      }}
-                    />
+                    <Grid item xs={12}>
+                      <ReactQuill
+                        theme="snow"
+                        value={values?.description}
+                        onChange={(content, delta, source, editor) => {
+                          console.log(content);
+                          setFieldValue("description", content);
+                        }}
+                        modules={modules}
+                        formats={[
+                          "header",
+                          "font",
+                          "size",
+                          "bold",
+                          "italic",
+                          "underline",
+                          "strike",
+                          "blockquote",
+                          "list",
+                          "bullet",
+                          "link",
+                          "image",
+                          "emoji",
+                        ]}
+                        style={{ height: "200px" }}
+                      />
+                    </Grid>
                   </Grid>
                 </Grid>
-                <Grid container columnSpacing={3} mt={5}>
+                <Grid container columnSpacing={3} mt={10}>
                   <Grid item xs={6} textAlign="right">
                     <LoadingButton
                       variant="contained"

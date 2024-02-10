@@ -18,19 +18,39 @@ import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { Axios } from "app/services/config";
 import ToastAlerts from "app/components/Toast";
-import { useDropzone } from "react-dropzone";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
 import styled from "@mui/material/styles/styled";
 import DropSingleImage from "app/components/DropZone/singleImage";
 import DropMultiImage from "app/components/DropZone/multiImage";
+import ReactQuill, { Quill } from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import "quill-emoji/dist/quill-emoji.css";
+import QuillEmoji from "quill-emoji";
 
-const ListItem = styled('li')(({ theme }) => ({
-    margin: theme.spacing(0.1),
-    borderRadius: '4px',
-    display: 'inline-block', 
-    padding: theme.spacing(.1),
-  }));
+Quill.register("modules/emoji", QuillEmoji);
+
+const modules = {
+  toolbar: [
+    [{ header: "1" }, { header: "2" }, { font: [] }],
+    [{ size: [] }],
+    ["bold", "italic", "underline", "strike", "blockquote"],
+    [{ list: "ordered" }, { list: "bullet" }],
+    ["link", "image", "emoji"],
+    ["clean"],
+  ],
+
+  clipboard: {
+    matchVisual: false,
+  },
+  "emoji-toolbar": true,
+  "emoji-textarea": false,
+};
+
+const ListItem = styled("li")(({ theme }) => ({
+  margin: theme.spacing(0.1),
+  borderRadius: "4px",
+  display: "inline-block",
+  padding: theme.spacing(0.1),
+}));
 
 const AddSport = () => {
   const navigate = useNavigate();
@@ -41,7 +61,6 @@ const AddSport = () => {
   const [amenitiesData, setAmenitiesData] = useState([]);
   const [amenities, setAmenities] = useState("");
 
-  
   var initialValues = {
     name: "",
     location: "",
@@ -75,27 +94,29 @@ const AddSport = () => {
       .nullable()
       .required("Terms & Condition is required"),
   });
-  
+
   const addAmenitiesItem = (event) => {
-    const message = event.target.value.trim();
-    if (event.key === "Enter" && message) {
-      const newItem = amenitiesData.concat(amenities);
-      setAmenitiesData(newItem);
-      setAmenities("");
-      event.preventDefault();
+    if (amenities.trim() === "") {
+      return;
     }
+    const newItem = amenitiesData.concat(amenities);
+    setAmenitiesData(newItem);
+    setAmenities("");
+    event.preventDefault();
   };
   const handleAmenitiesDelete = (chipToDelete) => {
     let found = false;
-    setAmenitiesData((chips) => chips.filter((chip) => {
-      if (chip === chipToDelete && !found) {
-        found = true;
-        return false;
-      }
-      return true;
-    }));
+    setAmenitiesData((chips) =>
+      chips.filter((chip) => {
+        if (chip === chipToDelete && !found) {
+          found = true;
+          return false;
+        }
+        return true;
+      })
+    );
   };
-  
+
   useEffect(
     () => () => {
       files.forEach((file) => URL.revokeObjectURL(file.preview));
@@ -109,7 +130,6 @@ const AddSport = () => {
     },
     [bannerImage]
   );
-
 
   const handleBanquetAdd = async (data) => {
     console.log(data, "data");
@@ -132,7 +152,6 @@ const AddSport = () => {
     formData.append("amenities", JSON.stringify([...amenitiesData]));
     formData.append("terms_condition", data.terms_condition);
     formData.append("status", data.status);
-
 
     try {
       await Axios.post("/sport/add", formData);
@@ -230,14 +249,22 @@ const AddSport = () => {
                       label="Add Amenities..."
                       value={amenities}
                       onChange={(e) => setAmenities(e.target.value)}
-                      onKeyPress={addAmenitiesItem}
                       component="li"
                       sx={{
                         mx: 1,
                       }}
                     />
                   </Grid>
-                  <Grid item xs={10}>
+                  <Grid item xs={1} mt={5}>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      onClick={addAmenitiesItem}
+                    >
+                      Add
+                    </Button>
+                  </Grid>
+                  <Grid item xs={9}>
                     <div
                       style={{
                         overflowY: "scroll",
@@ -282,11 +309,11 @@ const AddSport = () => {
                       setImage={setBannerImage}
                       image={bannerImage}
                     />
-                    </Grid>
+                  </Grid>
                   <Grid item xs={9}>
                     <Typography variant="body1">Images :-</Typography>
                     <DropMultiImage setImages={setFiles} images={files} />
-                   </Grid>
+                  </Grid>
                 </Grid>{" "}
                 <Typography variant="body1" marginTop={1}>
                   Description :-
@@ -300,10 +327,27 @@ const AddSport = () => {
                         console.log(content);
                         setFieldValue("description", content);
                       }}
+                      modules={modules}
+                      formats={[
+                        "header",
+                        "font",
+                        "size",
+                        "bold",
+                        "italic",
+                        "underline",
+                        "strike",
+                        "blockquote",
+                        "list",
+                        "bullet",
+                        "link",
+                        "image",
+                        "emoji",
+                      ]}
+                      style={{ height: "200px" }}
                     />
                   </Grid>
                 </Grid>
-                <Grid container columnSpacing={3} mt={5}>
+                <Grid container columnSpacing={3} mt={10}>
                   <Grid item xs={6} textAlign="right">
                     <LoadingButton
                       variant="contained"

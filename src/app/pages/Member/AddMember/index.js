@@ -2,15 +2,18 @@ import React, { useState } from "react";
 import {
   Card,
   CardContent,
+  FormControl,
   FormControlLabel,
+  FormHelperText,
   Grid,
   Switch,
-  Typography, Menu, MenuItem, Select,
+  TextField,
+  Typography,
 } from "@mui/material";
 import { AddCircleOutline, RemoveCircleOutline } from "@mui/icons-material"; // Import Material-UI icons
 import { LoadingButton } from "@mui/lab";
 import Button from "@mui/material/Button";
-import { Form, Formik, FieldArray, Field } from "formik";
+import { Form, Formik, FieldArray } from "formik";
 import JumboTextField from "@jumbo/components/JumboFormik/JumboTextField";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
@@ -18,9 +21,11 @@ import * as yup from "yup";
 import { Axios } from "app/services/config";
 import ToastAlerts from "app/components/Toast";
 import Div from "@jumbo/shared/Div";
-
-
-
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { format } from "date-fns";
+import dayjs from "dayjs";
 const AddMember = () => {
   const navigate = useNavigate();
   const showAlert = ToastAlerts();
@@ -34,12 +39,15 @@ const AddMember = () => {
     dob: "",
     member_type: "",
     status: true,
-    family_member: []
+    family_member: [],
   };
   const validationSchema = yup.object({
     member_id: yup.string("Enter Member ID").required("Member ID is required"),
-    member_type: yup.string("Enter Member Type").required("Member Type is required"),
-    dob: yup.date()
+    member_type: yup
+      .string("Enter Member Type")
+      .required("Member Type is required"),
+    dob: yup
+      .date()
       .test("not-current-date", "Enter Valid Date of Birth", function (value) {
         if (!value) {
           // Handle case where value is not provided
@@ -56,12 +64,21 @@ const AddMember = () => {
     first_name: yup
       .string("Enter First Name")
       .required("First Name is required")
-      .matches(/^[A-Za-z]+$/, "First Name must contain only alphabetic characters"),
+      .matches(
+        /^[A-Za-z]+$/,
+        "First Name must contain only alphabetic characters"
+      ),
     last_name: yup
       .string("Enter Last Name")
       .required("Last Name is required")
-      .matches(/^[A-Za-z]+$/, "Last Name must contain only alphabetic characters"),
-    email_id: yup.string("Enter your Email ID").email("Enter a valid Email ID").required("Email is required"),
+      .matches(
+        /^[A-Za-z]+$/,
+        "Last Name must contain only alphabetic characters"
+      ),
+    email_id: yup
+      .string("Enter your Email ID")
+      .email("Enter a valid Email ID")
+      .required("Email is required"),
     mobile_no: yup
       .string()
       .typeError("Phone number must be a number")
@@ -70,29 +87,37 @@ const AddMember = () => {
     password: yup.string().required("Password is Required"),
     family_member: yup.array(
       yup.object({
-        first_name: yup.string().required('First Name is required'),
-        last_name: yup.string().required('Last Name is required').nullable() ,
-        mobile_no: yup.string()
+        first_name: yup.string().required("First Name is required"),
+        last_name: yup.string().required("Last Name is required").nullable(),
+        mobile_no: yup
+          .string()
           .typeError("Phone number must be a number")
 
-          .matches(/^\d{10}$/, "Number should be 10 digits.").nullable() ,
+          .matches(/^\d{10}$/, "Number should be 10 digits.")
+          .nullable(),
         dob: yup
           .date()
           .nullable() // Allow null or empty string as valid values
-          .test("not-current-date", "Enter Valid Date of Birth", function (value) {
-            if (!value) {
-              return true; // Skip validation if no value is provided
-            }
+          .test(
+            "not-current-date",
+            "Enter Valid Date of Birth",
+            function (value) {
+              if (!value) {
+                return true; // Skip validation if no value is provided
+              }
 
-            const currentDate = new Date();
-            currentDate.setHours(0, 0, 0, 0);
-            return value < currentDate;
-          })
-        ,
-        email_id: yup.string("Enter your Email ID").email("Enter a valid Email ID").nullable() ,
-        relation: yup.string().required('Relation is required'),
+              const currentDate = new Date();
+              currentDate.setHours(0, 0, 0, 0);
+              return value < currentDate;
+            }
+          ),
+        email_id: yup
+          .string("Enter your Email ID")
+          .email("Enter a valid Email ID")
+          .nullable(),
+        relation: yup.string().required("Relation is required"),
       })
-    )
+    ),
   });
 
   const handleMemberAdd = async (data) => {
@@ -104,12 +129,6 @@ const AddMember = () => {
       showAlert("error", error.response.data.message);
     }
   };
-
-
-
-
-
-
 
   return (
     <React.Fragment>
@@ -123,10 +142,10 @@ const AddMember = () => {
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={(data, { setSubmitting }) => {
+              console.log(data, "data");
               validationSchema
                 .validate(data, { abortEarly: false })
                 .then(() => {
-           
                   handleMemberAdd(data);
                   setSubmitting(false);
                 })
@@ -140,45 +159,94 @@ const AddMember = () => {
               <Form noValidate autoComplete="off">
                 <Grid container rowSpacing={3} columnSpacing={3}>
                   <Grid item xs={6}>
-                    <JumboTextField fullWidth id="member_id" name="member_id" label="Member ID" />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <JumboTextField fullWidth id="first_name" name="first_name" label="First name" />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <JumboTextField fullWidth id="last_name" name="last_name" label="Last name" />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <JumboTextField fullWidth id="email_id" name="email_id" label="Email" />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <JumboTextField fullWidth id="password" name="password" label="Password" />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <JumboTextField fullWidth type="number" id="mobile_no" name="mobile_no" label="Phone No" />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <JumboTextField fullWidth id="member_type" name="member_type" label="Member Type" />
-                  </Grid>
-                  <Grid item xs={3}>
                     <JumboTextField
                       fullWidth
-                      type="date"
-                      id="dob"
-                      name="dob"
-                      label="Date of Birth"
-                      InputLabelProps={{
-                        shrink: true,
-                    }}
+                      id="member_id"
+                      name="member_id"
+                      label="Member ID"
                     />
                   </Grid>
+                  <Grid item xs={6}>
+                    <JumboTextField
+                      fullWidth
+                      id="first_name"
+                      name="first_name"
+                      label="First name"
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <JumboTextField
+                      fullWidth
+                      id="last_name"
+                      name="last_name"
+                      label="Last name"
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <JumboTextField
+                      fullWidth
+                      id="email_id"
+                      name="email_id"
+                      label="Email"
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <JumboTextField
+                      fullWidth
+                      id="password"
+                      name="password"
+                      label="Password"
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <JumboTextField
+                      fullWidth
+                      type="number"
+                      id="mobile_no"
+                      name="mobile_no"
+                      label="Phone No"
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <JumboTextField
+                      fullWidth
+                      id="member_type"
+                      name="member_type"
+                      label="Member Type"
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <FormControl fullWidth error={errors.dob && touched.dob}>
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DatePicker
+                          label="Date of Birth"
+                          id="dob"
+                          format="DD-MM-YYYY"
+                          name="dob"
+                          value={values.dob ? new Date(values.dob) : null}
+                          onChange={(newValue) => {
+                            setFieldValue("dob", newValue);
+                          }}
+                          slotProps={{ textField: { size: "small" } }}
+            
+                        />
+                      </LocalizationProvider>
+                      {errors.dob && touched.dob && (
+                        <FormHelperText>{errors.dob}</FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={3}></Grid>
                   <Grid item xs={6} alignContent="center">
                     <FormControlLabel
                       style={{ padding: "0px", margin: "0px", height: "100%" }}
                       control={
                         <Switch
                           onChange={(e) => {
-                            setFieldValue("status", values.status ? false : true);
+                            setFieldValue(
+                              "status",
+                              values.status ? false : true
+                            );
                           }}
                           defaultChecked={values.status ? true : false}
                           color="primary"
@@ -189,7 +257,6 @@ const AddMember = () => {
                       labelPlacement="start"
                     />
                   </Grid>
-
                 </Grid>
                 <Grid item xs={2} alignContent="center">
                   <FieldArray
@@ -204,23 +271,81 @@ const AddMember = () => {
                             <Div
                               sx={{ display: "flex", flexDirection: "column" }}
                             >
-                              <Typography variant="h5">{`Member ${index + 1
-                                }`}</Typography>
+                              <Typography variant="h5">{`Member ${
+                                index + 1
+                              }`}</Typography>
                               <Grid container rowSpacing={3} columnSpacing={3}>
                                 <Grid item xs={2}>
-                                  <JumboTextField fullWidth id="first_name" name={`family_member.${index}.first_name`} label="First Name" />
-                                </Grid>
-                                <Grid item xs={2}>
-                                  <JumboTextField fullWidth id="last_name" name={`family_member.${index}.last_name`} label="Last Name" />
-                                </Grid>
-                                <Grid item xs={2}>
-                                  <JumboTextField fullWidth id="mobile_no" name={`family_member.${index}.mobile_no`} label="Phone NO" />
-                                </Grid>
-                                <Grid item xs={2}>
-                                  <JumboTextField fullWidth id="email_id" name={`family_member.${index}.email_id`} label="Email ID" />
+                                  <JumboTextField
+                                    fullWidth
+                                    id="first_name"
+                                    name={`family_member.${index}.first_name`}
+                                    label="First Name"
+                                  />
                                 </Grid>
                                 <Grid item xs={2}>
                                   <JumboTextField
+                                    fullWidth
+                                    id="last_name"
+                                    name={`family_member.${index}.last_name`}
+                                    label="Last Name"
+                                  />
+                                </Grid>
+                                <Grid item xs={2}>
+                                  <JumboTextField
+                                    fullWidth
+                                    id="mobile_no"
+                                    name={`family_member.${index}.mobile_no`}
+                                    label="Phone NO"
+                                  />
+                                </Grid>
+                                <Grid item xs={2}>
+                                  <JumboTextField
+                                    fullWidth
+                                    id="email_id"
+                                    name={`family_member.${index}.email_id`}
+                                    label="Email ID"
+                                  />
+                                </Grid>
+                                <Grid item xs={2}>
+                                  <LocalizationProvider
+                                    dateAdapter={AdapterDayjs}
+                                  >
+                                    <DatePicker
+                                      label="Date of Birth"
+                                      id={`dob-${index}`}
+                                      format="DD-MM-YYYY"
+                                      name={`family_member.${index}.dob`}
+                                      value={
+                                        values.family_member[index]?.dob
+                                          ? new Date(
+                                              values.family_member[index].dob
+                                            )
+                                          : null
+                                      }
+                                      onChange={(newValue) => {
+                                        setFieldValue(
+                                          `family_member.${index}.dob`,
+                                          newValue
+                                        );
+                                      }}
+                                      slotProps={{
+                                        textField: { size: "small" },
+                                      }}
+                                      renderInput={(params) => (
+                                        <TextField
+                                          error={errors.dob && touched.dob}
+                                          {...params}
+                                          name={`family_member.${index}.dob`}
+                                        />
+                                      )}
+                                      // renderInput={(params) => (
+                                      //   <input {...params} />
+                                      // )}
+                                    />
+                                  </LocalizationProvider>
+
+                                  {/* <JumboTextField
                                     fullWidth
                                     type="date"
                                     id="dob"
@@ -228,12 +353,16 @@ const AddMember = () => {
                                     label="Date of Birth"
                                     InputLabelProps={{
                                       shrink: true,
-                                  }}
-                                 
-                                  />
+                                    }}
+                                  /> */}
                                 </Grid>
                                 <Grid item xs={2}>
-                                  <JumboTextField fullWidth id="relation" name={`family_member.${index}.relation`} label="Relation" />
+                                  <JumboTextField
+                                    fullWidth
+                                    id="relation"
+                                    name={`family_member.${index}.relation`}
+                                    label="Relation"
+                                  />
                                 </Grid>
                               </Grid>
                             </Div>
@@ -277,7 +406,7 @@ const AddMember = () => {
                               fontSize: "15px",
                               fontWeight: "500",
                               ml: 1.5,
-                            
+
                               ":hover": { cursor: "pointer", color: "black" },
                             }}
                           >
@@ -291,7 +420,12 @@ const AddMember = () => {
 
                 <Grid container columnSpacing={3} mt={5}>
                   <Grid item xs={6} textAlign="right">
-                    <LoadingButton variant="contained" size="medium" type="submit" loading={isSubmitting}>
+                    <LoadingButton
+                      variant="contained"
+                      size="medium"
+                      type="submit"
+                      loading={isSubmitting}
+                    >
                       Save
                     </LoadingButton>
                   </Grid>

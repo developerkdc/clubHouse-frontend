@@ -13,6 +13,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+
 import { useDropzone } from "react-dropzone";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import { LoadingButton } from "@mui/lab";
@@ -30,7 +31,11 @@ import "quill-emoji/dist/quill-emoji.css";
 import QuillEmoji from "quill-emoji";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import EditEventImage from "./editImage";
-
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
+import { formatDate } from "../ListEvents/date";
 const img = {
   display: "block",
   width: "auto",
@@ -271,12 +276,7 @@ const EditEvent = () => {
                           if (val === "single") {
                             setFieldValue("end_date", "");
                           } else {
-                            setFieldValue(
-                              "end_date",
-                              new Date(state.end_date)
-                                .toISOString()
-                                .split("T")[0]
-                            );
+                            setFieldValue("end_date", new Date(state.end_date));
                           }
                           setFieldValue("duration_type", val);
                         }}
@@ -301,7 +301,28 @@ const EditEvent = () => {
                   </Grid>
 
                   <Grid item xs={3}>
-                    <JumboTextField
+                    <FormControl
+                      fullWidth
+                      error={errors.start_date && touched.start_date}
+                    >
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DatePicker
+                          label="Start Date"
+                          id="start_date"
+                          format="DD-MM-YYYY"
+                          name="start_date"
+                          defaultValue={dayjs(formatDate(values?.start_date))}
+                          onChange={(newValue) => {
+                            setFieldValue("start_date", newValue);
+                          }}
+                          slotProps={{ textField: { size: "small" } }}
+                        />
+                      </LocalizationProvider>
+                      {errors.start_date && touched.start_date && (
+                        <FormHelperText>{errors.start_date}</FormHelperText>
+                      )}
+                    </FormControl>
+                    {/* <JumboTextField
                       fullWidth
                       type="date"
                       id="start_date"
@@ -310,11 +331,33 @@ const EditEvent = () => {
                       InputLabelProps={{
                         shrink: true,
                       }}
-                    />
+                    /> */}
                   </Grid>
 
                   <Grid item xs={3}>
-                    <JumboTextField
+                    <FormControl
+                      fullWidth
+                      error={errors.end_date && touched.end_date}
+                    >
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DatePicker
+                          id="end_date"
+                          name="end_date"
+                          label="End Date"
+                          format="DD-MM-YYYY"
+                          defaultValue={dayjs(formatDate(values?.end_date))}
+                          onChange={(newValue) => {
+                            setFieldValue("end_date", newValue);
+                          }}
+                          slotProps={{ textField: { size: "small" } }}
+                          disabled={values.duration_type !== "multi"}
+                        />
+                      </LocalizationProvider>
+                      {errors.end_date && touched.end_date && (
+                        <FormHelperText>{errors.end_date}</FormHelperText>
+                      )}
+                    </FormControl>
+                    {/* <JumboTextField
                       fullWidth
                       type="date"
                       id="end_date"
@@ -325,7 +368,7 @@ const EditEvent = () => {
                         shrink: true,
                       }}
                       disabled={values.duration_type !== "multi"}
-                    />
+                    /> */}
                   </Grid>
 
                   <Grid item xs={3}>
@@ -432,7 +475,7 @@ const EditEvent = () => {
                       )}
                     </aside>
                   </Grid>
-                  
+
                   <Grid item xs={9}>
                     <Typography variant="body1">Images:-</Typography>
                     <Button
@@ -496,20 +539,21 @@ const EditEvent = () => {
                         "image",
                         "emoji",
                       ]}
-                      css={css`
-                        .ql-editor img {
-                          max-width: 100%; /* Fix width */
-                          height: auto; /* Maintain aspect ratio */
-                        }
-                        .ql-editor {
-                          min-height: 18em;
-                        }
-                      `}
+                      style={{ height: "200px" }}
+                      // css={css`
+                      //   .ql-editor img {
+                      //     max-width: 10px; /* Fix width */
+                      //     height: 10px; /* Maintain aspect ratio */
+                      //   }
+                      //   .ql-editor {
+                      //     min-height: 18em;
+                      //   }
+                      // `}
                     />
                   </Grid>
                 </Grid>
 
-                <Grid container columnSpacing={3} mt={5}>
+                <Grid container columnSpacing={3} mt={10}>
                   <Grid item xs={6} textAlign="right">
                     <LoadingButton
                       variant="contained"

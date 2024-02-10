@@ -18,12 +18,32 @@ import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { Axios } from "app/services/config";
 import ToastAlerts from "app/components/Toast";
-import { useDropzone } from "react-dropzone";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
 import styled from "@mui/material/styles/styled";
 import DropSingleImage from "app/components/DropZone/singleImage";
 import DropMultiImage from "app/components/DropZone/multiImage";
+import ReactQuill, { Quill } from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import "quill-emoji/dist/quill-emoji.css";
+import QuillEmoji from "quill-emoji";
+
+Quill.register("modules/emoji", QuillEmoji);
+
+const modules = {
+  toolbar: [
+    [{ header: "1" }, { header: "2" }, { font: [] }],
+    [{ size: [] }],
+    ["bold", "italic", "underline", "strike", "blockquote"],
+    [{ list: "ordered" }, { list: "bullet" }],
+    ["link", "image", "emoji"],
+    ["clean"],
+  ],
+
+  clipboard: {
+    matchVisual: false,
+  },
+  "emoji-toolbar": true,
+  "emoji-textarea": false,
+};
 
 const ListItem = styled("li")(({ theme }) => ({
   margin: theme.spacing(0.1),
@@ -35,7 +55,7 @@ const ListItem = styled("li")(({ theme }) => ({
 const AddBanquet = () => {
   const [tagsData, setTagsData] = useState([]);
   const [amenitiesData, setAmenitiesData] = useState([]);
-  const [tags, setTages] = useState("");
+  const [tags, setTags] = useState("");
   const [amenities, setAmenities] = useState("");
 
   const handleTagsDelete = (chipToDelete) => {
@@ -64,23 +84,23 @@ const AddBanquet = () => {
   };
 
   const addTagsItem = (event) => {
-    const message = event.target.value.trim();
-    if (event.key === "Enter" && message) {
-      const newItem = tagsData.concat(tags);
-      setTagsData(newItem);
-      setTages("");
-      event.preventDefault();
+    if (tags.trim() === "") {
+      return;
     }
+    const newItem = tagsData.concat(tags);
+    setTagsData(newItem);
+    setTags("");
+    event.preventDefault();
   };
 
   const addAmenitiesItem = (event) => {
-    const message = event.target.value.trim();
-    if (event.key === "Enter" && message) {
-      const newItem = amenitiesData.concat(amenities);
-      setAmenitiesData(newItem);
-      setAmenities("");
-      event.preventDefault();
+    if (amenities.trim() === "") {
+      return;
     }
+    const newItem = amenitiesData.concat(amenities);
+    setAmenitiesData(newItem);
+    setAmenities("");
+    event.preventDefault();
   };
 
   const navigate = useNavigate();
@@ -261,21 +281,25 @@ const AddBanquet = () => {
                       variant="standard"
                       label="Add Tags..."
                       value={tags}
-                      onChange={(e) => setTages(e.target.value)}
-                      onKeyPress={addTagsItem}
-                      component="li"
-                      sx={{
-                        mx: 1,
-                      }}
+                      onChange={(e) => setTags(e.target.value)}
                     />
                   </Grid>
-                  <Grid item xs={4}>
+                  <Grid item xs={1} mt={5}>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      onClick={addTagsItem}
+                    >
+                      Add
+                    </Button>
+                  </Grid>
+
+                  <Grid item xs={3}>
                     <div
                       style={{
                         overflowY: "scroll",
                         maxHeight: "80px",
                         display: "flex",
-
                         flexWrap: "wrap",
                       }}
                     >
@@ -292,19 +316,29 @@ const AddBanquet = () => {
                   </Grid>
                   <Grid item xs={2}>
                     <Typography variant="body1">Amenities :-</Typography>
+
                     <TextField
                       variant="standard"
                       label="Add Amenities..."
                       value={amenities}
                       onChange={(e) => setAmenities(e.target.value)}
-                      onKeyPress={addAmenitiesItem}
                       component="li"
                       sx={{
                         mx: 1,
                       }}
                     />
                   </Grid>
-                  <Grid item xs={4}>
+                  <Grid item xs={1} mt={5}>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      onClick={addAmenitiesItem}
+                    >
+                      Add
+                    </Button>
+                  </Grid>
+
+                  <Grid item xs={3}>
                     <div
                       style={{
                         overflowY: "scroll",
@@ -352,7 +386,7 @@ const AddBanquet = () => {
                   </Grid>
                   <Grid item xs={9}>
                     <Typography variant="body1">Images :-</Typography>
-                  <DropMultiImage setImages={setFiles} images={files} />
+                    <DropMultiImage setImages={setFiles} images={files} />
                   </Grid>
                 </Grid>{" "}
                 <Typography variant="body1" marginTop={1}>
@@ -367,10 +401,27 @@ const AddBanquet = () => {
                         console.log(content);
                         setFieldValue("description", content);
                       }}
+                      modules={modules}
+                      formats={[
+                        "header",
+                        "font",
+                        "size",
+                        "bold",
+                        "italic",
+                        "underline",
+                        "strike",
+                        "blockquote",
+                        "list",
+                        "bullet",
+                        "link",
+                        "image",
+                        "emoji",
+                      ]}
+                      style={{ height: "200px" }}
                     />
                   </Grid>
                 </Grid>
-                <Grid container columnSpacing={3} mt={5}>
+                <Grid container columnSpacing={3} mt={10}>
                   <Grid item xs={6} textAlign="right">
                     <LoadingButton
                       variant="contained"
