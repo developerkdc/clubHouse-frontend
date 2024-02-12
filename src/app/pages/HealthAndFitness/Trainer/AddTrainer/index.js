@@ -149,7 +149,7 @@ const AddTrainer = () => {
     age: yup.number().required("Age is Required"),
   });
 
-  const handleNutritionistAdd = async (data) => {
+  const handleTrainerAdd = async (data) => {
     console.log(data, "data");
     const formData = new FormData();
 
@@ -171,7 +171,7 @@ const AddTrainer = () => {
     formData.append("status", data.status);
     try {
         await Axios.post("/health_fitness/trainer/add", formData);
-      showAlert("success", "User added successfully.");
+      showAlert("success", "Trainer added successfully.");
       navigate("/health/trainer");
     } catch (error) {
       showAlert("error", error.response.data.message);
@@ -218,7 +218,7 @@ const AddTrainer = () => {
               validationSchema
                 .validate(data, { abortEarly: false })
                 .then(() => {
-                  handleNutritionistAdd(data);
+                  handleTrainerAdd(data);
                   setSubmitting(false);
                 })
                 .catch((validationErrors) => {

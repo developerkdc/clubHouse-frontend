@@ -20,11 +20,33 @@ import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { Axios } from "app/services/config";
 import ToastAlerts from "app/components/Toast";
-import { useDropzone } from "react-dropzone";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
 import DropSingleImage from "app/components/DropZone/singleImage";
 import DropMultiImage from "app/components/DropZone/multiImage";
+import ReactQuill, { Quill } from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import "quill-emoji/dist/quill-emoji.css";
+import QuillEmoji from "quill-emoji";
+
+
+Quill.register("modules/emoji", QuillEmoji);
+
+
+const modules = {
+  toolbar: [
+    [{ header: "1" }, { header: "2" }, { font: [] }],
+    [{ size: [] }],
+    ["bold", "italic", "underline", "strike", "blockquote"],
+    [{ list: "ordered" }, { list: "bullet" }],
+    ["link", "image", "emoji"],
+    ["clean"],
+  ],
+
+  clipboard: {
+    matchVisual: false,
+  },
+  "emoji-toolbar": true,
+  "emoji-textarea": false,
+};
 
 const AddSpa = () => {
   const navigate = useNavigate();
@@ -249,7 +271,7 @@ const AddSpa = () => {
                   Description :-
                 </Typography>
                 <Grid container columnSpacing={3} marginTop={2}>
-                  <Grid item xs={12}>
+                <Grid item xs={12}>
                     <ReactQuill
                       theme="snow"
                       value={values?.description}
@@ -257,6 +279,23 @@ const AddSpa = () => {
                         console.log(content);
                         setFieldValue("description", content);
                       }}
+                      modules={modules}
+                      formats={[
+                        "header",
+                        "font",
+                        "size",
+                        "bold",
+                        "italic",
+                        "underline",
+                        "strike",
+                        "blockquote",
+                        "list",
+                        "bullet",
+                        "link",
+                        "image",
+                        "emoji",
+                      ]}
+                      style={{ height: "200px" }}
                     />
                   </Grid>
                 </Grid>

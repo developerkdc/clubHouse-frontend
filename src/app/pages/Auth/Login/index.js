@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Card, CardContent, Checkbox, FormControlLabel, Typography } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Checkbox,
+  FormControlLabel,
+  Typography,
+} from "@mui/material";
 import Div from "@jumbo/shared/Div";
 import { alpha } from "@mui/material/styles";
 import { ASSET_IMAGES } from "../../../utils/constants/paths";
@@ -9,17 +15,15 @@ import { Form, Formik } from "formik";
 import JumboTextField from "@jumbo/components/JumboFormik/JumboTextField";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import useJumboAuth from "@jumbo/hooks/useJumboAuth";
-import Swal from "sweetalert2";
-// import { Axios } from "index";
-import axios from "axios";
 import { Axios } from "app/services/config";
 import ToastAlerts from "app/components/Toast";
-// import { setAuthToken } from "app/services/config";
 
 const validationSchema = yup.object({
-  email_id: yup.string("Enter your Email ID").email("Enter Valid Email ID").required("Email ID is required"),
+  email_id: yup
+    .string("Enter your Email ID")
+    .email("Enter Valid Email ID")
+    .required("Email ID is required"),
   password: yup.string("Enter your password").required("Password is required"),
 });
 
@@ -27,29 +31,13 @@ const Login = ({ disableSmLogin }) => {
   const { setAuthToken, authToken, authUser } = useJumboAuth();
   const showAlert = ToastAlerts();
   const navigate = useNavigate();
-  // const { error, loading, isAuthenticated, user } = useSelector(
-  //   (state) => state.userReducer
-  // );
   const [showPassword, setShowPassword] = useState(false);
-  // const [isSubmitting, setSubmitting] = useState(false);
-
-  const dispatch = useDispatch();
 
   useEffect(() => {
-    // if (error) {
-    //   Swal.fire({
-    //     icon: "error",
-    //     title: "Invalid Credentials",
-    //     text: error,
-    //   });
-    //   dispatch(clearErrors());
-    // }
     if (authToken) {
       navigate("/");
+      window.location.reload();
     }
-    //  else if (authToken) {
-    //   navigate("/mycontent");
-    // }
   }, []);
 
   const onSignIn = async (values) => {
@@ -57,21 +45,12 @@ const Login = ({ disableSmLogin }) => {
       try {
         let { data } = await Axios.post("/auth/login", values);
         setAuthToken(data?.data?.token);
+       
       } catch (error) {
         showAlert("error", error.response.data.message);
       }
-      // navigate("/");
-      // });
     }
-    // dispatch(login(values?.email_id, values?.password, setSubmitting));
   };
-
-  // const handleForgotPassword = () => {
-  //   showDialog({
-  //     title: "Enter Email For Recovery",
-  //     content: <ForgotPasswordForm hideDialogue={hideDialog} />,
-  //   });
-  // };
 
   return (
     <Div
@@ -79,8 +58,6 @@ const Login = ({ disableSmLogin }) => {
         width: 720,
         maxWidth: "100%",
         margin: "auto",
-        // marginRight: 80,
-        // p: 4,
       }}
     >
       <Card
@@ -94,7 +71,10 @@ const Login = ({ disableSmLogin }) => {
           sx={{
             flex: "0 1 300px",
             position: "relative",
-            background: `#0267a0 url(${getAssetPath(`${ASSET_IMAGES}/widgets/keith-luke.jpg`, "640x428")}) no-repeat center`,
+            background: `#0267a0 url(${getAssetPath(
+              `${ASSET_IMAGES}/widgets/keith-luke.jpg`,
+              "640x428"
+            )}) no-repeat center`,
             backgroundSize: "cover",
 
             "&::after": {
@@ -119,7 +99,12 @@ const Login = ({ disableSmLogin }) => {
             }}
           >
             <Div sx={{ mb: 2 }}>
-              <Typography variant={"h3"} color={"inherit"} fontWeight={500} mb={3}>
+              <Typography
+                variant={"h3"}
+                color={"inherit"}
+                fontWeight={500}
+                mb={3}
+              >
                 Sign In
               </Typography>
               <Typography variant={"body1"} mb={2}>
@@ -159,11 +144,23 @@ const Login = ({ disableSmLogin }) => {
                 </Div>
                 <Div sx={{ mb: 1 }}>
                   <FormControlLabel
-                    control={<Checkbox checked={showPassword} onChange={() => setShowPassword(!showPassword)} />}
+                    control={
+                      <Checkbox
+                        checked={showPassword}
+                        onChange={() => setShowPassword(!showPassword)}
+                      />
+                    }
                     label="Show Password"
                   />
                 </Div>
-                <LoadingButton fullWidth variant="contained" size="medium" type="submit" sx={{ mb: 3 }} loading={isSubmitting}>
+                <LoadingButton
+                  fullWidth
+                  variant="contained"
+                  size="medium"
+                  type="submit"
+                  sx={{ mb: 3 }}
+                  loading={isSubmitting}
+                >
                   Sign In
                 </LoadingButton>
 

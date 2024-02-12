@@ -21,9 +21,30 @@ import * as yup from "yup";
 import { Axios } from "app/services/config";
 import ToastAlerts from "app/components/Toast";
 import { useDropzone } from "react-dropzone";
-import ReactQuill from "react-quill";
+import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import DropSingleImage from "app/components/DropZone/singleImage";
+import "quill-emoji/dist/quill-emoji.css";
+import QuillEmoji from "quill-emoji";
+
+Quill.register("modules/emoji", QuillEmoji);
+
+const modules = {
+  toolbar: [
+    [{ header: "1" }, { header: "2" }, { font: [] }],
+    [{ size: [] }],
+    ["bold", "italic", "underline", "strike", "blockquote"],
+    [{ list: "ordered" }, { list: "bullet" }],
+    ["link", "image", "emoji"],
+    ["clean"],
+  ],
+
+  clipboard: {
+    matchVisual: false,
+  },
+  "emoji-toolbar": true,
+  "emoji-textarea": false,
+};
 
 const thumbsContainer = {
   display: "flex",
@@ -93,7 +114,7 @@ const EditNews = () => {
       .required("Short Description is required"),
   });
 
-  const handleEventAdd = async (data) => {
+  const handleNewsEdit = async (data) => {
     console.log(data, "data");
     const formData = new FormData();
 
@@ -144,7 +165,7 @@ const EditNews = () => {
               validationSchema
                 .validate(data, { abortEarly: false })
                 .then(() => {
-                  handleEventAdd(data);
+                  handleNewsEdit(data);
                   setSubmitting(false);
                 })
                 .catch((validationErrors) => {
@@ -265,10 +286,27 @@ const EditNews = () => {
                         console.log(content);
                         setFieldValue("description", content);
                       }}
+                      modules={modules}
+                      formats={[
+                        "header",
+                        "font",
+                        "size",
+                        "bold",
+                        "italic",
+                        "underline",
+                        "strike",
+                        "blockquote",
+                        "list",
+                        "bullet",
+                        "link",
+                        "image",
+                        "emoji",
+                      ]}
+                      style={{ height: "200px" }}
                     />
                   </Grid>
                 </Grid>
-                <Grid container columnSpacing={3} mt={5}>
+                <Grid container columnSpacing={3} mt={10}>
                   <Grid item xs={6} textAlign="right">
                     <LoadingButton
                       variant="contained"

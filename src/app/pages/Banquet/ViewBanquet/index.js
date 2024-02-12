@@ -8,7 +8,6 @@ import {
   ImageList,
   ImageListItem,
 } from "@mui/material";
-import CardHeader from "@mui/material/CardHeader";
 import { CardActions, CardContent, Typography } from "@mui/material";
 import Chip from "@mui/material/Chip";
 import Avatar from "@mui/material/Avatar";

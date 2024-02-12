@@ -13,7 +13,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useDropzone } from "react-dropzone";
+
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import { LoadingButton } from "@mui/lab";
 import Button from "@mui/material/Button";
@@ -25,12 +25,16 @@ import { Axios } from "app/services/config";
 import ToastAlerts from "app/components/Toast";
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { css } from "@emotion/react";
 import "quill-emoji/dist/quill-emoji.css";
 import QuillEmoji from "quill-emoji";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import EditEventImage from "./editImage";
 import DropSingleImage from "app/components/DropZone/singleImage";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
+import { formatDate } from "../ListEvents/date";
 
 const thumbsContainer = {
   display: "flex",
@@ -44,7 +48,6 @@ const thumb = {
   justifyContent: "center",
   alignContent: "center",
   border: "1px solid #eaeaea",
-  // border: "1px solid red",
   marginBottom: 8,
   marginRight: 8,
   width: "70%",
@@ -74,7 +77,7 @@ const EditEvent = () => {
   const navigate = useNavigate();
   const showAlert = ToastAlerts();
   const { id } = useParams();
-  const { state } = useLocation();
+  // const { state } = useLocation();
   const [category, SetCategory] = useState(["sport", "religion"]);
   const [eventType, SetEventType] = useState(["free", "paid"]);
   const [durationType, SetDurationType] = useState(["single", "multi"]);
@@ -108,9 +111,9 @@ const EditEvent = () => {
         event_type: data.event_type,
         short_description: data.short_description,
         description: data.description,
-        start_date: new Date(data.start_date).toISOString().split("T")[0],
+        start_date: data.start_date,
         entry_fee: data.entry_fee,
-        end_date: new Date(data.end_date).toISOString().split("T")[0],
+        end_date: data.end_date,
         status: data.status,
         banner_image: data.banner_image || [],
       });
@@ -151,7 +154,7 @@ const EditEvent = () => {
     }),
   });
 
-  const handleEventAdd = async (data) => {
+  const handleEventEdit = async (data) => {
     const formData = new FormData();
     bannerImage.forEach((file) => {
       formData.append(`banner_image`, file);
@@ -184,8 +187,7 @@ const EditEvent = () => {
   useEffect(() => {
     getEventDetail();
   }, [openView]);
- 
-  console.log(initialValues);
+
   return (
     <React.Fragment>
       <Typography variant="h1" mb={3}>
@@ -199,11 +201,10 @@ const EditEvent = () => {
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={(data, { setSubmitting }) => {
-              // console.log(data, "datass");
               validationSchema
                 .validate(data, { abortEarly: false })
                 .then(() => {
-                  handleEventAdd(data);
+                  handleEventEdit(data);
                   setSubmitting(false);
                 })
                 .catch((validationErrors) => {
@@ -267,15 +268,12 @@ const EditEvent = () => {
                         value={values?.duration_type}
                         name="duration_type"
                         onChange={(event, val) => {
+                          console.log("first ", values.end_date);
                           if (val === "single") {
                             setFieldValue("end_date", "");
+                            console.log("last ", values.end_date);
                           } else {
-                            setFieldValue(
-                              "end_date",
-                              new Date(state.end_date)
-                                .toISOString()
-                                .split("T")[0]
-                            );
+                            setFieldValue("end_date", initialValues.end_date);
                           }
                           setFieldValue("duration_type", val);
                         }}
@@ -300,31 +298,52 @@ const EditEvent = () => {
                   </Grid>
 
                   <Grid item xs={3}>
-                    <JumboTextField
+                    <FormControl
                       fullWidth
-                      type="date"
-                      id="start_date"
-                      name="start_date"
-                      label="Start Date"
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                    />
+                      error={errors.start_date && touched.start_date}
+                    >
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DatePicker
+                          label="Start Date"
+                          id="start_date"
+                          format="DD-MM-YYYY"
+                          name="start_date"
+                          defaultValue={dayjs(formatDate(values?.start_date))}
+                          onChange={(newValue) => {
+                            setFieldValue("start_date", newValue);
+                          }}
+                          slotProps={{ textField: { size: "small" } }}
+                        />
+                      </LocalizationProvider>
+                      {errors.start_date && touched.start_date && (
+                        <FormHelperText>{errors.start_date}</FormHelperText>
+                      )}
+                    </FormControl>
                   </Grid>
 
                   <Grid item xs={3}>
-                    <JumboTextField
+                    <FormControl
                       fullWidth
-                      type="date"
-                      id="end_date"
-                      name="end_date"
-                      label="End Date"
-                      value={values?.end_date}
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      disabled={values.duration_type !== "multi"}
-                    />
+                      error={errors.end_date && touched.end_date}
+                    >
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DatePicker
+                          id="end_date"
+                          name="end_date"
+                          label="End Date"
+                          format="DD-MM-YYYY"
+                          defaultValue={dayjs(formatDate(values?.end_date))}
+                          onChange={(newValue) => {
+                            setFieldValue("end_date", newValue);
+                          }}
+                          slotProps={{ textField: { size: "small" } }}
+                          disabled={values.duration_type !== "multi"}
+                        />
+                      </LocalizationProvider>
+                      {errors.end_date && touched.end_date && (
+                        <FormHelperText>{errors.end_date}</FormHelperText>
+                      )}
+                    </FormControl>
                   </Grid>
 
                   <Grid item xs={3}>
@@ -344,7 +363,7 @@ const EditEvent = () => {
                           if (val === "free") {
                             setFieldValue("entry_fee", "");
                           } else {
-                            setFieldValue("entry_fee", state.entry_fee);
+                            setFieldValue("entry_fee", initialValues.entry_fee);
                           }
                           setFieldValue("event_type", val);
                         }}
@@ -492,20 +511,21 @@ const EditEvent = () => {
                         "image",
                         "emoji",
                       ]}
-                      css={css`
-                        .ql-editor img {
-                          max-width: 100%; /* Fix width */
-                          height: auto; /* Maintain aspect ratio */
-                        }
-                        .ql-editor {
-                          min-height: 18em;
-                        }
-                      `}
+                      style={{ height: "200px" }}
+                      // css={css`
+                      //   .ql-editor img {
+                      //     max-width: 10px; /* Fix width */
+                      //     height: 10px; /* Maintain aspect ratio */
+                      //   }
+                      //   .ql-editor {
+                      //     min-height: 18em;
+                      //   }
+                      // `}
                     />
                   </Grid>
                 </Grid>
 
-                <Grid container columnSpacing={3} mt={5}>
+                <Grid container columnSpacing={3} mt={10}>
                   <Grid item xs={6} textAlign="right">
                     <LoadingButton
                       variant="contained"

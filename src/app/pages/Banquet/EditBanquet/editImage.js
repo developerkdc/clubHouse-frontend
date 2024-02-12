@@ -16,12 +16,7 @@ import { Axios } from "app/services/config";
 import ToastAlerts from "app/components/Toast";
 import { useParams } from "react-router-dom";
 
-const EditBanquetImage = ({
-  openView,
-  setOpenView,
-  data,
-}) => {
-
+const EditBanquetImage = ({ openView, setOpenView, data }) => {
   const showAlert = ToastAlerts();
   const { id } = useParams();
   const [oldImage, setOldImageImages] = useState(data);
@@ -37,11 +32,11 @@ const EditBanquetImage = ({
     setOldImageImages(updatedData);
   };
 
-
   const handleRemoveNewPhoto = (fileToRemove) => {
     const updatedData = newPhotos.filter((file) => file !== fileToRemove);
     setNewPhotos(updatedData);
   };
+
   const { getRootProps, getInputProps } = useDropzone({
     accept: "image/*",
     onDrop: (acceptedFiles) => {
@@ -65,7 +60,7 @@ const EditBanquetImage = ({
     [newPhotos]
   );
 
-  const handileUploadImage = async () => {
+  const handleUploadImage = async () => {
     const formData = new FormData();
     newPhotos.forEach((file) => {
       formData.append(`images`, file);
@@ -81,7 +76,6 @@ const EditBanquetImage = ({
     }
   };
 
-  // console.log(data, "data");
   return (
     <Dialog
       open={openView}
@@ -110,7 +104,9 @@ const EditBanquetImage = ({
             style={{ marginTop: "10px", width: "118px" }}
           >
             <input {...getInputProps()} />
-            <Button size="small" variant="contained">Add Photo</Button>
+            <Button size="small" variant="contained">
+              Add Photo
+            </Button>
           </div>
         </ImageListItem>
         <ImageList
@@ -163,7 +159,7 @@ const EditBanquetImage = ({
           size="small"
           type="submit"
           variant="contained"
-          onClick={() => handileUploadImage(newPhotos)}
+          onClick={() => handleUploadImage(newPhotos)}
         >
           update images
         </Button>

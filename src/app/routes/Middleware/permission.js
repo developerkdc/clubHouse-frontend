@@ -9,7 +9,7 @@ import { Navigate, Outlet, useRoutes } from "react-router-dom";
 const PermissionMiddleware = ({ fallbackPath }) => {
   const [fallbackPathRoute, module, permission] = fallbackPath;
   const isToken = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("authUser"));
+  const user = JSON.parse(localStorage.getItem("authUser")) || {};
 
   const Swal = useSwalWrapper();
   const theme = useTheme();

@@ -3,6 +3,7 @@ import PermissionMiddleware from "../Middleware/permission";
 import AddEvent from "app/pages/Events/AddEvents";
 import ListEvent from "app/pages/Events/ListEvents";
 import EditEvent from "app/pages/Events/EditEvents";
+import ViewEventBoking from "app/pages/Events/ViewEventBoking";
 
 
 
@@ -13,6 +14,11 @@ var routes = [
   {
     path: `${routesName}`,
     element: <Page component={ListEvent} layout={"vertical-default"} />,
+    permission: "view",
+  },
+  {
+    path: `${routesName}/viewBoking`,
+    element: <Page component={ViewEventBoking} layout={"vertical-default"} />,
     permission: "view",
   },
   {

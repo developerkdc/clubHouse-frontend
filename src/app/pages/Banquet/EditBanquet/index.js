@@ -16,17 +16,38 @@ import Button from "@mui/material/Button";
 import { Form, Formik } from "formik";
 import JumboTextField from "@jumbo/components/JumboFormik/JumboTextField";
 import Swal from "sweetalert2";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import * as yup from "yup";
 import { Axios } from "app/services/config";
 import ToastAlerts from "app/components/Toast";
-import { useDropzone } from "react-dropzone";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
 import styled from "@mui/material/styles/styled";
 import EditBanquetImage from "./editImage";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DropSingleImage from "app/components/DropZone/singleImage";
+import ReactQuill, { Quill } from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import "quill-emoji/dist/quill-emoji.css";
+import QuillEmoji from "quill-emoji";
+
+Quill.register("modules/emoji", QuillEmoji);
+
+const modules = {
+  toolbar: [
+    [{ header: "1" }, { header: "2" }, { font: [] }],
+    [{ size: [] }],
+    ["bold", "italic", "underline", "strike", "blockquote"],
+    [{ list: "ordered" }, { list: "bullet" }],
+    ["link", "image", "emoji"],
+    ["clean"],
+  ],
+
+  clipboard: {
+    matchVisual: false,
+  },
+  "emoji-toolbar": true,
+  "emoji-textarea": false,
+};
+
 const thumbsContainer = {
   display: "flex",
   marginTop: 16,
@@ -59,11 +80,10 @@ const EditBanquet = () => {
   const navigate = useNavigate();
   const showAlert = ToastAlerts();
   const { id } = useParams();
-  const { state } = useLocation();
   const [openView, setOpenView] = useState(false);
   const [tagsData, setTagsData] = useState([]);
   const [amenitiesData, setAmenitiesData] = useState([]);
-  const [tags, setTages] = useState("");
+  const [tags, setTags] = useState("");
   const [amenities, setAmenities] = useState("");
   const [files, setFiles] = useState([]);
   const [bannerImage, setBannerImage] = useState([]);
@@ -156,23 +176,23 @@ const EditBanquet = () => {
   };
 
   const addTagsItem = (event) => {
-    const message = event.target.value.trim();
-    if (event.key === "Enter" && message) {
-      const newItem = tagsData.concat(tags);
-      setTagsData(newItem);
-      setTages("");
-      event.preventDefault();
+    if (tags.trim() === "") {
+      return;
     }
+    const newItem = tagsData.concat(tags);
+    setTagsData(newItem);
+    setTags("");
+    event.preventDefault();
   };
 
   const addAmenitiesItem = (event) => {
-    const message = event.target.value.trim();
-    if (event.key === "Enter" && message) {
-      const newItem = amenitiesData.concat(amenities);
-      setAmenitiesData(newItem);
-      setAmenities("");
-      event.preventDefault();
+    if (amenities.trim() === "") {
+      return;
     }
+    const newItem = amenitiesData.concat(amenities);
+    setAmenitiesData(newItem);
+    setAmenities("");
+    event.preventDefault();
   };
 
   useEffect(
@@ -182,7 +202,7 @@ const EditBanquet = () => {
     [bannerImage]
   );
 
-  const handleBanquetAdd = async (data) => {
+  const handleBanquetEdit = async (data) => {
     console.log(data, "data");
     const formData = new FormData();
     files.forEach((file) => {
@@ -230,7 +250,7 @@ const EditBanquet = () => {
       <Card>
         <CardContent>
           <Formik
-           key={JSON.stringify(initialValues)}
+            key={JSON.stringify(initialValues)}
             validateOnChange={true}
             initialValues={initialValues}
             validationSchema={validationSchema}
@@ -239,7 +259,7 @@ const EditBanquet = () => {
               validationSchema
                 .validate(data, { abortEarly: false })
                 .then(() => {
-                  handleBanquetAdd(data);
+                  handleBanquetEdit(data);
                   setSubmitting(false);
                 })
                 .catch((validationErrors) => {
@@ -311,15 +331,23 @@ const EditBanquet = () => {
                       variant="standard"
                       label="Add Chips..."
                       value={tags}
-                      onChange={(e) => setTages(e.target.value)}
-                      onKeyPress={addTagsItem}
+                      onChange={(e) => setTags(e.target.value)}
                       component="li"
                       sx={{
                         mx: 1,
                       }}
                     />
                   </Grid>
-                  <Grid item xs={4}>
+                  <Grid item xs={1} mt={5}>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      onClick={addTagsItem}
+                    >
+                      Add
+                    </Button>
+                  </Grid>
+                  <Grid item xs={3}>
                     <div
                       style={{
                         overflowY: "scroll",
@@ -346,14 +374,22 @@ const EditBanquet = () => {
                       label="Add Chips..."
                       value={amenities}
                       onChange={(e) => setAmenities(e.target.value)}
-                      onKeyPress={addAmenitiesItem}
                       component="li"
                       sx={{
                         mx: 1,
                       }}
                     />
                   </Grid>
-                  <Grid item xs={4}>
+                  <Grid item xs={1} mt={5}>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      onClick={addAmenitiesItem}
+                    >
+                      Add
+                    </Button>
+                  </Grid>
+                  <Grid item xs={3}>
                     <div
                       style={{
                         overflowY: "scroll",
@@ -463,10 +499,27 @@ const EditBanquet = () => {
                         console.log(content);
                         setFieldValue("description", content);
                       }}
+                      modules={modules}
+                      formats={[
+                        "header",
+                        "font",
+                        "size",
+                        "bold",
+                        "italic",
+                        "underline",
+                        "strike",
+                        "blockquote",
+                        "list",
+                        "bullet",
+                        "link",
+                        "image",
+                        "emoji",
+                      ]}
+                      style={{ height: "200px" }}
                     />
                   </Grid>
                 </Grid>
-                <Grid container columnSpacing={3} mt={5}>
+                <Grid container columnSpacing={3} mt={10}>
                   <Grid item xs={6} textAlign="right">
                     <LoadingButton
                       variant="contained"

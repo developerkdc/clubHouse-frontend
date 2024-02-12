@@ -116,7 +116,7 @@ const EditLibrary = () => {
       .required("Issued Quantity is required"),
   });
 
-  const handleLibraryAdd = async (data) => {
+  const handleLibraryEdit = async (data) => {
     console.log(data, "data");
     const formData = new FormData();
     files.forEach((file) => {
@@ -183,7 +183,7 @@ const EditLibrary = () => {
               validationSchema
                 .validate(data, { abortEarly: false })
                 .then(() => {
-                  handleLibraryAdd(data);
+                  handleLibraryEdit(data);
                   setSubmitting(false);
                 })
                 .catch((validationErrors) => {

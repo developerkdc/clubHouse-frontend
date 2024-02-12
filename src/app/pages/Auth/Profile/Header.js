@@ -8,7 +8,7 @@ import { ASSET_AVATARS, ASSET_IMAGES } from "../../../utils/constants/paths";
 import { getAssetPath } from "../../../utils/appHelpers";
 
 const Header = () => {
-  const AuthUser = JSON.parse(localStorage.getItem("authUser"));
+  const AuthUser = JSON.parse(localStorage.getItem("authUser")) || {};
   return (
     <ContentHeader
       avatar={<Avatar sx={{ width: 72, height: 72 }} alt={"Remy Sharp"} src={getAssetPath(`${ASSET_IMAGES}/clubLogo.png`, "72x72")} />}

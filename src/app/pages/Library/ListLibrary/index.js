@@ -26,10 +26,11 @@ export default function ListLibrary() {
   const showAlert = ToastAlerts();
   const dispatch = useDispatch();
   const [openView, setOpenView] = useState(false);
-  const [eventDetails, setMmberDetails] = useState(false);
+  const [libraryDetails, setLibraryDetails] = useState(false);
   const { libraryList, totalPages, error, successMessage } = useSelector(
     (state) => state.libraryReducer
   );
+  const { role_id } = JSON.parse(localStorage.getItem("authUser"))|| {};
   const [query, setQuery] = useState({});
 
   const columns = [
@@ -52,64 +53,74 @@ export default function ListLibrary() {
     { field: "author_name", headerName: "Author Name", sortable: true },
     { field: "book_location", headerName: "Book Location", sortable: true },
     { field: "total_quantity", headerName: "Total Quantity", sortable: true },
-    { field: "available_quantity", headerName: "Available Quantity", sortable: true },
+    {
+      field: "available_quantity",
+      headerName: "Available Quantity",
+      sortable: true,
+    },
 
-      {
-        field: "status",
-        headerName: "Status",
-        sortable: true,
-        render: (value, elm) =>
-          value ? (
-            <Button size="small" variant="outlined" color="success">
-              Active
-            </Button>
-          ) : (
-            <Button size="small" variant="outlined" color="error">
-              Inactive
-            </Button>
-          ),
-        onClick: async (elm) => {
-          try {
-            console.log(elm, "elmelm");
-            let status = elm.status;
-            const result = await Swal.fire({
-              title: `Change library status to ${status ? "inactive" : "active"} ?`,
-              icon: "warning",
-              showCancelButton: true,
-              confirmButtonText: "Yes",
-              cancelButtonText: "No",
-            });
-            if (result.isConfirmed) {
-              await Axios.patch(`/library/edit/${elm._id}`, { status: !status });
-              showAlert("success", "Library status updated successfully.");
-              navigate("/library");
-              dispatch(onLibraryList(query));
-            }
-          } catch (error) {
-            console.error("Error updating library:", error);
-            showAlert("error", "Failed to update library.");
+    {
+      field: "status",
+      headerName: "Status",
+      sortable: true,
+      render: (value, elm) =>
+        value ? (
+          <Button size="small" variant="outlined" color="success">
+            Active
+          </Button>
+        ) : (
+          <Button size="small" variant="outlined" color="error">
+            Inactive
+          </Button>
+        ),
+      onClick: async (elm) => {
+        try {
+          console.log(elm, "elmelm");
+          let status = elm.status;
+          const result = await Swal.fire({
+            title: `Change library status to ${
+              status ? "inactive" : "active"
+            } ?`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes",
+            cancelButtonText: "No",
+          });
+          if (result.isConfirmed) {
+            await Axios.patch(`/library/edit/${elm._id}`, { status: !status });
+            showAlert("success", "Library status updated successfully.");
+            navigate("/library");
+            dispatch(onLibraryList(query));
           }
-        },
+        } catch (error) {
+          console.error("Error updating library:", error);
+          showAlert("error", "Failed to update library.");
+        }
       },
+    },
   ];
- 
 
   const actions = [
     {
       label: "View Details",
       color: "secondary",
       onClick: (row) => {
-        setMmberDetails(row);
+        setLibraryDetails(row);
         setOpenView(true);
       },
       icon: <PreviewOutlinedIcon />,
     },
-    {
-      label: "Edit",
-      color: "secondary",
-      onClick: (row) => navigate(`/library/edit/${row._id}`, { state: row }),
-      icon: <ModeEditOutlinedIcon />,
-    },
+    ...(role_id?.permissions?.library?.edit
+      ? [
+          {
+            label: "Edit",
+            color: "secondary",
+            onClick: (row) =>
+              navigate(`/library/edit/${row._id}`, { state: row }),
+            icon: <ModeEditOutlinedIcon />,
+          },
+        ]
+      : []),
   ];
 
   const fetchData = (props) => {
@@ -127,7 +138,6 @@ export default function ListLibrary() {
   useEffect(() => {
     dispatch(onLibraryList(query));
   }, [query]);
-
 
   return (
     <Div
@@ -147,7 +157,6 @@ export default function ListLibrary() {
         }}
       >
         <Typography variant="h1">Library Master</Typography>
-        
 
         <Div
           sx={{
@@ -177,16 +186,16 @@ export default function ListLibrary() {
             }}
           />
           <Div>
-            {/* {permissions?.role_create == true && ( */}
-            <Button
-              size="small"
-              variant="contained"
-              sx={{ p: 1, pl: 4, pr: 4 }}
-              onClick={() => navigate("/library/add")}
-            >
-              Add Library
-            </Button>
-            {/* )} */}
+            {role_id?.permissions?.library?.add === true && (
+              <Button
+                size="small"
+                variant="contained"
+                sx={{ p: 1, pl: 4, pr: 4 }}
+                onClick={() => navigate("/library/add")}
+              >
+                Add Library
+              </Button>
+            )}
           </Div>
         </Div>
       </Div>
@@ -199,11 +208,11 @@ export default function ListLibrary() {
           totalCount={totalPages}
         />
       </Div>
-      {openView && eventDetails && (
+      {openView && libraryDetails && (
         <ViewLibrary
           openView={openView}
           setOpenView={setOpenView}
-          data={eventDetails}
+          data={libraryDetails}
         />
       )}
     </Div>

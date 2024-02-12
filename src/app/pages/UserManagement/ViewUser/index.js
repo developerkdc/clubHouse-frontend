@@ -9,21 +9,11 @@ import {
 import React from "react";
 import List from "@mui/material/List";
 import { ListItem, ListItemText, Typography } from "@mui/material";
-import {  Card, CardContent } from "@mui/material";
-import Stack from "@mui/material/Stack";
-import Div from "@jumbo/shared/Div";
 
-
-const Item = ({ children, sx }) => (
-  <Div sx={{ textAlign: 'center', flexBasis: '50%', ...sx }}>
-    {children}
-  </Div>
-);
 
 
 
 const ViewUser = ({ openView, setOpenView, data }) => {
-
 
   return (
 

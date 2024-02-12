@@ -4,6 +4,7 @@ import { useDropzone } from "react-dropzone";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 
 const DropMultiImage = ({ setImages, images }) => {
+  console.log(images, "images");
   const { getRootProps, getInputProps } = useDropzone({
     accept: "image/*",
     onDrop: (acceptedFiles) => {
@@ -12,59 +13,19 @@ const DropMultiImage = ({ setImages, images }) => {
         ...acceptedFiles.map((file) =>
           Object.assign(file, {
             preview: URL.createObjectURL(file),
+            id: Date.now() + Math.random(),
           })
         ),
       ]);
     },
   });
-  const handleRemoveNewPhoto = (fileToRemove) => {
-    const updatedData = images.filter((file) => file !== fileToRemove);
-    setImages(updatedData);
+
+  const handleRemoveNewPhoto = (idToRemove) => {
+    setImages((prevImages) => {
+      const updatedData = prevImages.filter((file) => file.id !== idToRemove);
+      return updatedData;
+    });
   };
-  const multiThumbsContainer = {
-    display: "flex",
-    flexWrap: "wrap",
-    maxHeight: "320px",
-    marginTop: 16,
-    paddingTop: "10px",
-    overflowY: "scroll",
-    // border: "1px solid red",
-  };
-  const multiThumb = {
-    display: "flex",
-    borderRadius: 2,
-    justifyContent: "center",
-    alignContent: "center",
-    border: "1px solid #eaeaea",
-    marginBottom: 15,
-    marginRight: 0,
-    width: "17%",
-    height: 130,
-    padding: 4,
-    // boxSizing: "border-box",
-  };
-  const img = {
-    maxWidth: "100%",
-    maxHeight: "100%",
-    display: "block",
-  };
-  const thumbs = images.map((file) => (
-    <>
-      <div style={multiThumb} key={file.name}>
-        <img src={file.preview} style={img} alt="" />
-      </div>
-      <HighlightOffIcon
-        style={{
-          position: "relative",
-          top: "-11px",
-          right: "12px",
-          cursor: "pointer",
-          color: "red",
-        }}
-        onClick={() => handleRemoveNewPhoto(file)}
-      />
-    </>
-  ));
 
   return (
     <>
@@ -79,11 +40,11 @@ const DropMultiImage = ({ setImages, images }) => {
       </div>
       <ImageList
         sx={{ width: "100%", maxHeight: 250 }}
-        cols={5}
+        cols={4}
         rowHeight={110}
       >
         {images?.map((file) => (
-          <ImageListItem key={file}>
+          <ImageListItem key={file.id}>
             <HighlightOffIcon
               style={{
                 position: "absolute",
@@ -92,7 +53,7 @@ const DropMultiImage = ({ setImages, images }) => {
                 cursor: "pointer",
                 color: "red",
               }}
-              onClick={() => handleRemoveNewPhoto(file)}
+              onClick={() => handleRemoveNewPhoto(file.id)}
             />
             <img
               src={file.preview}

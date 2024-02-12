@@ -25,16 +25,12 @@ export default function ListBanquet() {
   const showAlert = ToastAlerts();
   const dispatch = useDispatch();
   const [openView, setOpenView] = useState(false);
-  const [eventDetails, setMmberDetails] = useState(false);
-  // const [clear, setClear] = useState(false);
-
-  const [selectedEventDate, setSelectedEventDate] = useState(null);
-
+  const [banquetDetails, setBanquetDetails] = useState(false);
   const { banquetList, totalPages, error, successMessage } = useSelector(
     (state) => state.banquetReducer
-  );
-  console.log(banquetList,'ddddddd');
-  const [query, setQuery] = useState({});
+    );
+    const [query, setQuery] = useState({});
+    const { role_id } = JSON.parse(localStorage.getItem("authUser")) || {};
 
   const columns = [
     { field: "name", headerName: "Name", sortable: true },
@@ -71,10 +67,11 @@ export default function ListBanquet() {
         ),
       onClick: async (elm) => {
         try {
-          console.log(elm, "elmelm");
           let status = elm.status;
           const result = await Swal.fire({
-            title: `Change banquet status to ${status ? "inactive" : "active"} ?`,
+            title: `Change banquet status to ${
+              status ? "inactive" : "active"
+            } ?`,
             icon: "warning",
             showCancelButton: true,
             confirmButtonText: "Yes",
@@ -98,17 +95,20 @@ export default function ListBanquet() {
       label: "View Details",
       color: "secondary",
       onClick: (row) => {
-        setMmberDetails(row);
+        setBanquetDetails(row);
         setOpenView(true);
       },
       icon: <PreviewOutlinedIcon />,
     },
-    {
+    ...(role_id?.permissions?.banquet?.edit
+      ? [{
       label: "Edit",
       color: "secondary",
       onClick: (row) => navigate(`/banquet/edit/${row._id}`, { state: row }),
       icon: <ModeEditOutlinedIcon />,
     },
+  ]
+  : []),
   ];
 
   const fetchData = (props) => {
@@ -127,14 +127,6 @@ export default function ListBanquet() {
     dispatch(onBanquetList(query));
   }, [query]);
 
-  const handleFilter = () => {
-    setQuery({
-      ...query});
-  };
-  const handleClearFilter = () => {
-    setSelectedEventDate(null);
-    setQuery({ ...query, event_start_date: "", end_date: "" });
-  };
   return (
     <Div
       sx={{
@@ -153,7 +145,6 @@ export default function ListBanquet() {
         }}
       >
         <Typography variant="h1">Banquet Master</Typography>
-        
 
         <Div
           sx={{
@@ -182,8 +173,23 @@ export default function ListBanquet() {
               ),
             }}
           />
+
           <Div>
-            {/* {permissions?.role_create == true && ( */}
+            <Button
+              size="small"
+              variant="contained"
+              sx={{
+                mr: 2,
+                p: 1,
+                pl: 3,
+                pr: 3,
+              }}
+              onClick={() => navigate("/banquet/viewBoking")}
+            >
+              View All Registration
+            </Button>
+            {role_id?.permissions?.banquet?.add === true && (
+
             <Button
               size="small"
               variant="contained"
@@ -192,7 +198,7 @@ export default function ListBanquet() {
             >
               Add BANQUET
             </Button>
-            {/* )} */}
+            )}
           </Div>
         </Div>
       </Div>
@@ -205,11 +211,11 @@ export default function ListBanquet() {
           totalCount={totalPages}
         />
       </Div>
-      {openView && eventDetails && (
+      {openView && banquetDetails && (
         <ViewBanquet
           openView={openView}
           setOpenView={setOpenView}
-          data={eventDetails}
+          data={banquetDetails}
         />
       )}
     </Div>
