@@ -15,16 +15,16 @@ import { Form, Formik } from "formik";
 import JumboTextField from "@jumbo/components/JumboFormik/JumboTextField";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-import * as yup from "yup";
 import { Axios } from "app/services/config";
 import ToastAlerts from "app/components/Toast";
 import styled from "@mui/material/styles/styled";
 import DropSingleImage from "app/components/DropZone/singleImage";
 import DropMultiImage from "app/components/DropZone/multiImage";
 import ReactQuill, { Quill } from "react-quill";
+import QuillEmoji from "quill-emoji";
+import * as yup from "yup";
 import "react-quill/dist/quill.snow.css";
 import "quill-emoji/dist/quill-emoji.css";
-import QuillEmoji from "quill-emoji";
 
 Quill.register("modules/emoji", QuillEmoji);
 
@@ -57,32 +57,12 @@ const AddBanquet = () => {
   const [amenitiesData, setAmenitiesData] = useState([]);
   const [tags, setTags] = useState("");
   const [amenities, setAmenities] = useState("");
+  const [files, setFiles] = useState([]);
+  const [bannerImage, setBannerImage] = useState([]);
 
-  const handleTagsDelete = (chipToDelete) => {
-    let found = false;
-    setTagsData((chips) =>
-      chips.filter((chip) => {
-        if (chip === chipToDelete && !found) {
-          found = true;
-          return false;
-        }
-        return true;
-      })
-    );
-  };
-  const handleAmenitiesDelete = (chipToDelete) => {
-    let found = false;
-    setAmenitiesData((chips) =>
-      chips.filter((chip) => {
-        if (chip === chipToDelete && !found) {
-          found = true;
-          return false;
-        }
-        return true;
-      })
-    );
-  };
-
+  const navigate = useNavigate();
+  const showAlert = ToastAlerts();
+  
   const addTagsItem = (event) => {
     if (tags.trim() === "") {
       return;
@@ -103,9 +83,33 @@ const AddBanquet = () => {
     event.preventDefault();
   };
 
-  const navigate = useNavigate();
-  const showAlert = ToastAlerts();
+  const handleTagsDelete = (chipToDelete) => {
+    let found = false;
+    setTagsData((chips) =>
+      chips.filter((chip) => {
+        if (chip === chipToDelete && !found) {
+          found = true;
+          return false;
+        }
+        return true;
+      })
+    );
+  };
 
+  const handleAmenitiesDelete = (chipToDelete) => {
+    let found = false;
+    setAmenitiesData((chips) =>
+      chips.filter((chip) => {
+        if (chip === chipToDelete && !found) {
+          found = true;
+          return false;
+        }
+        return true;
+      })
+    );
+  };
+
+ 
   var initialValues = {
     name: "",
     location: "",
@@ -120,6 +124,7 @@ const AddBanquet = () => {
     terms_condition: "",
     status: true,
   };
+
   const validationSchema = yup.object({
     name: yup.string("Enter Banquet Name").required("Banquet Name is required"),
     location: yup
@@ -140,9 +145,6 @@ const AddBanquet = () => {
       .required("Terms & Condition is required"),
   });
 
-  const [files, setFiles] = useState([]);
-  const [bannerImage, setBannerImage] = useState([]);
-
   useEffect(
     () => () => {
       files.forEach((file) => URL.revokeObjectURL(file.preview));
@@ -158,13 +160,10 @@ const AddBanquet = () => {
   );
 
   const handleBanquetAdd = async (data) => {
-    console.log(data, "data");
     const formData = new FormData();
     files.forEach((file) => {
       formData.append(`images`, file);
     });
-
-    // Append banner image to formData
     bannerImage.forEach((file) => {
       formData.append(`banner_image`, file);
     });
@@ -181,10 +180,6 @@ const AddBanquet = () => {
     formData.append("terms_condition", data.terms_condition);
     formData.append("status", data.status);
 
-    // Object.keys(data).forEach((key) => {
-    //   formData.append(key, data[key]);
-    // });
-
     try {
       await Axios.post("/banquet/add", formData);
       showAlert("success", "Banquet added successfully.");
@@ -193,6 +188,7 @@ const AddBanquet = () => {
       showAlert("error", error.response.data.message);
     }
   };
+
   return (
     <React.Fragment>
       <Typography variant="h1" mb={3}>
@@ -205,7 +201,6 @@ const AddBanquet = () => {
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={(data, { setSubmitting }) => {
-              console.log(data, "datass");
               validationSchema
                 .validate(data, { abortEarly: false })
                 .then(() => {

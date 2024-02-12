@@ -96,40 +96,24 @@ const ViewGallery = ({ openView, setOpenView, data }) => {
                 {data?.status ? "Active" : "Inactive"}
               </Typography>
             </Item>
-          </Stack>
-
-          <Stack direction={"row"} alignSelf="stretch">
             <Item>
               <Typography variant={"h6"} color="text.secondary" fontSize={13}>
-              Source
+                Source
               </Typography>
               <Typography variant={"h6"} mb={0.5}>
                 {data?.source}
               </Typography>
             </Item>
+     
             <Item>
               <Typography variant={"h6"} color="text.secondary">
-
+                Event Date
               </Typography>
               <Typography variant={"h6"} mb={0.5}>
-           
-               
+                {getCustomDateTime(data?.event_date, "days", "DD MMM YYYY")}
               </Typography>
             </Item>
-            <Item>
-              <Typography variant={"h6"} color="text.secondary">
-              Event Date
-              </Typography>
-              <Typography variant={"h6"} mb={0.5}>
-              {getCustomDateTime(data?.event_date, "days", "DD MMM YYYY")}
-               
-              </Typography>
-            </Item>
-          
-           
-   
           </Stack>
-          
 
           <Stack direction={"row"} alignSelf="stretch">
             <Item>

@@ -19,7 +19,6 @@ import { onSportList } from "app/redux/actions/Sport";
 import ViewSport from "../ViewSport";
 import Swal from "sweetalert2";
 import { Axios } from "app/services/config";
-// import ViewBanquet from "../ViewBanquet";
 
 export default function ListSport() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -27,12 +26,12 @@ export default function ListSport() {
   const showAlert = ToastAlerts();
   const dispatch = useDispatch();
   const [openView, setOpenView] = useState(false);
-  const [eventDetails, setMmberDetails] = useState(false);
-
+  const [sportDetails, setSportDetails] = useState(false);
+  const { role_id } = JSON.parse(localStorage.getItem("authUser"))|| {};
   const { sportList, totalPages, error, successMessage } = useSelector(
     (state) => state.sportReducer
   );
-  console.log(sportList, "ddddddd");
+
   const [query, setQuery] = useState({});
 
   const columns = [
@@ -98,17 +97,22 @@ export default function ListSport() {
       label: "View Details",
       color: "secondary",
       onClick: (row) => {
-        setMmberDetails(row);
+        setSportDetails(row);
         setOpenView(true);
       },
       icon: <PreviewOutlinedIcon />,
     },
-    {
-      label: "Edit",
-      color: "secondary",
-      onClick: (row) => navigate(`/sport/edit/${row._id}`, { state: row }),
-      icon: <ModeEditOutlinedIcon />,
-    },
+    ...(role_id?.permissions?.sport?.edit
+      ? [
+          {
+            label: "Edit",
+            color: "secondary",
+            onClick: (row) =>
+              navigate(`/sport/edit/${row._id}`, { state: row }),
+            icon: <ModeEditOutlinedIcon />,
+          },
+        ]
+      : []),
   ];
 
   const fetchData = (props) => {
@@ -174,16 +178,16 @@ export default function ListSport() {
             }}
           />
           <Div>
-            {/* {permissions?.role_create == true && ( */}
-            <Button
-              size="small"
-              variant="contained"
-              sx={{ p: 1, pl: 4, pr: 4 }}
-              onClick={() => navigate("/sport/add")}
-            >
-              Add SPORT
-            </Button>
-            {/* )} */}
+            {role_id?.permissions?.sport?.add === true && (
+              <Button
+                size="small"
+                variant="contained"
+                sx={{ p: 1, pl: 4, pr: 4 }}
+                onClick={() => navigate("/sport/add")}
+              >
+                Add SPORT
+              </Button>
+            )}
           </Div>
         </Div>
       </Div>
@@ -196,11 +200,11 @@ export default function ListSport() {
           totalCount={totalPages}
         />
       </Div>
-      {openView && eventDetails && (
+      {openView && sportDetails && (
         <ViewSport
           openView={openView}
           setOpenView={setOpenView}
-          data={eventDetails}
+          data={sportDetails}
         />
       )}
     </Div>

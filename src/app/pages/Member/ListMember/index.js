@@ -16,12 +16,13 @@ import { Axios } from "app/services/config";
 import Swal from "sweetalert2";
 import LockResetOutlinedIcon from "@mui/icons-material/LockResetOutlined";
 export default function ListMember() {
+  const { role_id } = JSON.parse(localStorage.getItem("authUser"))|| {};
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const showAlert = ToastAlerts();
   const dispatch = useDispatch();
   const [openView, setOpenView] = useState(false);
-  const [memberDetails, setMmberDetails] = useState(false);
+  const [memberDetails, setMemberDetails] = useState(false);
   const { memberList, totalPages, error, successMessage } = useSelector(
     (state) => state.memberReducer
   );
@@ -91,23 +92,28 @@ export default function ListMember() {
       label: "View Details",
       color: "secondary",
       onClick: (row) => {
-        setMmberDetails(row);
+        setMemberDetails(row);
         setOpenView(true);
       },
       icon: <PreviewOutlinedIcon />,
     },
-    {
-      label: "Edit",
-      color: "secondary",
-      onClick: (row) => navigate(`/member/edit/${row._id}`, { state: row }),
-      icon: <ModeEditOutlinedIcon />,
-    },
-    {
-      label: "Change Password",
-      color: "primary",
-      onClick: (row) => navigate(`/member/change-password/${row._id}`),
-      icon: <LockResetOutlinedIcon />,
-    },
+    ...(role_id?.permissions?.member?.edit
+      ? [
+          {
+            label: "Edit",
+            color: "secondary",
+            onClick: (row) =>
+              navigate(`/member/edit/${row._id}`, { state: row }),
+            icon: <ModeEditOutlinedIcon />,
+          },
+          {
+            label: "Change Password",
+            color: "primary",
+            onClick: (row) => navigate(`/member/change-password/${row._id}`),
+            icon: <LockResetOutlinedIcon />,
+          },
+        ]
+      : []),
   ];
   const fetchData = (props) => {
     setQuery({ ...query, ...props });
@@ -170,16 +176,16 @@ export default function ListMember() {
             }}
           />
           <Div>
-            {/* {permissions?.role_create == true && ( */}
-            <Button
-              size="small"
-              variant="contained"
-              sx={{ p: 1, pl: 4, pr: 4 }}
-              onClick={() => navigate("/member/add")}
-            >
-              Add Member
-            </Button>
-            {/* )} */}
+            {role_id?.permissions?.member?.add === true && (
+              <Button
+                size="small"
+                variant="contained"
+                sx={{ p: 1, pl: 4, pr: 4 }}
+                onClick={() => navigate("/member/add")}
+              >
+                Add Member
+              </Button>
+            )}
           </Div>
         </Div>
       </Div>

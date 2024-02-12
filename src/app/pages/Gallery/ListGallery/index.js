@@ -27,15 +27,12 @@ export default function ListGallery() {
   const showAlert = ToastAlerts();
   const dispatch = useDispatch();
   const [openView, setOpenView] = useState(false);
-  const [eventDetails, setMmberDetails] = useState(false);
-  // const [clear, setClear] = useState(false);
-
-  const [selectedEventDate, setSelectedEventDate] = useState(null);
-
+  const [galleryDetails, setGalleryDetails] = useState(false);
+  const { role_id } = JSON.parse(localStorage.getItem("authUser")) || {};
   const { galleryList, totalPages, error, successMessage } = useSelector(
     (state) => state.galleryReducer
   );
-  console.log(galleryList,'ddddddd');
+  console.log(galleryList, "ddddddd");
   const [query, setQuery] = useState({});
 
   const columns = [
@@ -55,68 +52,72 @@ export default function ListGallery() {
       ),
     },
     {
-        field: "event_date",
-        headerName: "Event Date",
-        sortable: true,
-        render: (_, elm) =>
-          getCustomDateTime(elm?.event_date, "days", "DD MMM YYYY"),
-      },
-      {
-        field: "status",
-        headerName: "Status",
-        sortable: true,
-        render: (value, elm) =>
-          value ? (
-            <Button size="small" variant="outlined" color="success">
-              Active
-            </Button>
-          ) : (
-            <Button size="small" variant="outlined" color="error">
-              Inactive
-            </Button>
-          ),
-        onClick: async (elm) => {
-          try {
-            console.log(elm, "elmelm");
-            let status = elm.status;
-            const result = await Swal.fire({
-              title: `Change gallery status to ${status ? "inactive" : "active"} ?`,
-              icon: "warning",
-              showCancelButton: true,
-              confirmButtonText: "Yes",
-              cancelButtonText: "No",
-            });
-            if (result.isConfirmed) {
-              await Axios.patch(`/gallery/edit/${elm._id}`, { status: !status });
-              showAlert("success", "Gallery status updated successfully.");
-              navigate("/gallery");
-              dispatch(onGalleryList(query));
-            }
-          } catch (error) {
-            console.error("Error updating gallery:", error);
-            showAlert("error", "Failed to update gallery.");
+      field: "event_date",
+      headerName: "Event Date",
+      sortable: true,
+      render: (_, elm) =>
+        getCustomDateTime(elm?.event_date, "days", "DD MMM YYYY"),
+    },
+    {
+      field: "status",
+      headerName: "Status",
+      sortable: true,
+      render: (value, elm) =>
+        value ? (
+          <Button size="small" variant="outlined" color="success">
+            Active
+          </Button>
+        ) : (
+          <Button size="small" variant="outlined" color="error">
+            Inactive
+          </Button>
+        ),
+      onClick: async (elm) => {
+        try {
+          console.log(elm, "elmelm");
+          let status = elm.status;
+          const result = await Swal.fire({
+            title: `Change gallery status to ${
+              status ? "inactive" : "active"
+            } ?`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes",
+            cancelButtonText: "No",
+          });
+          if (result.isConfirmed) {
+            await Axios.patch(`/gallery/edit/${elm._id}`, { status: !status });
+            showAlert("success", "Gallery status updated successfully.");
+            navigate("/gallery");
+            dispatch(onGalleryList(query));
           }
-        },
+        } catch (error) {
+          console.error("Error updating gallery:", error);
+          showAlert("error", "Failed to update gallery.");
+        }
       },
+    },
   ];
- 
 
   const actions = [
     {
       label: "View Details",
       color: "secondary",
       onClick: (row) => {
-        setMmberDetails(row);
+        setGalleryDetails(row);
         setOpenView(true);
       },
       icon: <PreviewOutlinedIcon />,
     },
-    {
+    ...(role_id?.permissions?.gallery?.edit
+      ? [{
       label: "Edit",
       color: "secondary",
       onClick: (row) => navigate(`/gallery/edit/${row._id}`, { state: row }),
       icon: <ModeEditOutlinedIcon />,
     },
+  ]
+  : []),
   ];
 
   const fetchData = (props) => {
@@ -135,14 +136,6 @@ export default function ListGallery() {
     dispatch(onGalleryList(query));
   }, [query]);
 
-  const handleFilter = () => {
-    setQuery({
-      ...query});
-  };
-  const handleClearFilter = () => {
-    setSelectedEventDate(null);
-    setQuery({ ...query, event_start_date: "", end_date: "" });
-  };
   return (
     <Div
       sx={{
@@ -161,7 +154,6 @@ export default function ListGallery() {
         }}
       >
         <Typography variant="h1">Gallery Master</Typography>
-        
 
         <Div
           sx={{
@@ -191,7 +183,7 @@ export default function ListGallery() {
             }}
           />
           <Div>
-            {/* {permissions?.role_create == true && ( */}
+          {role_id?.permissions?.gallery?.add === true && (
             <Button
               size="small"
               variant="contained"
@@ -200,7 +192,7 @@ export default function ListGallery() {
             >
               Add Gallery
             </Button>
-            {/* )} */}
+          )}
           </Div>
         </Div>
       </Div>
@@ -213,11 +205,11 @@ export default function ListGallery() {
           totalCount={totalPages}
         />
       </Div>
-      {openView && eventDetails && (
+      {openView && galleryDetails && (
         <ViewGallery
           openView={openView}
           setOpenView={setOpenView}
-          data={eventDetails}
+          data={galleryDetails}
         />
       )}
     </Div>

@@ -80,7 +80,7 @@ const AddNews = () => {
     [bannerImage]
   );
 
-  const handleEventAdd = async (data) => {
+  const handleNewsAdd = async (data) => {
     console.log(data, "data");
     const formData = new FormData();
 
@@ -119,7 +119,7 @@ const AddNews = () => {
               validationSchema
                 .validate(data, { abortEarly: false })
                 .then(() => {
-                  handleEventAdd(data);
+                  handleNewsAdd(data);
                   setSubmitting(false);
                 })
                 .catch((validationErrors) => {

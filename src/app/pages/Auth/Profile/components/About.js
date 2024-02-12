@@ -26,7 +26,7 @@ const StyledListItemIcon = styled(ListItemIcon)(({ theme }) => ({
   border: `solid 1px ${theme.palette.divider}`,
 }));
 const About = () => {
-  const AuthUser = JSON.parse(localStorage.getItem("authUser"));
+  const AuthUser = JSON.parse(localStorage.getItem("authUser")) || {};
   return (
     <JumboCardQuick
       title={"About"}

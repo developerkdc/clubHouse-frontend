@@ -32,9 +32,11 @@ const ResetPassword = () => {
   });
 
   const handleResetPassword = async (data, setSubmitting) => {
-    
     try {
-      await Axios.post(`/auth/verify-otp`, {...data,email_id:state?.data?.email_id});
+      await Axios.post(`/auth/verify-otp`, {
+        ...data,
+        email_id: state?.data?.email_id,
+      });
       setSubmitting(false);
       showAlert("success", "Password updated successfully.");
       navigate("/login");
@@ -43,6 +45,7 @@ const ResetPassword = () => {
       showAlert("error", error.response.data.message);
     }
   };
+
   return (
     <Div
       sx={{
@@ -63,7 +66,10 @@ const ResetPassword = () => {
           sx={{
             flex: "0 1 300px",
             position: "relative",
-            background: `#0267a0 url(${getAssetPath(`${ASSET_IMAGES}/clubLogo.png`, "640x428")}) no-repeat center`,
+            background: `#0267a0 url(${getAssetPath(
+              `${ASSET_IMAGES}/clubLogo.png`,
+              "640x428"
+            )}) no-repeat center`,
             backgroundSize: "cover",
 
             "&::after": {
@@ -71,7 +77,8 @@ const ResetPassword = () => {
               position: "absolute",
               content: `''`,
               inset: 0,
-              backgroundColor: (theme) => alpha(theme.palette.common.black, 0.5),
+              backgroundColor: (theme) =>
+                alpha(theme.palette.common.black, 0.5),
             },
           }}
         >
@@ -88,7 +95,12 @@ const ResetPassword = () => {
             }}
           >
             <Div sx={{ mb: 2 }}>
-              <Typography variant={"h3"} color={"inherit"} fontWeight={500} mb={3}>
+              <Typography
+                variant={"h3"}
+                color={"inherit"}
+                fontWeight={500}
+                mb={3}
+              >
                 Set New Password
               </Typography>
             </Div>
@@ -121,13 +133,26 @@ const ResetPassword = () => {
             {({ isSubmitting, values }) => (
               <Form style={{ textAlign: "left" }} noValidate autoComplete="off">
                 <Div sx={{ mt: 1, mb: 3 }}>
-                  <JumboTextField fullWidth type="number" name="otp" label="OTP" />
+                  <JumboTextField
+                    fullWidth
+                    type="number"
+                    name="otp"
+                    label="OTP"
+                  />
                 </Div>
                 <Div sx={{ mt: 1, mb: 3 }}>
-                  <JumboTextField fullWidth name="password" label="New Password" />
+                  <JumboTextField
+                    fullWidth
+                    name="password"
+                    label="New Password"
+                  />
                 </Div>
                 <Div sx={{ mt: 1, mb: 3 }}>
-                  <JumboTextField fullWidth name="confirm_password" label="Confirm Password" />
+                  <JumboTextField
+                    fullWidth
+                    name="confirm_password"
+                    label="Confirm Password"
+                  />
                 </Div>
 
                 <LoadingButton
@@ -137,11 +162,9 @@ const ResetPassword = () => {
                   size="small"
                   sx={{ mb: 3, width: "auto" }}
                   loading={isSubmitting}
-                  // onClick={() => onVerify(values)}
                 >
                   Update
                 </LoadingButton>
-                {/* {!disableSmLogin && <React.Fragment></React.Fragment>} */}
               </Form>
             )}
           </Formik>

@@ -28,6 +28,7 @@ import ToastAlerts from "app/components/Toast";
 import { useDropzone } from "react-dropzone";
 import EditGalleryImage from "./editImage";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import DropSingleImage from "app/components/DropZone/singleImage";
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "quill-emoji/dist/quill-emoji.css";
@@ -56,53 +57,45 @@ const modules = {
 
 const thumbsContainer = {
   display: "flex",
-  flexDirection: "row",
-  flexWrap: "wrap",
   marginTop: 16,
+  maxHeight: "250px",
 };
 
 const thumb = {
-  display: "inline-flex",
+  display: "flex",
   borderRadius: 2,
+  justifyContent: "center",
+  alignContent: "center",
   border: "1px solid #eaeaea",
+  // border: "1px solid red",
   marginBottom: 8,
   marginRight: 8,
-  width: 100,
-  height: 100,
+  width: "70%",
+  height: "150px",
   padding: 4,
   boxSizing: "border-box",
 };
 
-const thumbInner = {
-  display: "flex",
-  minWidth: 0,
-  overflow: "hidden",
-};
-
-const img = {
-  display: "block",
-  width: "auto",
-  height: "100%",
-};
-
 const EditGallery = () => {
-  const [albumName, SetAlbumName] = useState(["sport", "religion"]);
   const navigate = useNavigate();
   const showAlert = ToastAlerts();
   const { id } = useParams();
   const { state } = useLocation();
-  console.log(state, "state");
   const [openView, setOpenView] = useState(false);
-  var initialValues = {
-    album_name: state.album_name,
-    source: state.source,
-    description: state.description,
-    short_description: state.short_description,
-    event_date: state.event_date,
+  const [files, setFiles] = useState([]);
+  const [bannerImage, setBannerImage] = useState([]);
+  const [albumName, SetAlbumName] = useState(["sport", "religion"]);
+
+  const [initialValues, setInitialValues] = useState({
+    album_name: '',
+    source: '',
+    description: '',
+    short_description: '',
+    event_date: '',
     images: [],
     banner_image: [],
-    status: state.status
-  };
+    status: '',
+  });
   const validationSchema = yup.object({
     source: yup.string("Enter Source").required("Source is required"),
     album_name: yup
@@ -115,40 +108,27 @@ const EditGallery = () => {
     event_date: yup.string("Event Date").required("Event Date is required"),
   });
 
-  const [files, setFiles] = useState(state.images ? state.images : []);
-  const [bannerImage, setBannerImage] = useState([]);
-  const {
-    getRootProps: getRootBannerImageProps,
-    getInputProps: getInputBannerImageProps,
-  } = useDropzone({
-    accept: "image/*",
-    onDrop: (acceptedFiles) => {
-      const selectedFile = acceptedFiles[0];
-      if (selectedFile) {
-        setBannerImage([
-          Object.assign(selectedFile, {
-            preview: URL.createObjectURL(selectedFile),
-          }),
-        ]);
-      }
-    },
-  });
-
-  useEffect(
-    () => () => {
-      bannerImage.forEach((file) => URL.revokeObjectURL(file.preview));
-    },
-    [bannerImage]
-  );
-  const thumbs = bannerImage.map((file) => (
-    <div style={thumb} key={file.name}>
-      <div style={thumbInner}>
-        <img src={file.preview} style={img} alt="" />
-      </div>
-    </div>
-  ));
-
-  const handleEventAdd = async (data) => {
+  const getGalleryDetails = async () => {
+    try {
+      const res = await Axios.get(`/gallery/list?id=${id}`);
+      let data = res.data.data;
+      setInitialValues({
+        album_name: data.album_name,
+        source: data.source,
+        description: data.description,
+        short_description: data.short_description,
+        event_date: new Date(data.event_date).toISOString().split("T")[0],
+        images: [],
+        banner_image: data.banner_image || [],
+        status: data.status,
+      });
+      setFiles(data.images || []);
+    } catch (error) {
+      showAlert("error", error.response.data.message);
+    }
+  };
+ 
+  const handleGalleryEdit = async (data) => {
     console.log(data, "data");
     const formData = new FormData();
     files.forEach((file) => {
@@ -174,6 +154,17 @@ const EditGallery = () => {
       showAlert("error", error.response.data.message);
     }
   };
+
+  useEffect(
+    () => () => {
+      bannerImage.forEach((file) => URL.revokeObjectURL(file.preview));
+    },
+    [bannerImage]
+  );
+
+  useEffect(() => {
+    getGalleryDetails();
+  }, [openView]);
   return (
     <React.Fragment>
       <Typography variant="h1" mb={3}>
@@ -182,6 +173,7 @@ const EditGallery = () => {
       <Card>
         <CardContent>
           <Formik
+           key={JSON.stringify(initialValues)}
             validateOnChange={true}
             initialValues={initialValues}
             validationSchema={validationSchema}
@@ -190,7 +182,7 @@ const EditGallery = () => {
               validationSchema
                 .validate(data, { abortEarly: false })
                 .then(() => {
-                  handleEventAdd(data);
+                  handleGalleryEdit(data);
                   setSubmitting(false);
                 })
                 .catch((validationErrors) => {
@@ -303,35 +295,28 @@ const EditGallery = () => {
                   />
                 </Grid>
 
-                <Grid container rowSpacing={3} columnSpacing={3} marginTop={5}>
+                <Grid container rowSpacing={3} columnSpacing={3} marginTop={1}>
                   <Grid item xs={3}>
                     <Typography variant="body1">Banner Images :-</Typography>
-                    <div
-                      {...getRootBannerImageProps({ className: "dropzone" })}
-                      style={{ marginTop: "10px", width: "120px" }}
-                    >
-                      <input {...getInputBannerImageProps()} />
-                      <Button size="small" variant="contained">
-                        {" "}
-                        Selecte Image
-                      </Button>
-                    </div>
-                    <aside style={thumbsContainer}>
-                      {/* Display initial image or selected images */}
-                      {bannerImage.length > 0 ? (
-                        thumbs // Display selected images
-                      ) : (
+                    <DropSingleImage
+                      setImage={setBannerImage}
+                      image={bannerImage}
+                    />
+                    {bannerImage.length == 0 && (
+                      <aside style={thumbsContainer}>
                         <div style={thumb}>
-                          <div style={thumbInner}>
-                            <img
-                              src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/gallery/${state.banner_image}`}
-                              style={img}
-                              alt=""
-                            />
-                          </div>
+                          <img
+                            src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/gallery/${values.banner_image}`}
+                            style={{
+                              display: "block",
+                              width: "100%",
+                              height: "100%",
+                            }}
+                            alt=""
+                          />
                         </div>
-                      )}
-                    </aside>
+                      </aside>
+                    )}
                   </Grid>
                   <Grid item xs={9}>
                     <Typography variant="body1">Images:-</Typography>
@@ -351,15 +336,19 @@ const EditGallery = () => {
                     )}
 
                     <ImageList
-                      sx={{ width: "90%", maxHeight: 250 }}
-                      cols={5}
+                      sx={{ width: "100%", maxHeight: 250 }}
+                      cols={4}
                       rowHeight={110}
                     >
                       {files.map((file) => (
                         <ImageListItem key={file}>
                           <img
                             src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/gallery/${file}`}
-                            style={img}
+                            style={{
+                              display: "block",
+                              width: "100%",
+                              height: "100%",
+                            }}
                             alt=""
                           />
                         </ImageListItem>

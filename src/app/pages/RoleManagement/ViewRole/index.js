@@ -14,7 +14,6 @@ import React from "react";
 
 const ViewRole = ({ openView, setOpenView, data }) => {
   return (
-
     <Dialog
       open={openView}
       onClose={() => setOpenView(false)}
@@ -22,38 +21,60 @@ const ViewRole = ({ openView, setOpenView, data }) => {
       aria-describedby="alert-dialog-description"
       maxWidth="lg"
     >
-      <DialogTitle id="alert-dialog-title"> {data?.role_name}</DialogTitle>
+      <DialogTitle
+        style={{ backgroundColor: "#7352C7", color: "white" }}
+        id="alert-dialog-title"
+      >
+        Role Name :- {data?.role_name}
+      </DialogTitle>
       <DialogContent>
-   
-      <Card style={{ marginBottom: "20px" }}>
-  <CardContent>
-    <Grid container style={{ display: "flex", justifyContent: "space-around" }}>
-      {Object.keys(data?.permissions).map((category, index) => (
-        <Grid item xs={12} sm={5} md={5} lg={2.2} key={category} style={{ marginBottom: "5px" }}>
-          <Box sx={{ height: 120 }}>
-            <Typography variant="body2" style={{ fontSize: "18px"}}sx={{color:"blue"}} >
-              <span style={{ opacity: "0.5" }}>{category}:</span>
-            </Typography>
-            {Object.keys(data?.permissions[category]).map((action) => (
-              <Typography key={action} variant="body2" style={{ fontSize: "18px"}}>
-                <span  style={{color:"black" }}>{action}:</span> {data?.permissions[category][action] ? "True" : "False"}
-              </Typography>
+        <DialogTitle id="alert-dialog-title"> Permissions :-</DialogTitle>
+        <CardContent>
+          <Grid
+            container
+            style={{ display: "flex", justifyContent: "space-around" }}
+          >
+            {Object.keys(data?.permissions).map((category, index) => (
+              <Grid
+                item
+                xs={12}
+                sm={5}
+                md={5}
+                lg={2.2}
+                key={category}
+                style={{ marginBottom: "5px" }}
+              >
+                <Box sx={{ height: 120 }}>
+                  <Typography
+                    variant="body2"
+                    style={{ fontSize: "18px" }}
+                    sx={{ color: "blue" }}
+                  >
+                    <span style={{ opacity: "0.5" }}>{category}:</span>
+                  </Typography>
+                  {Object.keys(data?.permissions[category]).map((action) => (
+                    <Typography
+                      key={action}
+                      variant="body2"
+                      style={{ fontSize: "18px" }}
+                    >
+                      <span style={{ color: "black" }}>{action}:</span>{" "}
+                      {data?.permissions[category][action] ? "True" : "False"}
+                    </Typography>
+                  ))}
+                </Box>
+              </Grid>
             ))}
-          </Box>
-        </Grid>
-      ))}
-    </Grid>
-  </CardContent>
-</Card>
-
-
-
+          </Grid>
+        </CardContent>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setOpenView(false)} size="large">Close</Button> {/* Set size to "large" for a larger button */}
+        <Button onClick={() => setOpenView(false)} size="large">
+          Close
+        </Button>{" "}
+        {/* Set size to "large" for a larger button */}
       </DialogActions>
     </Dialog>
-
   );
 };
 

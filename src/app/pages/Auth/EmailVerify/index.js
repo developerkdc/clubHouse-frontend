@@ -1,7 +1,6 @@
 import React from "react";
-import { Card, CardContent, Grid, TextField, Typography } from "@mui/material";
+import { Card, CardContent, Grid, Typography } from "@mui/material";
 import CardMedia from "@mui/material/CardMedia";
-import Button from "@mui/material/Button";
 import { alpha } from "@mui/material/styles";
 import Div from "@jumbo/shared/Div";
 import { useNavigate } from "react-router-dom";
@@ -18,11 +17,13 @@ const EmailVerify = () => {
   const navigate = useNavigate();
 
   const validationSchema = yup.object({
-    email_id: yup.string("Enter your Registered Email ID").email("Enter a valid Email ID").required("Registered Email is required"),
+    email_id: yup
+      .string("Enter your Registered Email ID")
+      .email("Enter a valid Email ID")
+      .required("Registered Email is required"),
   });
 
   const handleSendOtp = async (data, setSubmitting) => {
-    
     try {
       await Axios.post(`/auth/forgot-password`, data);
       setSubmitting(false);
@@ -48,7 +49,12 @@ const EmailVerify = () => {
     >
       <Card sx={{ maxWidth: "100%", width: 360, mb: 4 }}>
         <Div sx={{ position: "relative", height: "200px" }}>
-          <CardMedia component="img" alt="green iguana" height="200" image={`${ASSET_IMAGES}/clubLogo2.png`} />
+          <CardMedia
+            component="img"
+            alt="green iguana"
+            height="200"
+            image={`${ASSET_IMAGES}/clubLogo2.png`}
+          />
           <Div
             sx={{
               flex: 1,
@@ -56,7 +62,8 @@ const EmailVerify = () => {
               position: "absolute",
               display: "flex",
               alignItems: "center",
-              backgroundColor: (theme) => alpha(theme.palette.common.black, 0.5),
+              backgroundColor: (theme) =>
+                alpha(theme.palette.common.black, 0.5),
               p: (theme) => theme.spacing(3),
             }}
           >
@@ -83,7 +90,6 @@ const EmailVerify = () => {
                 .validate(data, { abortEarly: false })
                 .then(() => {
                   handleSendOtp(data, setSubmitting);
-                  // setSubmitting(false);
                 })
                 .catch((validationErrors) => {
                   console.error("Validation Errors:", validationErrors);
@@ -95,10 +101,21 @@ const EmailVerify = () => {
               <Form noValidate autoComplete="off">
                 <Grid container rowSpacing={3}>
                   <Grid item xs={12}>
-                    <JumboTextField fullWidth id="email_id" name="email_id" label="Registered Email ID" />
+                    <JumboTextField
+                      fullWidth
+                      id="email_id"
+                      name="email_id"
+                      label="Registered Email ID"
+                    />
                   </Grid>
                   <Grid item xs={12}>
-                    <LoadingButton fullWidth variant="contained" size="medium" type="submit" loading={isSubmitting}>
+                    <LoadingButton
+                      fullWidth
+                      variant="contained"
+                      size="medium"
+                      type="submit"
+                      loading={isSubmitting}
+                    >
                       Send OTP
                     </LoadingButton>
                   </Grid>

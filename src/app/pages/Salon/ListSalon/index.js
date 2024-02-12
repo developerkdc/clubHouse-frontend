@@ -26,8 +26,8 @@ export default function ListSalon() {
   const showAlert = ToastAlerts();
   const dispatch = useDispatch();
   const [openView, setOpenView] = useState(false);
-  const [eventDetails, setMmberDetails] = useState(false);
-  const [selectedEventDate, setSelectedEventDate] = useState(null);
+  const [salonDetails, setSalonDetails] = useState(false);
+  const { role_id } = JSON.parse(localStorage.getItem("authUser"))|| {};
   const { salonList, totalPages, error, successMessage } = useSelector(
     (state) => state.salonReducer
   );
@@ -96,17 +96,20 @@ export default function ListSalon() {
       label: "View Details",
       color: "secondary",
       onClick: (row) => {
-        setMmberDetails(row);
+        setSalonDetails(row);
         setOpenView(true);
       },
       icon: <PreviewOutlinedIcon />,
     },
-    {
+    ...(role_id?.permissions?.salon?.edit
+      ? [{
       label: "Edit",
       color: "secondary",
       onClick: (row) => navigate(`/salon/edit/${row._id}`, { state: row }),
       icon: <ModeEditOutlinedIcon />,
     },
+  ]
+  : []),
   ];
 
   const fetchData = (props) => {
@@ -173,7 +176,8 @@ export default function ListSalon() {
             }}
           />
           <Div>
-            {/* {permissions?.role_create == true && ( */}
+          {role_id?.permissions?.salon?.add === true && (
+
             <Button
               size="small"
               variant="contained"
@@ -182,7 +186,7 @@ export default function ListSalon() {
             >
               Add Salon
             </Button>
-            {/* )} */}
+            )} 
           </Div>
         </Div>
       </Div>
@@ -195,11 +199,11 @@ export default function ListSalon() {
           totalCount={totalPages}
         />
       </Div>
-      {openView && eventDetails && (
+      {openView && salonDetails && (
         <ViewSalon
           openView={openView}
           setOpenView={setOpenView}
-          data={eventDetails}
+          data={salonDetails}
         />
       )}
     </Div>

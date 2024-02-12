@@ -14,7 +14,6 @@ import {
   Typography,
 } from "@mui/material";
 
-import { useDropzone } from "react-dropzone";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import { LoadingButton } from "@mui/lab";
 import Button from "@mui/material/Button";
@@ -26,45 +25,37 @@ import { Axios } from "app/services/config";
 import ToastAlerts from "app/components/Toast";
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { css } from "@emotion/react";
 import "quill-emoji/dist/quill-emoji.css";
 import QuillEmoji from "quill-emoji";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import EditEventImage from "./editImage";
+import DropSingleImage from "app/components/DropZone/singleImage";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import { formatDate } from "../ListEvents/date";
-const img = {
-  display: "block",
-  width: "auto",
-  height: "100%",
-};
+
 const thumbsContainer = {
   display: "flex",
-  flexDirection: "row",
-  flexWrap: "wrap",
-  marginTop: 16,
+  marginTop: 0,
+  maxHeight: "250px",
 };
 
 const thumb = {
-  display: "inline-flex",
+  display: "flex",
   borderRadius: 2,
+  justifyContent: "center",
+  alignContent: "center",
   border: "1px solid #eaeaea",
   marginBottom: 8,
   marginRight: 8,
-  width: 100,
-  height: 100,
+  width: "70%",
+  height: "150px",
   padding: 4,
   boxSizing: "border-box",
 };
 
-const thumbInner = {
-  display: "flex",
-  minWidth: 0,
-  overflow: "hidden",
-};
 Quill.register("modules/emoji", QuillEmoji);
 
 const modules = {
@@ -83,27 +74,55 @@ const modules = {
   "emoji-textarea": false,
 };
 const EditEvent = () => {
-  const [category, SetCategory] = useState(["sport", "religion"]);
-  const [eventType, SetEventType] = useState(["free", "paid"]);
-  const [durationType, SetDurationType] = useState(["single", "multi"]);
   const navigate = useNavigate();
   const showAlert = ToastAlerts();
   const { id } = useParams();
-  const { state } = useLocation();
-  console.log(state, "state");
+  // const { state } = useLocation();
+  const [category, SetCategory] = useState(["sport", "religion"]);
+  const [eventType, SetEventType] = useState(["free", "paid"]);
+  const [durationType, SetDurationType] = useState(["single", "multi"]);
+  const [openView, setOpenView] = useState(false);
 
-  var initialValues = {
-    title: state.title,
-    category: state.category,
-    duration_type: state.duration_type,
-    event_type: state.event_type,
-    short_description: state.short_description,
-    description: state.description,
-    start_date: new Date(state.start_date).toISOString().split("T")[0],
-    entry_fee: state.entry_fee,
-    end_date: new Date(state.end_date).toISOString().split("T")[0],
-    status: state.status,
+  const [files, setFiles] = useState([]);
+  const [bannerImage, setBannerImage] = useState([]);
+
+  const [initialValues, setInitialValues] = useState({
+    title: "",
+    category: "",
+    duration_type: "",
+    event_type: "",
+    short_description: "",
+    description: "",
+    start_date: "",
+    entry_fee: "",
+    end_date: "",
+    status: false,
+    banner_image: [],
+  });
+
+  const getEventDetail = async () => {
+    try {
+      let res = await Axios.get(`/event/list?id=${id}`);
+      let data = res.data.data;
+      setInitialValues({
+        title: data.title,
+        category: data.category,
+        duration_type: data.duration_type,
+        event_type: data.event_type,
+        short_description: data.short_description,
+        description: data.description,
+        start_date: data.start_date,
+        entry_fee: data.entry_fee,
+        end_date: data.end_date,
+        status: data.status,
+        banner_image: data.banner_image || [],
+      });
+      setFiles(data.images || []);
+    } catch (error) {
+      showAlert("error", error.response.data.message);
+    }
   };
+
   const validationSchema = yup.object({
     title: yup.string("Enter Title").required("Title is required"),
     category: yup
@@ -134,12 +153,8 @@ const EditEvent = () => {
       otherwise: yup.string(),
     }),
   });
-  const [openView, setOpenView] = useState(false);
 
-  const [files, setFiles] = useState(state.images ? state.images : []);
-  const [bannerImage, setBannerImage] = useState([]);
-
-  const handleEventAdd = async (data) => {
+  const handleEventEdit = async (data) => {
     const formData = new FormData();
     bannerImage.forEach((file) => {
       formData.append(`banner_image`, file);
@@ -162,22 +177,6 @@ const EditEvent = () => {
       showAlert("error", error.response.data.message);
     }
   };
-  const {
-    getRootProps: getRootBannerImageProps,
-    getInputProps: getInputBannerImageProps,
-  } = useDropzone({
-    accept: "image/*",
-    onDrop: (acceptedFiles) => {
-      const selectedFile = acceptedFiles[0];
-      if (selectedFile) {
-        setBannerImage([
-          Object.assign(selectedFile, {
-            preview: URL.createObjectURL(selectedFile),
-          }),
-        ]);
-      }
-    },
-  });
 
   useEffect(
     () => () => {
@@ -185,13 +184,9 @@ const EditEvent = () => {
     },
     [bannerImage]
   );
-  const thumbs = bannerImage.map((file) => (
-    <div style={thumb} key={file.name}>
-      <div style={thumbInner}>
-        <img src={file.preview} style={img} alt="" />
-      </div>
-    </div>
-  ));
+  useEffect(() => {
+    getEventDetail();
+  }, [openView]);
 
   return (
     <React.Fragment>
@@ -201,15 +196,15 @@ const EditEvent = () => {
       <Card>
         <CardContent>
           <Formik
+            key={JSON.stringify(initialValues)}
             validateOnChange={true}
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={(data, { setSubmitting }) => {
-              // console.log(data, "datass");
               validationSchema
                 .validate(data, { abortEarly: false })
                 .then(() => {
-                  handleEventAdd(data);
+                  handleEventEdit(data);
                   setSubmitting(false);
                 })
                 .catch((validationErrors) => {
@@ -273,10 +268,12 @@ const EditEvent = () => {
                         value={values?.duration_type}
                         name="duration_type"
                         onChange={(event, val) => {
+                          console.log("first ", values.end_date);
                           if (val === "single") {
                             setFieldValue("end_date", "");
+                            console.log("last ", values.end_date);
                           } else {
-                            setFieldValue("end_date", new Date(state.end_date));
+                            setFieldValue("end_date", initialValues.end_date);
                           }
                           setFieldValue("duration_type", val);
                         }}
@@ -322,16 +319,6 @@ const EditEvent = () => {
                         <FormHelperText>{errors.start_date}</FormHelperText>
                       )}
                     </FormControl>
-                    {/* <JumboTextField
-                      fullWidth
-                      type="date"
-                      id="start_date"
-                      name="start_date"
-                      label="Start Date"
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                    /> */}
                   </Grid>
 
                   <Grid item xs={3}>
@@ -357,18 +344,6 @@ const EditEvent = () => {
                         <FormHelperText>{errors.end_date}</FormHelperText>
                       )}
                     </FormControl>
-                    {/* <JumboTextField
-                      fullWidth
-                      type="date"
-                      id="end_date"
-                      name="end_date"
-                      label="End Date"
-                      value={values?.end_date}
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      disabled={values.duration_type !== "multi"}
-                    /> */}
                   </Grid>
 
                   <Grid item xs={3}>
@@ -388,7 +363,7 @@ const EditEvent = () => {
                           if (val === "free") {
                             setFieldValue("entry_fee", "");
                           } else {
-                            setFieldValue("entry_fee", state.entry_fee);
+                            setFieldValue("entry_fee", initialValues.entry_fee);
                           }
                           setFieldValue("event_type", val);
                         }}
@@ -446,36 +421,29 @@ const EditEvent = () => {
                   />
                 </Grid>
 
-                <Grid container rowSpacing={3} columnSpacing={3} marginTop={5}>
+                <Grid container rowSpacing={3} columnSpacing={3} marginTop={1}>
                   <Grid item xs={3}>
                     <Typography variant="body1">Banner Images :-</Typography>
-                    <div
-                      {...getRootBannerImageProps({ className: "dropzone" })}
-                      style={{ marginTop: "10px", width: "112px" }}
-                    >
-                      <input {...getInputBannerImageProps()} />
-                      <Button size="small" variant="contained">
-                        Select Image
-                      </Button>
-                    </div>
-                    <aside style={thumbsContainer}>
-                      {/* Display initial image or selected images */}
-                      {bannerImage.length > 0 ? (
-                        thumbs // Display selected images
-                      ) : (
+                    <DropSingleImage
+                      setImage={setBannerImage}
+                      image={bannerImage}
+                    />
+                    {bannerImage.length == 0 && (
+                      <aside style={thumbsContainer}>
                         <div style={thumb}>
-                          <div style={thumbInner}>
-                            <img
-                              src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/event/${state.banner_image}`}
-                              style={img}
-                              alt=""
-                            />
-                          </div>
+                          <img
+                            src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/event/${values.banner_image}`}
+                            style={{
+                              display: "block",
+                              width: "100%",
+                              height: "100%",
+                            }}
+                            alt=""
+                          />
                         </div>
-                      )}
-                    </aside>
+                      </aside>
+                    )}
                   </Grid>
-
                   <Grid item xs={9}>
                     <Typography variant="body1">Images:-</Typography>
                     <Button
@@ -502,7 +470,11 @@ const EditEvent = () => {
                         <ImageListItem key={file}>
                           <img
                             src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/event/${file}`}
-                            style={img}
+                            style={{
+                              display: "block",
+                              width: "100%",
+                              height: "100%",
+                            }}
                             alt=""
                           />
                         </ImageListItem>

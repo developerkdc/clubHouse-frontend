@@ -3,6 +3,7 @@ import PermissionMiddleware from "../Middleware/permission";
 import AddBanquet from "app/pages/Banquet/AddBanquet";
 import ListBanquet from "app/pages/Banquet/ListBanquet";
 import EditBanquet from "app/pages/Banquet/EditBanquet";
+import ViewBanquetBoking from "app/pages/Banquet/ViewBanquetBoking";
 
 
 
@@ -14,6 +15,11 @@ var routes = [
   {
     path: `${routesName}`,
     element: <Page component={ListBanquet} layout={"vertical-default"} />,
+    permission: "view",
+  },
+  {
+    path: `${routesName}/viewBoking`,
+    element: <Page component={ViewBanquetBoking} layout={"vertical-default"} />,
     permission: "view",
   },
   {

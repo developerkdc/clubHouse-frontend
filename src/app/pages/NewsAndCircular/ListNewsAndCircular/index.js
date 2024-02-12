@@ -12,13 +12,9 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import ModeEditOutlinedIcon from "@mui/icons-material/ModeEditOutlined";
 import CustomTable from "app/components/Table";
-
 import PreviewOutlinedIcon from "@mui/icons-material/PreviewOutlined";
-
 import ToastAlerts from "app/components/Toast";
-
 import Swal from "sweetalert2";
-
 import { onNewsList } from "app/redux/actions/NewsAndCircular";
 import { getCustomDateTime } from "@jumbo/utils";
 import { Axios } from "app/services/config";
@@ -29,8 +25,7 @@ export default function ListNews() {
   const navigate = useNavigate();
   const showAlert = ToastAlerts();
   const dispatch = useDispatch();
-  // const [rolesList, setRolesList] = useState([{ role_name: "user" }, { role_name: "admin" }, { role_name: "owner" }]);
-  const { role_id } = JSON.parse(localStorage.getItem("authUser"));
+  const { role_id } = JSON.parse(localStorage.getItem("authUser"))|| {};
   const { newsList, totalPages, error } = useSelector(
     (state) => state.newsReducer
   );
@@ -115,12 +110,16 @@ export default function ListNews() {
       },
       icon: <PreviewOutlinedIcon />,
     },
-    {
-      label: "Edit",
-      color: "secondary",
-      onClick: (row) => navigate(`/news/edit/${row._id}`, { state: row }),
-      icon: <ModeEditOutlinedIcon />,
-    },
+    ...(role_id?.permissions?.news?.edit
+      ? [
+          {
+            label: "Edit",
+            color: "secondary",
+            onClick: (row) => navigate(`/news/edit/${row._id}`, { state: row }),
+            icon: <ModeEditOutlinedIcon />,
+          },
+        ]
+      : []),
   ];
   const fetchData = (props) => {
     setQuery({ ...query, ...props });
@@ -188,7 +187,7 @@ export default function ListNews() {
             }}
           />
           <Div>
-            {role_id?.permissions?.news?.add && (
+            {role_id && role_id?.permissions?.news?.add && (
               <Button
                 size="small"
                 variant="contained"

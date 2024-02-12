@@ -27,7 +27,8 @@ export default function ListUser() {
   const showAlert = ToastAlerts();
   const dispatch = useDispatch();
 
-  const { role_id } = JSON.parse(localStorage.getItem("authUser"));
+  const { role_id } = JSON.parse(localStorage.getItem("authUser"))|| {};
+  console.log(role_id, "role_id");
   const { userList, totalPages, error } = useSelector(
     (state) => state.userReducer
   );
@@ -102,18 +103,22 @@ export default function ListUser() {
       },
       icon: <PreviewOutlinedIcon />,
     },
-    {
-      label: "Edit",
-      color: "secondary",
-      onClick: (row) => navigate(`/user/edit/${row._id}`, { state: row }),
-      icon: <ModeEditOutlinedIcon />,
-    },
-    {
-      label: "Change Password",
-      color: "primary",
-      onClick: (row) => navigate(`/user/change-password/${row._id}`),
-      icon: <LockResetOutlinedIcon />,
-    },
+    ...(role_id?.permissions?.user?.edit
+      ? [
+          {
+            label: "Edit",
+            color: "secondary",
+            onClick: (row) => navigate(`/user/edit/${row._id}`, { state: row }),
+            icon: <ModeEditOutlinedIcon />,
+          },
+          {
+            label: "Change Password",
+            color: "primary",
+            onClick: (row) => navigate(`/user/change-password/${row._id}`),
+            icon: <LockResetOutlinedIcon />,
+          },
+        ]
+      : []),
   ];
   const fetchData = (props) => {
     setQuery({ ...query, ...props });
@@ -156,7 +161,7 @@ export default function ListUser() {
           position: "sticky",
           top: 0,
           background: "#F5F7FA",
-          zIndex: 10, // Ensure the header stays above the body
+          zIndex: 10,
         }}
       >
         <Typography variant="h1">User Master</Typography>
@@ -167,12 +172,10 @@ export default function ListUser() {
               id="tags-standard"
               options={rolesList}
               getOptionLabel={(option) => option.role_name}
-              value={selectedRole} // Use a single value for the selected role
+              value={selectedRole}
               onChange={(e, newValue) => {
                 setSelectedRole(newValue);
               }}
-              // inputValue={searchTerm}
-              // onInputChange={(event, newInputValue) => setSearchTerm(newInputValue)}
               renderInput={(params) => <TextField {...params} label="Roles" />}
             />
 
@@ -225,16 +228,16 @@ export default function ListUser() {
             }}
           />
           <Div>
-            {/* {permissions?.role_create == true && ( */}
-            <Button
-              size="small"
-              variant="contained"
-              sx={{ p: 1, pl: 4, pr: 4 }}
-              onClick={() => navigate("/user/add")}
-            >
-              Add User
-            </Button>
-            {/* )} */}
+            {role_id?.permissions?.user?.add === true && (
+              <Button
+                size="small"
+                variant="contained"
+                sx={{ p: 1, pl: 4, pr: 4 }}
+                onClick={() => navigate("/user/add")}
+              >
+                Add User
+              </Button>
+            )}
           </Div>
         </Div>
       </Div>

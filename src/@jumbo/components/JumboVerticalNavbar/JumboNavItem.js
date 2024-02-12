@@ -53,7 +53,10 @@ const JumboNavItem = ({item, isNested, translate}) => {
                             backgroundColor: theme => theme.palette.nav.tick.hover,
                         }} : {}
                 },
-                ...(location.pathname === item.uri) ? {
+                ...(location.pathname === item.uri || item?.isActiveUri?.some((e) => {
+                    const regex = new RegExp('^' + e.replace(/:[^\s/]+/g, '([\\w-]+)').replace(/\//g, '\\/') + '$');
+                    return regex.test(location.pathname)
+                })) ? {
                     color: theme => theme.palette.nav.action.active,
                     backgroundColor: theme => theme.palette.nav.background.active,
                     ...(!isMiniAndClosed) ? {'&::before': {

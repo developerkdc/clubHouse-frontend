@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Card,
   CardContent,
@@ -24,11 +24,11 @@ import Div from "@jumbo/shared/Div";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { format } from "date-fns";
-import dayjs from "dayjs";
+import { isValidEmail } from "@jumbo/utils";
 const AddMember = () => {
   const navigate = useNavigate();
   const showAlert = ToastAlerts();
+
   var initialValues = {
     member_id: "",
     first_name: "",
@@ -77,8 +77,12 @@ const AddMember = () => {
       ),
     email_id: yup
       .string("Enter your Email ID")
-      .email("Enter a valid Email ID")
-      .required("Email is required"),
+      .required("Email is required")
+      .test(
+        "isValidEmail",
+        "Email should contain lover case characters, '@' and '.' symbols",
+        (value) => isValidEmail(value) // Check if the email is valid
+      ),
     mobile_no: yup
       .string()
       .typeError("Phone number must be a number")
@@ -87,17 +91,27 @@ const AddMember = () => {
     password: yup.string().required("Password is Required"),
     family_member: yup.array(
       yup.object({
-        first_name: yup.string().required("First Name is required"),
-        last_name: yup.string().required("Last Name is required").nullable(),
+        first_name: yup
+          .string("Enter First Name")
+          .required("First Name is required")
+          .matches(
+            /^[A-Za-z]+$/,
+            "First Name must contain only alphabetic characters"
+          ),
+        last_name: yup
+          .string("Enter Last Name")
+          .required("Last Name is required")
+          .matches(
+            /^[A-Za-z]+$/,
+            "Last Name must contain only alphabetic characters"
+          ),
         mobile_no: yup
           .string()
           .typeError("Phone number must be a number")
-
-          .matches(/^\d{10}$/, "Number should be 10 digits.")
-          .nullable(),
+          .nullable()
+          .matches(/^\d{10}$/, "Number should be 10 digits."),
         dob: yup
           .date()
-          .nullable() // Allow null or empty string as valid values
           .test(
             "not-current-date",
             "Enter Valid Date of Birth",
@@ -110,7 +124,8 @@ const AddMember = () => {
               currentDate.setHours(0, 0, 0, 0);
               return value < currentDate;
             }
-          ),
+          )
+          .nullable(),
         email_id: yup
           .string("Enter your Email ID")
           .email("Enter a valid Email ID")
@@ -228,7 +243,6 @@ const AddMember = () => {
                             setFieldValue("dob", newValue);
                           }}
                           slotProps={{ textField: { size: "small" } }}
-            
                         />
                       </LocalizationProvider>
                       {errors.dob && touched.dob && (
@@ -295,6 +309,7 @@ const AddMember = () => {
                                   <JumboTextField
                                     fullWidth
                                     id="mobile_no"
+                                    type="number"
                                     name={`family_member.${index}.mobile_no`}
                                     label="Phone NO"
                                   />
@@ -339,22 +354,8 @@ const AddMember = () => {
                                           name={`family_member.${index}.dob`}
                                         />
                                       )}
-                                      // renderInput={(params) => (
-                                      //   <input {...params} />
-                                      // )}
                                     />
                                   </LocalizationProvider>
-
-                                  {/* <JumboTextField
-                                    fullWidth
-                                    type="date"
-                                    id="dob"
-                                    name={`family_member.${index}.dob`}
-                                    label="Date of Birth"
-                                    InputLabelProps={{
-                                      shrink: true,
-                                    }}
-                                  /> */}
                                 </Grid>
                                 <Grid item xs={2}>
                                   <JumboTextField

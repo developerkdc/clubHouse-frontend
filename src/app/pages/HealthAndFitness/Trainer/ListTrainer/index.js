@@ -1,7 +1,13 @@
 import Div from "@jumbo/shared/Div/Div";
 import React, { useEffect, useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
-import { Avatar, Button, InputAdornment, TextField, Typography } from "@mui/material";
+import {
+  Avatar,
+  Button,
+  InputAdornment,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import CustomTable from "app/components/Table";
@@ -24,6 +30,7 @@ export default function ListTrainer() {
   const { trainerList, totalPages, error, successMessage } = useSelector(
     (state) => state.trainerReducer
   );
+  const { role_id } = JSON.parse(localStorage.getItem("authUser"))|| {};
 
   const [query, setQuery] = useState({});
 
@@ -113,18 +120,24 @@ export default function ListTrainer() {
       },
       icon: <PreviewOutlinedIcon />,
     },
-    {
-      label: "Edit",
-      color: "secondary",
-      onClick: (row) => navigate(`/health/trainer/edit/${row._id}`, { state: row }),
-      icon: <ModeEditOutlinedIcon />,
-    },
-    {
-      label: "Change Password",
-      color: "primary",
-      onClick: (row) => navigate(`/health/trainer/change-password/${row._id}`),
-      icon: <LockResetOutlinedIcon />,
-    },
+    ...(role_id?.permissions?.trainer?.edit
+      ? [
+          {
+            label: "Edit",
+            color: "secondary",
+            onClick: (row) =>
+              navigate(`/health/trainer/edit/${row._id}`, { state: row }),
+            icon: <ModeEditOutlinedIcon />,
+          },
+          {
+            label: "Change Password",
+            color: "primary",
+            onClick: (row) =>
+              navigate(`/health/trainer/change-password/${row._id}`),
+            icon: <LockResetOutlinedIcon />,
+          },
+        ]
+      : []),
   ];
   const fetchData = (props) => {
     setQuery({ ...query, ...props });
@@ -187,16 +200,16 @@ export default function ListTrainer() {
             }}
           />
           <Div>
-            {/* {permissions?.role_create == true && ( */}
-            <Button
-              size="small"
-              variant="contained"
-              sx={{ p: 1, pl: 4, pr: 4 }}
-              onClick={() => navigate("/health/trainer/add")}
-            >
-              Add trainer
-            </Button>
-            {/* )} */}
+            {role_id?.permissions?.trainer?.add === true && (
+              <Button
+                size="small"
+                variant="contained"
+                sx={{ p: 1, pl: 4, pr: 4 }}
+                onClick={() => navigate("/health/trainer/add")}
+              >
+                Add trainer
+              </Button>
+            )}
           </Div>
         </Div>
       </Div>

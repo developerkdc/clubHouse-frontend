@@ -150,7 +150,7 @@ const EditNutritionist = () => {
     age: yup.number().required("Age is Required"),
   });
 
-  const handleNutritionistAdd = async (data) => {
+  const handleNutritionistEdit = async (data) => {
     console.log(data, "data");
     const formData = new FormData();
 
@@ -219,7 +219,7 @@ const EditNutritionist = () => {
               validationSchema
                 .validate(data, { abortEarly: false })
                 .then(() => {
-                  handleNutritionistAdd(data);
+                  handleNutritionistEdit(data);
                   setSubmitting(false);
                 })
                 .catch((validationErrors) => {

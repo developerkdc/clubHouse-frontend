@@ -13,27 +13,24 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import CustomTable from "app/components/Table";
-import PreviewOutlinedIcon from "@mui/icons-material/PreviewOutlined";
-import ModeEditOutlinedIcon from "@mui/icons-material/ModeEditOutlined";
 import { useSelector } from "react-redux";
 import ToastAlerts from "app/components/Toast";
 import { onEventList } from "app/redux/actions/Event";
-import ViewEvent from "../ViewEvent";
 import { getCustomDateTime } from "@jumbo/utils";
+
 import { Axios } from "app/services/config";
 import Swal from "sweetalert2";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
-export default function ListEvent() {
+export default function ViewEventBoking() {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const showAlert = ToastAlerts();
   const dispatch = useDispatch();
   const [openView, setOpenView] = useState(false);
   const [eventDetails, setEventDetails] = useState(false);
-  const { role_id } = JSON.parse(localStorage.getItem("authUser")) || {};
 
   const [selectedEventDate, setSelectedEventDate] = useState({
     start_date: "",
@@ -87,64 +84,6 @@ export default function ListEvent() {
       headerName: "Entry Fees",
       render: (_, elm) => (elm?.entry_fee ? elm?.entry_fee : "-"),
     },
-
-    {
-      field: "status",
-      headerName: "Status",
-      sortable: true,
-      render: (value, elm) =>
-        value ? (
-          <Button size="small" variant="outlined" color="success">
-            Active
-          </Button>
-        ) : (
-          <Button size="small" variant="outlined" color="error">
-            Inactive
-          </Button>
-        ),
-      onClick: async (elm) => {
-        try {
-          console.log(elm, "elmelm");
-          let status = elm.status;
-          const result = await Swal.fire({
-            title: `Change event status to ${status ? "inactive" : "active"} ?`,
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "Yes",
-            cancelButtonText: "No",
-          });
-          if (result.isConfirmed) {
-            await Axios.patch(`/event/edit/${elm._id}`, { status: !status });
-            showAlert("success", "Event status updated successfully.");
-            navigate("/event");
-            dispatch(onEventList(query));
-          }
-        } catch (error) {
-          console.error("Error updating event:", error);
-          showAlert("error", "Failed to update event.");
-        }
-      },
-    },
-  ];
-  const actions = [
-    {
-      label: "View Details",
-      color: "secondary",
-      onClick: (row) => {
-        setEventDetails(row);
-        setOpenView(true);
-      },
-      icon: <PreviewOutlinedIcon />,
-    },
-    ...(role_id?.permissions?.event?.edit
-      ? [{
-      label: "Edit",
-      color: "secondary",
-      onClick: (row) => navigate(`/event/edit/${row._id}`, { state: row }),
-      icon: <ModeEditOutlinedIcon />,
-    },
-  ]
-  : []),
   ];
 
   const fetchData = (props) => {
@@ -199,7 +138,7 @@ export default function ListEvent() {
           zIndex: 10,
         }}
       >
-        <Typography variant="h1">Event Master</Typography>
+        <Typography variant="h1">Event Registration List</Typography>
         <Div
           sx={{
             display: "flex",
@@ -232,6 +171,26 @@ export default function ListEvent() {
                   />
                 </LocalizationProvider>
               </FormControl>
+
+              {/* <TextField
+                fullWidth
+                type="date"
+                id="event_start_date"
+                name="event_start_date"
+                label="Event Date"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                onChange={(e) => {
+                  const selectedDate = e.target.value;
+                  setSelectedEventDate((prevDate) => ({
+                    ...prevDate,
+                    event_start_date: selectedDate,
+                  }));
+                }}
+                size="small"
+                value={selectedEventDate.event_start_date}
+              /> */}
             </Grid>
 
             <Grid item xs={3}>
@@ -257,6 +216,25 @@ export default function ListEvent() {
                   />
                 </LocalizationProvider>
               </FormControl>
+              {/* <TextField
+                fullWidth
+                type="date"
+                id="start_date"
+                name="start_date"
+                label="From Date"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                onChange={(e) => {
+                  const selectedDate = e.target.value;
+                  setSelectedEventDate((prevDate) => ({
+                    ...prevDate,
+                    start_date: selectedDate,
+                  }));
+                }}
+                size="small"
+                value={selectedEventDate.start_date}
+              /> */}
             </Grid>
             <Grid item xs={3}>
               <FormControl fullWidth>
@@ -281,25 +259,6 @@ export default function ListEvent() {
                   />
                 </LocalizationProvider>
               </FormControl>
-              {/* <TextField
-                fullWidth
-                type="date"
-                id="end_date"
-                name="end_date"
-                label="To Date"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                onChange={(e) => {
-                  const selectedDate = e.target.value;
-                  setSelectedEventDate((prevDate) => ({
-                    ...prevDate,
-                    end_date: selectedDate,
-                  }));
-                }}
-                size="small"
-                value={selectedEventDate.end_date}
-              /> */}
             </Grid>
           </Grid>
           <Div
@@ -353,49 +312,28 @@ export default function ListEvent() {
             }}
           />
 
-          <Div>
+          {/* <Div>
+          
+
             <Button
-              size="small"
+               size="small"
               variant="contained"
-              sx={{
-                mr: 2,
-                p: 1,
-                pl: 3,
-                pr: 3,
-              }}
-              onClick={() => navigate("/event/viewBoking")}
+              sx={{ p: 1, pl: 4, pr: 4 }}
+            //   onClick={() => navigate("/event/add")}
             >
-              View All Registration
+             Import CSV
             </Button>
-            {role_id?.permissions?.event?.add === true && (
-              <Button
-                size="small"
-                variant="contained"
-                sx={{ p: 1, pl: 4, pr: 4 }}
-                onClick={() => navigate("/event/add")}
-              >
-                Add Event
-              </Button>
-            )}
-          </Div>
+          </Div> */}
         </Div>
       </Div>
       <Div>
         <CustomTable
           data={eventList}
           columns={columns}
-          actions={actions}
           fetchData={fetchData}
           totalCount={totalPages}
         />
       </Div>
-      {openView && eventDetails && (
-        <ViewEvent
-          openView={openView}
-          setOpenView={setOpenView}
-          data={eventDetails}
-        />
-      )}
     </Div>
   );
 }

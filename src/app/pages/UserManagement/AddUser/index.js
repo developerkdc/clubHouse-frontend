@@ -1,5 +1,15 @@
 import React from "react";
-import { Autocomplete, Card, CardContent, FormControlLabel, FormHelperText, Grid, Switch, TextField, Typography } from "@mui/material";
+import {
+  Autocomplete,
+  Card,
+  CardContent,
+  FormControlLabel,
+  FormHelperText,
+  Grid,
+  Switch,
+  TextField,
+  Typography,
+} from "@mui/material";
 import FormControl from "@mui/material/FormControl";
 import { LoadingButton } from "@mui/lab";
 import Button from "@mui/material/Button";
@@ -32,18 +42,24 @@ const AddUser = () => {
     first_name: yup
       .string("Enter First Name")
       .required("First Name is required")
-      .matches(/^[A-Za-z]+$/, "First Name must contain only alphabetic characters"),
+      .matches(
+        /^[A-Za-z]+$/,
+        "First Name must contain only alphabetic characters"
+      ),
     last_name: yup
       .string("Enter Last Name")
       .required("Last Name is required")
-      .matches(/^[A-Za-z]+$/, "Last Name must contain only alphabetic characters"),
-      email_id: yup
+      .matches(
+        /^[A-Za-z]+$/,
+        "Last Name must contain only alphabetic characters"
+      ),
+    email_id: yup
       .string("Enter your Email ID")
       .required("Email is required")
       .test(
         "isValidEmail",
         "Email should contain lover case characters, '@' and '.' symbols",
-        (value) => isValidEmail(value)  // Check if the email is valid
+        (value) => isValidEmail(value) // Check if the email is valid
       ),
     mobile_no: yup
       .string()
@@ -51,7 +67,7 @@ const AddUser = () => {
       .required("Phone Number is Required")
       .matches(/^\d{10}$/, "Number should be 10 digits."),
     password: yup.string().required("Password is Required"),
-    role_id: yup.string().required("Please select role.")
+    role_id: yup.string().required("Please select role."),
   });
 
   const handleUserAdd = async (data) => {
@@ -91,25 +107,59 @@ const AddUser = () => {
               <Form noValidate autoComplete="off">
                 <Grid container rowSpacing={3} columnSpacing={3}>
                   <Grid item xs={6}>
-                    <JumboTextField fullWidth id="user_id" name="user_id" label="User ID" />
+                    <JumboTextField
+                      fullWidth
+                      id="user_id"
+                      name="user_id"
+                      label="User ID"
+                    />
                   </Grid>
                   <Grid item xs={6}>
-                    <JumboTextField fullWidth id="first_name" name="first_name" label="First name" />
+                    <JumboTextField
+                      fullWidth
+                      id="first_name"
+                      name="first_name"
+                      label="First name"
+                    />
                   </Grid>
                   <Grid item xs={6}>
-                    <JumboTextField fullWidth id="last_name" name="last_name" label="Last name" />
+                    <JumboTextField
+                      fullWidth
+                      id="last_name"
+                      name="last_name"
+                      label="Last name"
+                    />
                   </Grid>
                   <Grid item xs={6}>
-                    <JumboTextField fullWidth id="email_id" name="email_id" label="Email" />
+                    <JumboTextField
+                      fullWidth
+                      id="email_id"
+                      name="email_id"
+                      label="Email"
+                    />
                   </Grid>
                   <Grid item xs={6}>
-                    <JumboTextField fullWidth id="password" name="password" label="Password" />
+                    <JumboTextField
+                      fullWidth
+                      id="password"
+                      name="password"
+                      label="Password"
+                    />
                   </Grid>
                   <Grid item xs={6}>
-                    <JumboTextField fullWidth type="number" id="mobile_no" name="mobile_no" label="Phone No." />
+                    <JumboTextField
+                      fullWidth
+                      type="number"
+                      id="mobile_no"
+                      name="mobile_no"
+                      label="Phone No."
+                    />
                   </Grid>
                   <Grid item xs={6}>
-                    <FormControl fullWidth error={errors.role_id && touched.role_id}>
+                    <FormControl
+                      fullWidth
+                      error={errors.role_id && touched.role_id}
+                    >
                       <Autocomplete
                         fullWidth
                         size="small"
@@ -120,9 +170,17 @@ const AddUser = () => {
                         onChange={(event, val) => {
                           setFieldValue("role_id", val._id);
                         }}
-                        renderInput={(params) => <TextField error={errors.role_id && touched.role_id} {...params} label="Roles" />}
+                        renderInput={(params) => (
+                          <TextField
+                            error={errors.role_id && touched.role_id}
+                            {...params}
+                            label="Roles"
+                          />
+                        )}
                       />
-                      {errors && errors.role_id && touched.role_id && <FormHelperText>{errors.role_id}</FormHelperText>}
+                      {errors && errors.role_id && touched.role_id && (
+                        <FormHelperText>{errors.role_id}</FormHelperText>
+                      )}
                     </FormControl>
                   </Grid>
                   <Grid item xs={6} alignContent="center">
@@ -131,7 +189,10 @@ const AddUser = () => {
                       control={
                         <Switch
                           onChange={(e) => {
-                            setFieldValue("status", values.status ? false : true);
+                            setFieldValue(
+                              "status",
+                              values.status ? false : true
+                            );
                           }}
                           defaultChecked={values.status ? true : false}
                           color="primary"
@@ -146,7 +207,12 @@ const AddUser = () => {
 
                 <Grid container columnSpacing={3} mt={5}>
                   <Grid item xs={6} textAlign="right">
-                    <LoadingButton variant="contained" size="medium" type="submit" loading={isSubmitting}>
+                    <LoadingButton
+                      variant="contained"
+                      size="medium"
+                      type="submit"
+                      loading={isSubmitting}
+                    >
                       Save
                     </LoadingButton>
                   </Grid>

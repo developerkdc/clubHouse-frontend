@@ -131,7 +131,7 @@ const AddSport = () => {
     [bannerImage]
   );
 
-  const handleBanquetAdd = async (data) => {
+  const handleSportAdd = async (data) => {
     console.log(data, "data");
     const formData = new FormData();
     files.forEach((file) => {
@@ -178,7 +178,7 @@ const AddSport = () => {
               validationSchema
                 .validate(data, { abortEarly: false })
                 .then(() => {
-                  handleBanquetAdd(data);
+                  handleSportAdd(data);
                   setSubmitting(false);
                 })
                 .catch((validationErrors) => {

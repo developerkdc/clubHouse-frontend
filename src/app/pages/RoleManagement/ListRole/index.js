@@ -18,6 +18,7 @@ export default function ListRole() {
   const navigate = useNavigate();
   const showAlert = ToastAlerts();
   const dispatch = useDispatch();
+  const { role_id } = JSON.parse(localStorage.getItem("authUser"))|| {};
   const [openView, setOpenView] = useState(false);
   const [roleDetails, setRoleDetails] = useState(false);
   const { roleList, totalPages, error, successMessage } = useSelector(
@@ -75,21 +76,23 @@ export default function ListRole() {
       },
       icon: <PreviewOutlinedIcon />,
     },
-    {
-      label: "Edit",
-      color: "secondary",
-      onClick: (row) => navigate(`/roles/edit/${row._id}`, { state: row }),
-      icon: <ModeEditOutlinedIcon />,
-    },
+    ...(role_id?.permissions?.roles?.edit
+      ? [
+          {
+            label: "Edit",
+            color: "secondary",
+            onClick: (row) =>
+              navigate(`/roles/edit/${row._id}`, { state: row }),
+            icon: <ModeEditOutlinedIcon />,
+          },
+        ]
+      : []),
   ];
   const fetchData = (props) => {
     console.log(props);
     setQuery({ ...query, ...props });
   };
 
-  const handleSearch = (value) => {
-    // dispatch(getAllRoles(value,"",""));
-  };
   useEffect(() => {
     setQuery({ ...query, search: searchTerm });
   }, [searchTerm]);
@@ -132,7 +135,6 @@ export default function ListRole() {
             size="small"
             onChange={(e) => {
               setSearchTerm(e.target.value);
-              handleSearch(e.target.value);
             }}
             sx={{ width: 300, mb: 5, mt: 4 }}
             InputProps={{
@@ -146,16 +148,16 @@ export default function ListRole() {
             }}
           />
           <Div>
-            {/* {permissions?.role_create == true && ( */}
-            <Button
-              size="small"
-              variant="contained"
-              sx={{ p: 1, pl: 4, pr: 4 }}
-              onClick={() => navigate("/roles/add")}
-            >
-              Add Role
-            </Button>
-            {/* )} */}
+            {role_id?.permissions?.roles?.add === true && (
+              <Button
+                size="small"
+                variant="contained"
+                sx={{ p: 1, pl: 4, pr: 4 }}
+                onClick={() => navigate("/roles/add")}
+              >
+                Add Role
+              </Button>
+            )}
           </Div>
         </Div>
       </Div>

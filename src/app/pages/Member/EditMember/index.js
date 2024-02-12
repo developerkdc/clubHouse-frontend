@@ -120,7 +120,7 @@ const EditMember = () => {
     ),
   });
 
-  const handleMemberAdd = async (data) => {
+  const handleMemberEdit = async (data) => {
     try {
       await Axios.patch(`/member/edit/${id}`, data);
       showAlert("success", "Member added successfully.");
@@ -145,7 +145,7 @@ const EditMember = () => {
               validationSchema
                 .validate(data, { abortEarly: false })
                 .then(() => {
-                  handleMemberAdd(data);
+                  handleMemberEdit(data);
                   setSubmitting(false);
                 })
                 .catch((validationErrors) => {

@@ -43,6 +43,7 @@ const JumboNavSection = ({item, translate}) => {
             {
                 subMenus &&
                 subMenus.map((child, index) => {
+                    console.log(child)
                     return (<JumboNavIdentifier item={child} key={index}/>)
                 })
             }

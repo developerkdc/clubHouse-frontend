@@ -27,12 +27,11 @@ export default function ListSpa() {
   const showAlert = ToastAlerts();
   const dispatch = useDispatch();
   const [openView, setOpenView] = useState(false);
-  const [eventDetails, setMmberDetails] = useState(false);
-  const [selectedEventDate, setSelectedEventDate] = useState(null);
+  const [spaDetails, setSpaDetails] = useState(false);
   const { spaList, totalPages, error, successMessage } = useSelector(
     (state) => state.spaReducer
   );
-
+  const { role_id } = JSON.parse(localStorage.getItem("authUser"))|| {};
   const [query, setQuery] = useState({});
 
   const columns = [
@@ -97,17 +96,20 @@ export default function ListSpa() {
       label: "View Details",
       color: "secondary",
       onClick: (row) => {
-        setMmberDetails(row);
+        setSpaDetails(row);
         setOpenView(true);
       },
       icon: <PreviewOutlinedIcon />,
     },
-    {
+    ...(role_id?.permissions?.spa?.edit
+      ? [{
       label: "Edit",
       color: "secondary",
       onClick: (row) => navigate(`/spa/edit/${row._id}`, { state: row }),
       icon: <ModeEditOutlinedIcon />,
     },
+  ]
+  : []),
   ];
 
   const fetchData = (props) => {
@@ -174,7 +176,8 @@ export default function ListSpa() {
             }}
           />
           <Div>
-            {/* {permissions?.role_create == true && ( */}
+          {role_id?.permissions?.spa?.add === true && (
+
             <Button
               size="small"
               variant="contained"
@@ -183,7 +186,7 @@ export default function ListSpa() {
             >
               Add Spa
             </Button>
-            {/* )} */}
+          )}
           </Div>
         </Div>
       </Div>
@@ -196,11 +199,11 @@ export default function ListSpa() {
           totalCount={totalPages}
         />
       </Div>
-      {openView && eventDetails && (
+      {openView && spaDetails && (
         <ViewSpa
           openView={openView}
           setOpenView={setOpenView}
-          data={eventDetails}
+          data={spaDetails}
         />
       )}
     </Div>

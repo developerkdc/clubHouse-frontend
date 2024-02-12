@@ -74,11 +74,11 @@ const AddGallery = () => {
       .string("Short Description")
       .required("Short Description is required"),
     event_date: yup.string("Event Date").required("Event Date is required"),
-    images: yup
-      .array()
-      .of(yup.string())
-      .min(1, "At least one image is required")
-      .required("Images are required"),
+    // images: yup
+    //   .array()
+    //   .of(yup.string())
+    //   .min(1, "At least one image is required")
+    //   .required("Images are required"),
   });
 
   const [files, setFiles] = useState([]);
@@ -98,7 +98,7 @@ const AddGallery = () => {
     [bannerImage]
   );
 
-  const handleEventAdd = async (data) => {
+  const handleGalleryAdd = async (data) => {
     console.log(data, "data");
     const formData = new FormData();
     files.forEach((file) => {
@@ -144,7 +144,7 @@ const AddGallery = () => {
               validationSchema
                 .validate(data, { abortEarly: false })
                 .then(() => {
-                  handleEventAdd(data);
+                  handleGalleryAdd(data);
                   setSubmitting(false);
                 })
                 .catch((validationErrors) => {
@@ -270,9 +270,9 @@ const AddGallery = () => {
                   <Grid item xs={9}>
                     <Typography variant="body1">Images :-</Typography>
                     <DropMultiImage setImages={setFiles} images={files} />
-                    {errors.images && touched.images && (
+                    {/* {errors.images && touched.images && (
                       <FormHelperText error>{errors.images}</FormHelperText>
-                    )}
+                    )} */}
                   </Grid>
                 </Grid>{" "}
                 <Typography variant="body1" marginTop={1}>
