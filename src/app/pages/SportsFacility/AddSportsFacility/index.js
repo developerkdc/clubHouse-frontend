@@ -241,13 +241,14 @@ const AddSport = () => {
                     />
                   </Grid>
                 </Grid>
-                <Grid container rowSpacing={3} columnSpacing={3} marginTop={-1}>
+                <Grid container rowSpacing={3} columnSpacing={3} marginTop={0}>
                   <Grid item xs={2}>
-                    <Typography variant="body1">Amenities :-</Typography>
                     <TextField
                       variant="standard"
                       label="Add Amenities..."
                       value={amenities}
+                      fullWidth
+                      size="small"
                       onChange={(e) => setAmenities(e.target.value)}
                       component="li"
                       sx={{
@@ -255,7 +256,7 @@ const AddSport = () => {
                       }}
                     />
                   </Grid>
-                  <Grid item xs={1} mt={5}>
+                  <Grid item xs={1} mt={2}>
                     <Button
                       variant="contained"
                       size="small"
@@ -278,6 +279,7 @@ const AddSport = () => {
                           <Chip
                             variant="outlined"
                             label={data}
+                            size="small"
                             onDelete={() => handleAmenitiesDelete(data)}
                           />
                         </ListItem>
@@ -285,7 +287,7 @@ const AddSport = () => {
                     </div>
                   </Grid>
                 </Grid>
-                <Grid item xs={2} alignContent="center">
+                <Grid item xs={2} mt={2} alignContent="center">
                   <FormControlLabel
                     style={{ padding: "0px", margin: "5px", height: "100%" }}
                     control={

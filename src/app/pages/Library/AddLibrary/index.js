@@ -228,7 +228,7 @@ const AddLibrary = () => {
                     />
                   </Grid>
                 </Grid>
-                <Grid item xs={2} alignContent="center">
+                <Grid item xs={2} mt={2} alignContent="center">
                   <FormControlLabel
                     style={{ padding: "0px", margin: "0px", height: "100%" }}
                     control={
