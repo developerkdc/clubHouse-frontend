@@ -25,6 +25,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { isValidEmail } from "@jumbo/utils";
+import dayjs from "dayjs";
 const AddMember = () => {
   const navigate = useNavigate();
   const showAlert = ToastAlerts();
@@ -108,7 +109,6 @@ const AddMember = () => {
         mobile_no: yup
           .string()
           .typeError("Phone number must be a number")
-          .nullable()
           .matches(/^\d{10}$/, "Number should be 10 digits."),
         dob: yup
           .date()
@@ -124,12 +124,11 @@ const AddMember = () => {
               currentDate.setHours(0, 0, 0, 0);
               return value < currentDate;
             }
-          )
-          .nullable(),
+          ),
         email_id: yup
           .string("Enter your Email ID")
-          .email("Enter a valid Email ID")
-          .nullable(),
+          .email("Enter a valid Email ID"),
+
         relation: yup.string().required("Relation is required"),
       })
     ),
@@ -231,14 +230,27 @@ const AddMember = () => {
                     />
                   </Grid>
                   <Grid item xs={3}>
-                    <FormControl fullWidth error={errors.dob && touched.dob}>
+                    <FormControl
+                      key={values.dob}
+                      fullWidth
+                      error={errors.dob && touched.dob}
+                    >
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DatePicker
                           label="Date of Birth"
-                          id="dob"
+                          id="from"
                           format="DD-MM-YYYY"
-                          name="dob"
-                          value={values.dob ? new Date(values.dob) : null}
+                          name="from"
+                          sx={{
+                            width: "100%",
+                          }}
+                          value={
+                            values.dob
+                              ? dayjs(values.dob)
+                              : errors.dob
+                              ? ""
+                              : null
+                          }
                           onChange={(newValue) => {
                             setFieldValue("dob", newValue);
                           }}
@@ -328,7 +340,7 @@ const AddMember = () => {
                                   >
                                     <DatePicker
                                       label="Date of Birth"
-                                      id={`dob-${index}`}
+                                      id={`dob`}
                                       format="DD-MM-YYYY"
                                       name={`family_member.${index}.dob`}
                                       value={
@@ -371,7 +383,7 @@ const AddMember = () => {
                               onClick={() => arrayHelpers.remove(index)}
                               sx={{
                                 ml: 2,
-                                mt: 1.5,
+                                mt: values.family_member.length ? 3 : 1,
                                 color: "red",
                                 ":hover": { cursor: "pointer" },
                               }}

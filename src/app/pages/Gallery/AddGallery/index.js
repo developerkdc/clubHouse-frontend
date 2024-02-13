@@ -29,6 +29,7 @@ import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "quill-emoji/dist/quill-emoji.css";
 import QuillEmoji from "quill-emoji";
+import dayjs from "dayjs";
 
 Quill.register("modules/emoji", QuillEmoji);
 
@@ -198,7 +199,9 @@ const AddGallery = () => {
                           format="DD-MM-YYYY"
                           value={
                             values.event_date
-                              ? new Date(values.event_date)
+                              ? dayjs(values.event_date)
+                              : errors.event_date
+                              ? ""
                               : null
                           }
                           onChange={(newValue) => {
@@ -211,16 +214,6 @@ const AddGallery = () => {
                         <FormHelperText>{errors.event_date}</FormHelperText>
                       )}
                     </FormControl>
-                    {/* <JumboTextField
-                      fullWidth
-                      type="date"
-                      id="event_date"
-                      name="event_date"
-                      label="Event Date"
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                    /> */}
                   </Grid>
 
                   <Grid item xs={6}>
