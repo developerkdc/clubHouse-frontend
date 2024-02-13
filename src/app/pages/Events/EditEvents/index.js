@@ -109,11 +109,11 @@ const EditEvent = () => {
         category: data.category,
         duration_type: data.duration_type,
         event_type: data.event_type,
-        short_description: data.short_description,
-        description: data.description,
-        start_date: data.start_date,
-        entry_fee: data.entry_fee,
-        end_date: data.end_date,
+        short_description: data.short_description ? data.short_description : "",
+        description: data.description ? data.description : "",
+        start_date: data.start_date ? data.start_date : "",
+        entry_fee: data.entry_fee ? data.entry_fee : "",
+        end_date: data.end_date ? data.end_date : "",
         status: data.status,
         banner_image: data.banner_image || [],
       });
@@ -268,11 +268,16 @@ const EditEvent = () => {
                         value={values?.duration_type}
                         name="duration_type"
                         onChange={(event, val) => {
-                          console.log("first ", values.end_date);
+                          console.log("Selected duration type:", val);
                           if (val === "single") {
+                            console.log("Setting end_date to null");
                             setFieldValue("end_date", "");
-                            console.log("last ", values.end_date);
+                            console.log(
+                              "Setting end_date to null",
+                              values.end_date
+                            ); //
                           } else {
+                            console.log("Setting end_date to initial value");
                             setFieldValue("end_date", initialValues.end_date);
                           }
                           setFieldValue("duration_type", val);
@@ -287,13 +292,10 @@ const EditEvent = () => {
                           />
                         )}
                       />
-                      {errors &&
-                        errors.duration_type &&
-                        touched.duration_type && (
-                          <FormHelperText>
-                            {errors.duration_type}
-                          </FormHelperText>
-                        )}
+                      {console.log("Updated values:", values)}
+                      {errors.duration_type && touched.duration_type && (
+                        <FormHelperText>{errors.duration_type}</FormHelperText>
+                      )}
                     </FormControl>
                   </Grid>
 
@@ -308,7 +310,18 @@ const EditEvent = () => {
                           id="start_date"
                           format="DD-MM-YYYY"
                           name="start_date"
-                          defaultValue={dayjs(formatDate(values?.start_date))}
+                          // defaultValue={
+                          //   values?.start_date
+                          //     ? dayjs(formatDate(values?.start_date))
+                          //     : ""
+                          // }
+                          value={
+                            values.start_date
+                              ? dayjs(formatDate(values.start_date))
+                              : errors.start_date
+                              ? ""
+                              : null
+                          }
                           onChange={(newValue) => {
                             setFieldValue("start_date", newValue);
                           }}
@@ -320,9 +333,9 @@ const EditEvent = () => {
                       )}
                     </FormControl>
                   </Grid>
-
                   <Grid item xs={3}>
                     <FormControl
+                      key={values.end_date}
                       fullWidth
                       error={errors.end_date && touched.end_date}
                     >
@@ -332,7 +345,18 @@ const EditEvent = () => {
                           name="end_date"
                           label="End Date"
                           format="DD-MM-YYYY"
-                          defaultValue={dayjs(formatDate(values?.end_date))}
+                          // defaultValue={
+                          //   values.end_date
+                          //     ? dayjs(formatDate(values.end_date))
+                          //     : null
+                          // }
+                          value={
+                            values.end_date
+                              ? dayjs(formatDate(values.end_date))
+                              : errors.end_date
+                              ? ""
+                              : null
+                          }
                           onChange={(newValue) => {
                             setFieldValue("end_date", newValue);
                           }}
@@ -340,12 +364,12 @@ const EditEvent = () => {
                           disabled={values.duration_type !== "multi"}
                         />
                       </LocalizationProvider>
+
                       {errors.end_date && touched.end_date && (
                         <FormHelperText>{errors.end_date}</FormHelperText>
                       )}
                     </FormControl>
                   </Grid>
-
                   <Grid item xs={3}>
                     <FormControl
                       fullWidth

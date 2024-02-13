@@ -29,6 +29,7 @@ import QuillEmoji from "quill-emoji";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
 Quill.register("modules/emoji", QuillEmoji);
 
 const modules = {
@@ -271,6 +272,8 @@ const AddEvent = () => {
                           value={
                             values.start_date
                               ? new Date(values.start_date)
+                              : errors.start_date
+                              ? ""
                               : null
                           }
                           onChange={(newValue) => {
@@ -283,20 +286,11 @@ const AddEvent = () => {
                         <FormHelperText>{errors.start_date}</FormHelperText>
                       )}
                     </FormControl>
-                    {/* <JumboTextField
-                      fullWidth
-                      type="date"
-                      id="start_date"
-                      name="start_date"
-                      label="Start Date"
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                    /> */}
                   </Grid>
 
                   <Grid item xs={3}>
                     <FormControl
+                      key={values.end_date}
                       fullWidth
                       error={errors.end_date && touched.end_date}
                     >
@@ -307,7 +301,11 @@ const AddEvent = () => {
                           label="End Date"
                           format="DD-MM-YYYY"
                           value={
-                            values.end_date ? new Date(values.end_date) : null
+                            values.end_date
+                              ? dayjs(values.end_date)
+                              : errors.end_date
+                              ? ""
+                              : null
                           }
                           onChange={(newValue) => {
                             setFieldValue("end_date", newValue);
