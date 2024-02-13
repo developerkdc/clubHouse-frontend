@@ -269,17 +269,18 @@ const AddBanquet = () => {
                     />
                   </Grid>
                 </Grid>
-                <Grid container rowSpacing={3} columnSpacing={3} marginTop={-1}>
-                  <Grid item xs={2}>
-                    <Typography variant="body1">Tags :-</Typography>
+                <Grid container rowSpacing={3} columnSpacing={3} marginTop={0}>
+                  <Grid item xs={2} >
                     <TextField
                       variant="standard"
+                      fullWidth
+                      size="small"
                       label="Add Tags..."
                       value={tags}
                       onChange={(e) => setTags(e.target.value)}
                     />
                   </Grid>
-                  <Grid item xs={1} mt={5}>
+                  <Grid item xs={1} mt={2}>
                     <Button
                       variant="contained"
                       size="small"
@@ -302,6 +303,7 @@ const AddBanquet = () => {
                         <ListItem key={Index}>
                           <Chip
                             variant="outlined"
+                            size="small"
                             label={data}
                             onDelete={() => handleTagsDelete(data)}
                           />
@@ -310,11 +312,11 @@ const AddBanquet = () => {
                     </div>
                   </Grid>
                   <Grid item xs={2}>
-                    <Typography variant="body1">Amenities :-</Typography>
-
                     <TextField
                       variant="standard"
                       label="Add Amenities..."
+                      fullWidth
+                      size="small"
                       value={amenities}
                       onChange={(e) => setAmenities(e.target.value)}
                       component="li"
@@ -323,7 +325,7 @@ const AddBanquet = () => {
                       }}
                     />
                   </Grid>
-                  <Grid item xs={1} mt={5}>
+                  <Grid item xs={1} mt={2}>
                     <Button
                       variant="contained"
                       size="small"
@@ -347,6 +349,7 @@ const AddBanquet = () => {
                           <Chip
                             variant="outlined"
                             label={data}
+                            size="small"
                             onDelete={() => handleAmenitiesDelete(data)}
                           />
                         </ListItem>
@@ -354,7 +357,7 @@ const AddBanquet = () => {
                     </div>
                   </Grid>
                 </Grid>
-                <Grid item xs={2} alignContent="center">
+                <Grid item xs={2} mt={2} alignContent="center">
                   <FormControlLabel
                     style={{ padding: "0px", margin: "5px", height: "100%" }}
                     control={
@@ -371,7 +374,7 @@ const AddBanquet = () => {
                     labelPlacement="start"
                   />
                 </Grid>
-                <Grid container rowSpacing={3} columnSpacing={3} marginTop={-1}>
+                <Grid container rowSpacing={3} columnSpacing={3} marginTop={1}>
                   <Grid item xs={3}>
                     <Typography variant="body1">Banner Image :-</Typography>
                     <DropSingleImage

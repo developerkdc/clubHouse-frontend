@@ -26,7 +26,7 @@ import DropSingleImage from "app/components/DropZone/singleImage";
 
 const thumbsContainer = {
   display: "flex",
-  marginTop: 16,
+  marginTop: 5,
   maxHeight: "250px",
 };
 
@@ -273,7 +273,7 @@ const EditLibrary = () => {
                     />
                   </Grid>
                 </Grid>
-                <Grid item xs={2} alignContent="center">
+                <Grid item xs={2} mt={2} alignContent="center">
                   <FormControlLabel
                     style={{ padding: "0px", margin: "0px", height: "100%" }}
                     control={
@@ -290,9 +290,9 @@ const EditLibrary = () => {
                     labelPlacement="start"
                   />
                 </Grid>
-                <Grid container rowSpacing={3} columnSpacing={3} marginTop={5}>
+                <Grid container rowSpacing={3} columnSpacing={3} marginTop={1}>
                   <Grid item xs={3}>
-                    <Typography variant="body1">Banner Images :-</Typography>
+                    <Typography variant="body1">Banner Image :-</Typography>
                     <DropSingleImage
                       setImage={setBannerImage}
                       image={bannerImage}
@@ -315,11 +315,12 @@ const EditLibrary = () => {
                   </Grid>
 
                   <Grid item xs={9}>
-                    <Typography variant="body1">Images:-</Typography>
+                    <Typography variant="body1">Images :-</Typography>
                     <Button
                       size="small"
                       variant="contained"
                       onClick={setOpenView}
+                      style={{marginTop:"8px"}}
                     >
                       <ModeEditIcon />
                     </Button>

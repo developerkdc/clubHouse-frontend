@@ -48,7 +48,7 @@ const modules = {
 
 const thumbsContainer = {
   display: "flex",
-  marginTop: 16,
+  marginTop: 5,
   maxHeight: "250px",
 };
 
@@ -252,7 +252,7 @@ const EditNews = () => {
                 </Grid>
                 <Grid container rowSpacing={3} columnSpacing={3} marginTop={1}>
                   <Grid item xs={3}>
-                    <Typography variant="body1">Banner Images :-</Typography>
+                    <Typography variant="body1">Banner Image :-</Typography>
                     <DropSingleImage
                       setImage={setBannerImage}
                       image={bannerImage}

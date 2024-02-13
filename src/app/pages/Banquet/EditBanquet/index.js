@@ -50,7 +50,7 @@ const modules = {
 
 const thumbsContainer = {
   display: "flex",
-  marginTop: 16,
+  marginTop: 5,
   maxHeight: "250px",
 };
 
@@ -324,21 +324,22 @@ const EditBanquet = () => {
                     />
                   </Grid>
                 </Grid>
-                <Grid container rowSpacing={3} columnSpacing={3} marginTop={-1}>
+                <Grid container rowSpacing={3} columnSpacing={3} marginTop={0}>
                   <Grid item xs={2}>
-                    <Typography variant="body1">Tags :-</Typography>
                     <TextField
                       variant="standard"
+                      fullWidth
                       label="Add Chips..."
+                      size="small"
                       value={tags}
                       onChange={(e) => setTags(e.target.value)}
                       component="li"
-                      sx={{
-                        mx: 1,
-                      }}
+                      // sx={{
+                      //   mx: 1,
+                      // }}
                     />
                   </Grid>
-                  <Grid item xs={1} mt={5}>
+                  <Grid item xs={1} mt={2}>
                     <Button
                       variant="contained"
                       size="small"
@@ -361,6 +362,7 @@ const EditBanquet = () => {
                           <Chip
                             variant="outlined"
                             label={data}
+                            size="small"
                             onDelete={() => handleTagsDelete(data)}
                           />
                         </ListItem>
@@ -368,10 +370,11 @@ const EditBanquet = () => {
                     </div>
                   </Grid>
                   <Grid item xs={2}>
-                    <Typography variant="body1">Amenities :-</Typography>
                     <TextField
                       variant="standard"
                       label="Add Chips..."
+                      fullWidth
+                      size="small"
                       value={amenities}
                       onChange={(e) => setAmenities(e.target.value)}
                       component="li"
@@ -380,7 +383,7 @@ const EditBanquet = () => {
                       }}
                     />
                   </Grid>
-                  <Grid item xs={1} mt={5}>
+                  <Grid item xs={1} mt={2}>
                     <Button
                       variant="contained"
                       size="small"
@@ -403,6 +406,7 @@ const EditBanquet = () => {
                           <Chip
                             variant="outlined"
                             label={data}
+                            size="small"
                             onDelete={() => handleAmenitiesDelete(data)}
                           />
                         </ListItem>
@@ -410,7 +414,7 @@ const EditBanquet = () => {
                     </div>
                   </Grid>
                 </Grid>
-                <Grid item xs={2} alignContent="center">
+                <Grid item xs={2} mt={2} alignContent="center">
                   <FormControlLabel
                     style={{ padding: "0px", margin: "5px", height: "100%" }}
                     control={
@@ -430,7 +434,7 @@ const EditBanquet = () => {
 
                 <Grid container rowSpacing={3} columnSpacing={3} marginTop={1}>
                   <Grid item xs={3}>
-                    <Typography variant="body1">Banner Images :-</Typography>
+                    <Typography variant="body1">Banner Image :-</Typography>
                     <DropSingleImage
                       setImage={setBannerImage}
                       image={bannerImage}
@@ -452,11 +456,12 @@ const EditBanquet = () => {
                     )}
                   </Grid>
                   <Grid item xs={9}>
-                    <Typography variant="body1">Images:-</Typography>
+                    <Typography variant="body1">Images :-</Typography>
                     <Button
                       size="small"
                       variant="contained"
                       onClick={setOpenView}
+                      style={{marginTop:"8px"}}
                     >
                       <ModeEditIcon />
                     </Button>

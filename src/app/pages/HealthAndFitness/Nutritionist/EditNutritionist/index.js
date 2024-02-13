@@ -24,34 +24,52 @@ import { isValidEmail } from "@jumbo/utils";
 import { useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useEffect } from "react";
+import DropSingleImage from "app/components/DropZone/singleImage";
 
 const thumbsContainer = {
   display: "flex",
-  flexDirection: "row",
-  flexWrap: "wrap",
-  marginTop: 16,
+  marginTop: 5,
+  maxHeight: "250px",
 };
 
 const thumb = {
-  display: "inline-flex",
+  display: "flex",
+  borderRadius: 2,
+  justifyContent: "center",
+  alignContent: "center",
+  border: "1px solid #eaeaea",
+  // border: "1px solid red",
   marginBottom: 8,
   marginRight: 8,
-  width: 100,
-  height: 100,
+  width: "70%",
+  height: "150px",
   padding: 4,
+  boxSizing: "border-box",
 };
-
-const thumbInner = {
-  display: "flex",
-  minWidth: 0,
-  overflow: "hidden",
-};
-
-const img = {
-  display: "block",
-  width: "auto",
-  height: "100%",
-};
+const Languages = [
+  "English",
+  "Spanish",
+  "French",
+  "German",
+  "Chinese",
+  "Japanese",
+  "Arabic",
+  "Russian",
+  "Hindi",
+  "Portuguese",
+  "Bengali",
+  "Urdu",
+  "Indonesian",
+  "Italian",
+  "Turkish",
+  "Thai",
+  "Dutch",
+  "Korean",
+  "Vietnamese",
+  "Polish",
+  "Ukrainian",
+  // Add more languages as needed
+];
 
 const EditNutritionist = () => {
   const { id } = useParams();
@@ -62,53 +80,43 @@ const EditNutritionist = () => {
 
   const [gender, SetGender] = useState(["Male", "Female"]);
   const [profile_image, setProfile_image] = useState([]);
-  console.log(profile_image, "profile_image");
 
-  const {
-    getRootProps: getRootProfile_imageProps,
-    getInputProps: getInputProfile_imageProps,
-  } = useDropzone({
-    accept: "image/*",
-    onDrop: (acceptedFiles) => {
-      const selectedFile = acceptedFiles[0];
-      if (selectedFile) {
-        setProfile_image([
-          Object.assign(selectedFile, {
-            preview: URL.createObjectURL(selectedFile),
-          }),
-        ]);
-      }
-    },
+  const [initialValues, setInitialValues] = useState({
+    first_name: '',
+    last_name: '',
+    gender: '',
+    age: '',
+    email_id: '',
+    profile_image: [],
+    mobile_no: '',
+    experience: '',
+    available_from: '',
+    available_till: '',
+    language: Languages || [],
+    status: '',
   });
 
-  useEffect(
-    () => () => {
-      profile_image.forEach((file) => URL.revokeObjectURL(file.preview));
-    },
-    [profile_image]
-  );
-
-  const thumbs = profile_image.map((file) => (
-    <div style={thumb} key={file.name}>
-      <div style={thumbInner}>
-        <img src={file.preview} style={img} alt="" />
-      </div>
-    </div>
-  ));
-
-  var initialValues = {
-    first_name: state.first_name,
-    last_name: state.last_name,
-    gender: state.gender,
-    age: state.age,
-    email_id: state.email_id,
-    profile_image: [],
-    mobile_no: state.mobile_no,
-    experience: state.experience,
-    available_from: state.available_from,
-    available_till: state.available_till,
-    language: state.language,
-    status: state.status,
+  const getNutritionistDetails = async () => {
+    try {
+      const res = await Axios.get(`/health_fitness/nutritionist/list?id=${id}`);
+      let data = res.data.data;
+      setInitialValues({
+        first_name: data.first_name,
+        last_name: data.last_name,
+        gender: data.gender,
+        age: data.age,
+        email_id: data.email_id,
+        profile_image: data.profile_image || [],
+        mobile_no: data.mobile_no,
+        experience: data.experience,
+        available_from: data.available_from,
+        available_till: data.available_till,
+        language: data.language || [],
+        status: data.status,
+      });
+    } catch (error) {
+      showAlert("error", error.response.data.message);
+    }
   };
 
   const validationSchema = yup.object({
@@ -178,30 +186,16 @@ const EditNutritionist = () => {
       showAlert("error", error.response.data.message);
     }
   };
-  const Languages = [
-    "English",
-    "Spanish",
-    "French",
-    "German",
-    "Chinese",
-    "Japanese",
-    "Arabic",
-    "Russian",
-    "Hindi",
-    "Portuguese",
-    "Bengali",
-    "Urdu",
-    "Indonesian",
-    "Italian",
-    "Turkish",
-    "Thai",
-    "Dutch",
-    "Korean",
-    "Vietnamese",
-    "Polish",
-    "Ukrainian",
-    // Add more languages as needed
-  ];
+  useEffect(
+    () => () => {
+      profile_image.forEach((file) => URL.revokeObjectURL(file.preview));
+    },
+    [profile_image]
+  );
+ 
+  useEffect(() => {
+    getNutritionistDetails();
+  }, []);
 
   return (
     <React.Fragment>
@@ -211,6 +205,7 @@ const EditNutritionist = () => {
       <Card>
         <CardContent>
           <Formik
+          key={JSON.stringify(initialValues)}
             validateOnChange={true}
             initialValues={initialValues}
             validationSchema={validationSchema}
@@ -398,31 +393,25 @@ const EditNutritionist = () => {
                 <Grid container rowSpacing={3} columnSpacing={3} marginTop={-1}>
                   <Grid item xs={3}>
                     <Typography variant="body1">Banner Images :-</Typography>
-                    <div
-                      {...getRootProfile_imageProps({ className: "dropzone" })}
-                      style={{ marginTop: "10px", width: "112px" }}
-                    >
-                      <input {...getInputProfile_imageProps()} />
-                      <Button size="small" variant="contained">
-                        Select Image
-                      </Button>
-                    </div>
-                    <aside style={thumbsContainer}>
-                      {/* Display initial image or selected images */}
-                      {profile_image.length > 0 ? (
-                        thumbs // Display selected images
-                      ) : (
+                    <DropSingleImage
+                      setImage={setProfile_image}
+                      image={profile_image}
+                    />
+                    {profile_image.length == 0 && (
+                      <aside style={thumbsContainer}>
                         <div style={thumb}>
-                          <div style={thumbInner}>
-                            <img
-                              src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/nutritionist/${state.profile_image}`}
-                              style={img}
-                              alt=""
-                            />
-                          </div>
+                          <img
+                            src={`${process.env.REACT_APP_BACKEND_IMAGE_PATH}/nutritionist/${values.profile_image}`}
+                            style={{
+                              display: "block",
+                              width: "100%",
+                              height: "100%",
+                            }}
+                            alt=""
+                          />
                         </div>
-                      )}
-                    </aside>
+                      </aside>
+                    )}
                   </Grid>
                 </Grid>
 
