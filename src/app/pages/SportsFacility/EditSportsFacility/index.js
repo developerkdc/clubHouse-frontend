@@ -417,7 +417,9 @@ const EditSport = () => {
                     </ImageList>
                   </Grid>
                 </Grid>
-
+                <Typography variant="body1" marginTop={1}>
+                  Description :-
+                </Typography>
                 <Grid container columnSpacing={3} marginTop={2}>
                 <Grid item xs={12}>
                     <ReactQuill
