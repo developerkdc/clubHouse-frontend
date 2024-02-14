@@ -90,31 +90,6 @@ const EditMember = () => {
       yup.object({
         first_name: yup.string().required("First Name is required"),
         last_name: yup.string().required("Last Name is required"),
-        mobile_no: yup
-          .string()
-          .typeError("Phone number must be a number")
-          .matches(/^\d{10}$/, "Number should be 10 digits.")
-          .nullable(),
-        dob: yup
-          .date()
-          .nullable()
-          .test(
-            "not-current-date",
-            "Enter Valid Date of Birth",
-            function (value) {
-              if (!value) {
-                return true; // Skip validation if no value is provided
-              }
-
-              const currentDate = new Date();
-              currentDate.setHours(0, 0, 0, 0);
-              return value < currentDate;
-            }
-          ),
-        email_id: yup
-          .string("Enter your Email ID")
-          .email("Enter a valid Email ID")
-          .nullable(),
         relation: yup.string().required("Relation is required"),
       })
     ),
@@ -334,16 +309,7 @@ const EditMember = () => {
                                     />
                                   </LocalizationProvider>
 
-                                  {/* <JumboTextField
-                                    fullWidth
-                                    type="date"
-                                    id="dob"
-                                    name={`family_member.${index}.dob`}
-                                    label="Date of Birth"
-                                    InputLabelProps={{
-                                      shrink: true,
-                                    }}
-                                  /> */}
+                        
                                 </Grid>
                                 <Grid item xs={2}>
                                   <JumboTextField
@@ -359,7 +325,11 @@ const EditMember = () => {
                               onClick={() => arrayHelpers.remove(index)}
                               sx={{
                                 ml: 2,
-                                mt: 1.5,
+                                mt:
+                                  errors?.family_member &&
+                                  touched?.family_member
+                                    ? 0.5
+                                    : 3.5,
                                 color: "red",
                                 ":hover": { cursor: "pointer" },
                               }}

@@ -106,29 +106,6 @@ const AddMember = () => {
             /^[A-Za-z]+$/,
             "Last Name must contain only alphabetic characters"
           ),
-        mobile_no: yup
-          .string()
-          .typeError("Phone number must be a number")
-          .matches(/^\d{10}$/, "Number should be 10 digits."),
-        dob: yup
-          .date()
-          .test(
-            "not-current-date",
-            "Enter Valid Date of Birth",
-            function (value) {
-              if (!value) {
-                return true; // Skip validation if no value is provided
-              }
-
-              const currentDate = new Date();
-              currentDate.setHours(0, 0, 0, 0);
-              return value < currentDate;
-            }
-          ),
-        email_id: yup
-          .string("Enter your Email ID")
-          .email("Enter a valid Email ID"),
-
         relation: yup.string().required("Relation is required"),
       })
     ),
@@ -171,6 +148,7 @@ const AddMember = () => {
           >
             {({ setFieldValue, isSubmitting, values, errors, touched }) => (
               <Form noValidate autoComplete="off">
+                {console.log(errors, "ewrrrrrr")}
                 <Grid container rowSpacing={3} columnSpacing={3}>
                   <Grid item xs={6}>
                     <JumboTextField
@@ -289,7 +267,7 @@ const AddMember = () => {
                     name="family_member"
                     render={(arrayHelpers) => (
                       <Div>
-                        {values?.family_member?.map((subItem, index) => (
+                        {values?.family_member?.map((member, index) => (
                           <Div
                             key={index}
                             sx={{ display: "flex", alignItems: "center" }}
@@ -317,6 +295,7 @@ const AddMember = () => {
                                     label="Last Name"
                                   />
                                 </Grid>
+                                {console.log(errors, "fff")}
                                 <Grid item xs={2}>
                                   <JumboTextField
                                     fullWidth
@@ -334,19 +313,27 @@ const AddMember = () => {
                                     label="Email ID"
                                   />
                                 </Grid>
+                                {console.log(errors, "errors")}
                                 <Grid item xs={2}>
                                   <LocalizationProvider
                                     dateAdapter={AdapterDayjs}
                                   >
                                     <DatePicker
                                       label="Date of Birth"
-                                      id={`dob`}
+                                      id="dob"
                                       format="DD-MM-YYYY"
                                       name={`family_member.${index}.dob`}
+                                      sx={{
+                                        "& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline":
+                                          {
+                                            borderColor: "red !important", // Border color when error is present
+                                          },
+                                      }}
                                       value={
-                                        values.family_member[index]?.dob
-                                          ? new Date(
-                                              values.family_member[index].dob
+                                        values?.family_member?.[index]?.dob
+                                          ? dayjs(
+                                              values?.family_member?.[index]
+                                                ?.dob
                                             )
                                           : null
                                       }
@@ -357,17 +344,38 @@ const AddMember = () => {
                                         );
                                       }}
                                       slotProps={{
-                                        textField: { size: "small" },
+                                        textField: {
+                                          size: "small",
+                                          error: Boolean(
+                                            errors?.family_member?.[index]?.dob
+                                          ),
+                                        }, // Set error prop based on validation
                                       }}
                                       renderInput={(params) => (
                                         <TextField
-                                          error={errors.dob && touched.dob}
                                           {...params}
                                           name={`family_member.${index}.dob`}
+                                          error={Boolean(
+                                            errors?.family_member?.[index]?.dob
+                                          )} // Set error prop based on validation
                                         />
                                       )}
                                     />
                                   </LocalizationProvider>
+
+                                  {errors?.family_member?.[index]?.dob &&
+                                    touched?.family_member?.[index]?.dob && (
+                                      <FormHelperText
+                                        sx={{
+                                          color: "#E73145",
+                                          fontSize: "11px",
+                                          mt: 0.7,
+                                          ml: 1.5,
+                                        }}
+                                      >
+                                        {errors?.family_member?.[index]?.dob}
+                                      </FormHelperText>
+                                    )}
                                 </Grid>
                                 <Grid item xs={2}>
                                   <JumboTextField
@@ -379,11 +387,16 @@ const AddMember = () => {
                                 </Grid>
                               </Grid>
                             </Div>
+
                             <RemoveCircleOutline
                               onClick={() => arrayHelpers.remove(index)}
                               sx={{
                                 ml: 2,
-                                mt: values.family_member.length ? 3 : 1,
+                                mt:
+                                  errors?.family_member &&
+                                  touched?.family_member
+                                    ? 0.5
+                                    : 3.5,
                                 color: "red",
                                 ":hover": { cursor: "pointer" },
                               }}
